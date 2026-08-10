@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dennishilk.github.io/linux-migration-companion/schemas/migration-passport.schema.json",
+  "title": "Linux Migration Companion Passport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "product",
+    "locale",
+    "updatedAt",
+    "answers",
+    "softwareSelections",
+    "hardware",
+    "liveTests",
+    "mediaProgress",
+    "selectedDistroId"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "product": { "const": "linux-migration-companion" },
+    "locale": { "enum": ["en", "de"] },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "answers": { "$ref": "#/$defs/advisorAnswers" },
+    "softwareSelections": {
+      "type": "object",
+      "maxProperties": 60,
+      "propertyNames": {
+        "enum": [
+          "microsoft-365", "outlook", "onedrive", "microsoft-teams",
+          "libreoffice", "onlyoffice", "thunderbird", "google-drive",
+          "dropbox", "acrobat-pro", "photoshop", "lightroom",
+          "creative-cloud", "illustrator", "premiere-pro", "after-effects",
+          "affinity-suite", "davinci-resolve", "blender", "gimp", "inkscape",
+          "krita", "audacity", "obs-studio", "fl-studio", "ableton-live",
+          "visual-studio", "vscode", "jetbrains", "github-desktop",
+          "docker-desktop", "wsl", "powershell", "putty", "notepad-plus-plus",
+          "steam", "battle-net", "epic-games", "xbox-pc", "ea-app",
+          "ubisoft-connect", "riot-vanguard", "roblox", "steamvr", "gog-galaxy",
+          "minecraft", "discord", "spotify", "firefox", "chrome", "edge",
+          "vlc", "zoom", "slack", "whatsapp", "itunes", "autocad",
+          "solidworks", "quickbooks", "sketchup"
+        ]
+      },
+      "additionalProperties": { "enum": ["important", "essential"] }
+    },
+    "hardware": { "$ref": "#/$defs/hardware" },
+    "liveTests": { "$ref": "#/$defs/liveTests" },
+    "mediaProgress": { "$ref": "#/$defs/mediaProgress" },
+    "selectedDistroId": {
+      "enum": [
+        null,
+        "linux-mint-cinnamon",
+        "zorin-os",
+        "ubuntu-lts",
+        "fedora-kde",
+        "debian-kde",
+        "opensuse-tumbleweed-kde",
+        "cachyos",
+        "nobara",
+        "nixos",
+        "arch-linux",
+        "gentoo"
+      ]
+    }
+  },
+  "$defs": {
+    "advisorAnswers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currentWindows", "deviceType", "experience", "terminalComfort",
+        "troubleshooting", "maintenance", "freshness", "rollingTolerance",
+        "desktopPreference", "windowsLikeUi", "gaming", "gameLaunchers",
+        "office", "development", "creative", "mediaProduction",
+        "professionalDependencies", "gpuVendor", "secureBoot",
+        "proprietaryTolerance", "systemInterest", "migrationMode"
+      ],
+      "properties": {
+        "currentWindows": { "enum": ["windows10", "windows11", "other"] },
+        "deviceType": { "enum": ["desktop", "laptop"] },
+        "experience": { "enum": ["none", "beginner", "intermediate", "advanced", "expert"] },
+        "terminalComfort": { "enum": ["avoid", "guided", "comfortable", "enthusiast"] },
+        "troubleshooting": { "enum": ["avoid", "guided", "comfortable", "enthusiast"] },
+        "maintenance": { "enum": ["minimal", "regular", "active", "hobby"] },
+        "freshness": { "enum": ["stable", "balanced", "newest"] },
+        "rollingTolerance": { "enum": ["no", "maybe", "yes"] },
+        "desktopPreference": { "enum": ["windows_like", "kde", "gnome", "no_preference", "build_my_own"] },
+        "windowsLikeUi": { "enum": ["important", "nice", "irrelevant"] },
+        "gaming": { "enum": ["none", "casual", "important", "critical"] },
+        "gameLaunchers": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "enum": ["steam", "battlenet", "epic", "xbox", "ea", "ubisoft", "riot", "vr"] }
+        },
+        "office": { "enum": ["none", "basic", "complex"] },
+        "development": { "enum": ["none", "web", "cross_platform", "microsoft_stack"] },
+        "creative": { "enum": ["none", "hobby", "professional"] },
+        "mediaProduction": { "enum": ["none", "hobby", "professional"] },
+        "professionalDependencies": { "enum": ["none", "replaceable", "essential"] },
+        "gpuVendor": { "enum": ["unknown", "nvidia", "amd", "intel"] },
+        "secureBoot": { "enum": ["required", "preferred", "irrelevant"] },
+        "proprietaryTolerance": { "enum": ["avoid", "accept_if_needed", "comfortable"] },
+        "systemInterest": { "enum": ["use_it", "customize", "declarative", "manual_build", "compile_control"] },
+        "migrationMode": { "enum": ["test", "dual_boot", "replace"] }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "gpuVendor", "overall", "scannerStatus", "notes"],
+      "properties": {
+        "source": { "const": "manual" },
+        "gpuVendor": { "enum": ["unknown", "nvidia", "amd", "intel"] },
+        "overall": { "enum": ["verified", "probably_supported", "unknown", "known_issue", "proprietary_driver_required"] },
+        "scannerStatus": { "const": "deferred" },
+        "notes": { "type": "string", "maxLength": 1000 }
+      }
+    },
+    "liveTests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wifi", "ethernet", "graphics", "audio", "bluetooth", "suspend", "external_monitor", "webcam", "microphone", "printer"],
+      "properties": {
+        "wifi": { "$ref": "#/$defs/liveStatus" },
+        "ethernet": { "$ref": "#/$defs/liveStatus" },
+        "graphics": { "$ref": "#/$defs/liveStatus" },
+        "audio": { "$ref": "#/$defs/liveStatus" },
+        "bluetooth": { "$ref": "#/$defs/liveStatus" },
+        "suspend": { "$ref": "#/$defs/liveStatus" },
+        "external_monitor": { "$ref": "#/$defs/liveStatus" },
+        "webcam": { "$ref": "#/$defs/liveStatus" },
+        "microphone": { "$ref": "#/$defs/liveStatus" },
+        "printer": { "$ref": "#/$defs/liveStatus" }
+      }
+    },
+    "liveStatus": { "enum": ["not_tested", "works", "issue", "not_applicable"] },
+    "mediaProgress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["download", "verify", "write", "boot", "test", "return"],
+      "properties": {
+        "download": { "type": "boolean" },
+        "verify": { "type": "boolean" },
+        "write": { "type": "boolean" },
+        "boot": { "type": "boolean" },
+        "test": { "type": "boolean" },
+        "return": { "type": "boolean" }
+      }
+    }
+  }
+}
