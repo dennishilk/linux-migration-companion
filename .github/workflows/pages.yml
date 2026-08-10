@@ -31,7 +31,7 @@ jobs:
         env:
           VITE_BASE_PATH: /linux-migration-companion/
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
