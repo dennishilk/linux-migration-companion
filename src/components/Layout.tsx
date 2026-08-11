@@ -1,5 +1,7 @@
+import { useState } from "react";
 import type { AppSection, Locale } from "../domain/types";
 import { messages, sectionLabel, t } from "../i18n";
+import { ResetDialog } from "./ResetDialog";
 
 const sections: AppSection[] = [
   "advisor",
@@ -19,6 +21,7 @@ interface LayoutProps {
   section: AppSection;
   onLocaleChange: (locale: Locale) => void;
   onSectionChange: (section: AppSection) => void;
+  onReset: () => void;
   children: React.ReactNode;
 }
 
@@ -27,8 +30,16 @@ export function Layout({
   section,
   onLocaleChange,
   onSectionChange,
+  onReset,
   children
 }: LayoutProps) {
+  const [resetOpen, setResetOpen] = useState(false);
+
+  const confirmReset = () => {
+    onReset();
+    setResetOpen(false);
+  };
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -41,9 +52,19 @@ export function Layout({
           onClick={() => onSectionChange("advisor")}
           aria-label={t(locale, "appName")}
         >
-          <span className="brand-mark" aria-hidden="true">
-            LM
-          </span>
+          <svg
+            className="brand-mark"
+            viewBox="0 0 64 64"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect x="1" y="1" width="62" height="62" rx="13" />
+            <path className="brand-path" d="M15 19c9 0 9 13 18 13h16" />
+            <path className="brand-path" d="M15 45c9 0 9-13 18-13" />
+            <circle className="brand-node" cx="15" cy="19" r="4" />
+            <circle className="brand-node" cx="15" cy="45" r="4" />
+            <path className="brand-arrow" d="m42 24 8 8-8 8" />
+          </svg>
           <span>
             <strong>{t(locale, "appName")}</strong>
             <small>{t(locale, "releaseStatus")}</small>
@@ -55,6 +76,13 @@ export function Layout({
             <span className="status-dot" aria-hidden="true" />
             {t(locale, "localOnly")}
           </span>
+          <button
+            type="button"
+            className="start-over-control"
+            onClick={() => setResetOpen(true)}
+          >
+            {t(locale, "startOver")}
+          </button>
           <div className="language-switch" role="group" aria-label={t(locale, "language")}>
             <button
               type="button"
@@ -121,9 +149,23 @@ export function Layout({
       </div>
 
       <footer className="footer">
-        <span>{t(locale, "privacyFooter")}</span>
-        <span>{t(locale, "notAffiliated")}</span>
+        <div className="footer-safety">
+          <span>{t(locale, "privacyFooter")}</span>
+          <span>{t(locale, "notAffiliated")}</span>
+        </div>
+        <div className="footer-attribution" aria-label="Authorship and license">
+          <span>© 2026 Dennis Hilk</span>
+          <span>Linux Migration Companion</span>
+          <span>Licensed under the MIT License</span>
+        </div>
       </footer>
+
+      <ResetDialog
+        locale={locale}
+        open={resetOpen}
+        onCancel={() => setResetOpen(false)}
+        onConfirm={confirmReset}
+      />
     </div>
   );
 }

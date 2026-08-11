@@ -224,7 +224,11 @@ export function App() {
     next.locale = passport.locale;
     setPassport(next);
     setAdvisorComplete(false);
-    navigate("advisor");
+    setSection("advisor");
+    const url = new URL(window.location.href);
+    url.searchParams.delete("step");
+    window.history.replaceState({ step: "advisor" }, "", url);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const importPassport = (nextPassport: MigrationPassport) => {
@@ -337,7 +341,6 @@ export function App() {
           liveReadiness={liveReadiness}
           migrationReadiness={migrationReadiness}
           onImport={importPassport}
-          onClear={reset}
           onContinue={() => navigate("first_boot")}
         />
       );
@@ -353,6 +356,7 @@ export function App() {
       section={section}
       onLocaleChange={updateLocale}
       onSectionChange={navigate}
+      onReset={reset}
     >
       {content}
     </Layout>

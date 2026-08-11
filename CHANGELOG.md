@@ -2,6 +2,9 @@
 
 ## 0.2.0-rc.1 — 2026-08-11
 
+- Added restrained Dennis Hilk/MIT attribution to the public UI and README.
+- Replaced the former `LM` monogram with an original converging migration-path mark and matching favicon.
+- Replaced the immediate Passport reset with a global, localized, keyboard-accessible confirmation dialog that clears only Companion-owned persistence.
 - Expanded Software Reality from 60 to 90 curated applications/workflows with explicit scope, volatility, official source, and review date.
 - Replaced the single hardware summary with 19 class-level evidence records and seven honest evidence states.
 - Added explainable migration readiness and “Should I keep Windows?” strategy derivation without percentages.

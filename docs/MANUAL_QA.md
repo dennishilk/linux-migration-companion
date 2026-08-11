@@ -40,7 +40,9 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] Passport preview matches stored data; export downloads valid schema-v2 JSON.
 - [ ] Strict v1 import migrates; valid v2 imports; malformed/extra/oversized/deep/unknown/stale/contradictory files fail safely.
 - [ ] Markup-like notes render as text and create no DOM element or console error.
-- [ ] Reset requires confirmation and clears both v1 and v2 keys.
+- [ ] `Start over` / `Neu beginnen` opens the reset dialog without changing progress on the first click.
+- [ ] Cancel or Escape preserves progress, traps focus while open, and returns focus to the reset control.
+- [ ] Confirmed reset clears only the app-owned v1/v2 keys, preserves the locale and unrelated storage, removes `?step=`, and creates a schema-valid default Passport at step 1.
 - [ ] First Boot 2.0 responds to blockers, NVIDIA, Steam, browser/office, identity, cloud, printer, Bluetooth, displays, development, media, unresolved hardware, and NixOS.
 - [ ] Guided mode stays concise; explanation mode shows WHAT, WHY, RISK, VERIFY SUCCESS, and BACK OUT for every step.
 - [ ] No control executes commands, installs software, requests privilege, partitions, writes media, or changes a bootloader.
@@ -88,7 +90,7 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] Cards do not overlap, clip controls, truncate critical status, or create kilometer-long lines.
 - [ ] Sticky controls do not cover focused elements or the final card.
 - [ ] The ten-item desktop navigation remains reachable at short heights.
-- [ ] Visible focus follows a logical order; no keyboard trap exists.
+- [ ] Visible focus follows a logical order; the reset dialog traps Tab focus only while open and releases it on Cancel, Escape, or confirmation.
 - [ ] Button groups, selects, textareas, checkboxes, summaries, and file input trigger have accessible names.
 - [ ] Heading hierarchy is coherent after direct navigation.
 - [ ] Status uses text and structure, not color alone; contrast remains legible.
@@ -113,6 +115,7 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] CI and CodeQL pass on the release-candidate SHA.
 - [ ] A branch preview or equivalent serves the exact candidate SHA over HTTPS.
 - [ ] Chromium and Firefox matrix above is performed against that SHA.
-- [ ] Page title, description, canonical URL, favicon, and app identity are correct.
+- [ ] Page title, description, canonical URL, favicon, and app identity are correct; the former `LM` mark is absent.
+- [ ] The footer visibly presents `© 2026 Dennis Hilk`, `Linux Migration Companion`, and `Licensed under the MIT License`.
 - [ ] `noindex,nofollow` and `robots.txt` remain in place until Dennis explicitly authorizes public indexing.
 - [ ] Only after approval: remove both indexing gates in one reviewed change; do not change them implicitly during deployment.

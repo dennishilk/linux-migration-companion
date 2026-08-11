@@ -139,4 +139,8 @@ Browser storage is convenience, not backup. Inspect exports before sharing, and 
 
 This repository is a website release candidate, not a compatibility certification. It is not affiliated with or endorsed by any listed Linux distribution, software vendor, or media-writer project. Names and trademarks belong to their respective owners.
 
+## Authorship and license
+
+© 2026 Dennis Hilk  
+Linux Migration Companion  
 Licensed under the [MIT License](LICENSE).

@@ -3,11 +3,37 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { App } from "./App";
 import { createDefaultPassport } from "./domain/defaults";
+import { migrationPassportSchema } from "./passport/schema";
+
+const PASSPORT_V2_KEY = "linux-migration-companion:passport:v2";
+const PASSPORT_V1_KEY = "linux-migration-companion:passport:v1";
 
 function jsonFile(name: string, contents: string): File {
   const file = new File([contents], name, { type: "application/json" });
   Object.defineProperty(file, "text", { value: async () => contents });
   return file;
+}
+
+function storePopulatedPassport(locale: "en" | "de" = "en") {
+  const passport = createDefaultPassport();
+  passport.locale = locale;
+  passport.selectedDistroId = "linux-mint-cinnamon";
+  passport.comparisonDistroIds = ["linux-mint-cinnamon", "zorin-os"];
+  passport.softwareSelections = { photoshop: "essential" };
+  passport.hardware.evidence.wifi = {
+    state: "live_verified",
+    required: true,
+    details: "Tested on the target laptop"
+  };
+  passport.liveTests.wifi = "works";
+  passport.dataMigration.documents = {
+    importance: "essential",
+    method: "copy",
+    notes: "Backup checked"
+  };
+  passport.mediaProgress.download = true;
+  window.localStorage.setItem(PASSPORT_V2_KEY, JSON.stringify(passport));
+  return passport;
 }
 
 describe("release-candidate application flow", () => {
@@ -23,6 +49,109 @@ describe("release-candidate application flow", () => {
     render(<App />);
     expect(screen.getByText("Runs locally in your browser. No account. No tracking.")).toBeInTheDocument();
     expect(screen.getByText("No disk writes. No command execution.")).toBeInTheDocument();
+  });
+
+  it("opens reset confirmation without changing progress on the first click", async () => {
+    const user = userEvent.setup();
+    const passport = storePopulatedPassport();
+    window.history.replaceState({}, "", "/?step=data");
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Start over" }));
+
+    expect(
+      screen.getByRole("dialog", { name: "Start over?" })
+    ).toBeInTheDocument();
+    expect(
+      JSON.parse(window.localStorage.getItem(PASSPORT_V2_KEY) ?? "{}").selectedDistroId
+    ).toBe(passport.selectedDistroId);
+    expect(new URLSearchParams(window.location.search).get("step")).toBe("data");
+  });
+
+  it("cancels reset without changing state and returns focus to Start over", async () => {
+    const user = userEvent.setup();
+    storePopulatedPassport();
+    window.history.replaceState({}, "", "/?step=data");
+    render(<App />);
+    const startOver = screen.getByRole("button", { name: "Start over" });
+    const before = window.localStorage.getItem(PASSPORT_V2_KEY);
+
+    await user.click(startOver);
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(window.localStorage.getItem(PASSPORT_V2_KEY)).toBe(before);
+    expect(screen.getByRole("heading", { name: "Plan the data, not just the operating system" })).toBeInTheDocument();
+    expect(new URLSearchParams(window.location.search).get("step")).toBe("data");
+    await waitFor(() => expect(startOver).toHaveFocus());
+  });
+
+  it("confirms a schema-valid clean reset and preserves unrelated storage and locale", async () => {
+    const user = userEvent.setup();
+    storePopulatedPassport("de");
+    window.history.replaceState({}, "", "/?step=data");
+    render(<App />);
+    window.localStorage.setItem(PASSPORT_V1_KEY, "legacy-owned-data");
+    window.localStorage.setItem("another-app:setting", "keep-me");
+
+    await user.click(screen.getByRole("button", { name: "Neu beginnen" }));
+    await user.click(screen.getByRole("button", { name: "Alles zurücksetzen" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Könnte Linux Windows für dich realistisch ersetzen?"
+      })
+    ).toBeInTheDocument();
+    expect(new URLSearchParams(window.location.search).get("step")).toBeNull();
+    expect(window.localStorage.getItem(PASSPORT_V1_KEY)).toBeNull();
+    expect(window.localStorage.getItem("another-app:setting")).toBe("keep-me");
+
+    await waitFor(() => {
+      const parsed = migrationPassportSchema.parse(
+        JSON.parse(window.localStorage.getItem(PASSPORT_V2_KEY) ?? "")
+      );
+      expect(parsed.locale).toBe("de");
+      expect(parsed.selectedDistroId).toBeNull();
+      expect(parsed.comparisonDistroIds).toEqual([]);
+      expect(parsed.softwareSelections).toEqual({});
+      expect(parsed.dataMigration).toEqual({});
+      expect(Object.values(parsed.liveTests).every((state) => state === "not_tested")).toBe(true);
+      expect(Object.values(parsed.hardware.evidence).every((item) => item.state === "unknown")).toBe(true);
+      expect(Object.values(parsed.mediaProgress).every((state) => state === false)).toBe(true);
+    });
+  });
+
+  it("provides localized reset copy, trapped focus and Escape cancellation", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const startOver = screen.getByRole("button", { name: "Start over" });
+
+    await user.click(startOver);
+    const dialog = screen.getByRole("dialog", { name: "Start over?" });
+    expect(within(dialog).getByText("Advisor answers and selected comparisons")).toBeInTheDocument();
+    expect(within(dialog).getByText("Export the Passport first if you want to keep this evidence.")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus());
+    await user.tab({ shift: true });
+    expect(screen.getByRole("button", { name: "Reset everything" })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "DE" }));
+    await user.click(screen.getByRole("button", { name: "Neu beginnen" }));
+    const germanDialog = screen.getByRole("dialog", { name: "Neu beginnen?" });
+    expect(within(germanDialog).getByRole("button", { name: "Abbrechen" })).toBeInTheDocument();
+    expect(within(germanDialog).getByRole("button", { name: "Alles zurücksetzen" })).toBeInTheDocument();
+    expect(within(germanDialog).getByText("Lokaler Status des Migration Passport")).toBeInTheDocument();
+  });
+
+  it("uses the migration-path identity and presents authorship without the old LM mark", () => {
+    render(<App />);
+    expect(document.querySelector(".brand-mark .brand-arrow")).toBeInTheDocument();
+    expect(screen.queryByText(/^LM$/)).not.toBeInTheDocument();
+    expect(screen.getByText("© 2026 Dennis Hilk")).toBeInTheDocument();
+    expect(screen.getByText("Licensed under the MIT License")).toBeInTheDocument();
   });
 
   it("switches the core interface to German and persists the locale locally", async () => {

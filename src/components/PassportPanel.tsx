@@ -22,7 +22,6 @@ interface PassportPanelProps {
   liveReadiness: LiveReadiness;
   migrationReadiness: ReadinessAssessment;
   onImport: (passport: MigrationPassport) => void;
-  onClear: () => void;
   onContinue: () => void;
 }
 
@@ -48,7 +47,6 @@ export function PassportPanel({
   liveReadiness,
   migrationReadiness,
   onImport,
-  onClear,
   onContinue
 }: PassportPanelProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -240,18 +238,6 @@ export function PassportPanel({
       </details>
 
       <div className="panel-actions">
-        <button
-          type="button"
-          className="button danger"
-          onClick={() => {
-            if (window.confirm(copy(locale, "Reset all local migration data?", "Alle lokalen Migrationsdaten zurücksetzen?"))) {
-              onClear();
-              setImportState("idle");
-            }
-          }}
-        >
-          {t(locale, "clear")}
-        </button>
         <button type="button" className="button primary" onClick={onContinue}>
           {copy(locale, "Build First Boot Plan 2.0", "First Boot Plan 2.0 erstellen")}
         </button>
