@@ -46,12 +46,12 @@ jobs:
       - name: Build portable Windows executable
         shell: pwsh
         run: |
-          & $env:MSBUILD_PATH collectors/windows-exe/LinuxMigrationCompanion.WindowsCollector.csproj /m /t:Rebuild /p:Configuration=Release /p:ContinuousIntegrationBuild=true "/p:PathMap=$env:GITHUB_WORKSPACE=."
+          & $env:MSBUILD_PATH collectors/windows-exe/LinuxMigrationCompanion.WindowsCollector.csproj /m /t:Rebuild /p:Configuration=Release "/p:PathMap=$env:GITHUB_WORKSPACE=."
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and run Windows collector tests
         shell: pwsh
         run: |
-          & $env:MSBUILD_PATH collectors/windows-exe/tests/LinuxMigrationCompanion.WindowsCollector.Tests.csproj /m /t:Rebuild /p:Configuration=Release /p:ContinuousIntegrationBuild=true "/p:PathMap=$env:GITHUB_WORKSPACE=."
+          & $env:MSBUILD_PATH collectors/windows-exe/tests/LinuxMigrationCompanion.WindowsCollector.Tests.csproj /m /t:Rebuild /p:Configuration=Release "/p:PathMap=$env:GITHUB_WORKSPACE=."
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & collectors/windows-exe/tests/bin/Release/LinuxMigrationCompanion.WindowsCollector.Tests.exe "$env:GITHUB_WORKSPACE"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
