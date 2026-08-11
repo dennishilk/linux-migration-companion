@@ -1,6 +1,6 @@
 {
   "name": "linux-migration-companion",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-rc.1",
   "private": true,
   "type": "module",
   "engines": {

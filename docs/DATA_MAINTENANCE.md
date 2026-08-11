@@ -15,6 +15,8 @@ Community compatibility databases can be offered as a manual research aid, but t
 ## Software record checklist
 
 - Correct product/workflow name and category.
+- Explicit `application` or `workflow` scope.
+- Explicit `stable` or `volatile` freshness; volatile claims must tell the user to re-check.
 - One or more explicit routes: native, web, compatibility layer, alternative, partial replacement, no real equivalent, or manual verification.
 - Conservative base risk.
 - `blockerWhenEssential` only when exact dependency plausibly keeps Windows necessary.
@@ -26,13 +28,13 @@ Community compatibility databases can be offered as a manual research aid, but t
 
 - Current project/edition label at review time.
 - Accurate release model and maintenance description.
-- Honest Alpha support depth.
+- Honest Companion support depth.
 - Official home, download, verification, and installation links.
 - Media handoff type.
 - Decision rules and persona tests updated together.
 
 ## Review cadence
 
-Perform a focused review before every tagged release and at least quarterly while the Alpha is active. High-volatility entries—game launchers/anti-cheat, vendor platform support, current distro editions, download/verification URLs—should be checked first.
+Perform a focused review before every tagged release and at least quarterly while the project is public. High-volatility entries—game launchers/anti-cheat, vendor platform support, current distro editions, download/verification URLs—must be checked first. Every changed review date represents an actual source review, not a mechanical timestamp bump.
 
 If a fact cannot be verified, weaken the wording, mark the route for manual verification, or remove the claim. Never preserve confident copy merely to avoid an empty state.

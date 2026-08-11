@@ -11,7 +11,7 @@ The user sees one of four ordinal tiers:
 3. **Exploratory**
 4. **Not recommended**
 
-No percentage is displayed because the Alpha has no calibrated probability model or population outcome data. Internally, additive points establish ordering, while hard caps enforce suitability boundaries. The score is not a compatibility measurement.
+No percentage is displayed because the Companion has no calibrated probability model or population outcome data. Internally, additive points establish ordering, while hard caps enforce suitability boundaries. The score is not a compatibility measurement.
 
 ## Evaluation order
 
@@ -21,7 +21,21 @@ No percentage is displayed because the Alpha has no calibrated probability model
 4. Apply specialist gates and maximum tiers.
 5. Convert the final ordinal points to a tier, then apply the strictest cap.
 6. Sort by tier, then points, then stable profile name.
-7. Separately evaluate global warnings and the software/live evidence. A blocker can override every distro result.
+7. Separately evaluate global warnings, software, hardware, live-test, and data evidence. A blocker can override every distro result.
+
+## Readiness evaluation order
+
+The readiness engine is separate from distro ranking:
+
+1. Essential software records explicitly marked `blockerWhenEssential`, failed required hardware, known required hardware issues, and live-test failures create blockers.
+2. Blockers return `BLOCKED`; software blockers recommend keeping Windows for those workflows.
+3. Essential medium/high workflows without a hard blocker return `WINDOWS SHOULD BE RETAINED` until representative proof exists.
+4. An otherwise empty evidence record returns `INSUFFICIENT EVIDENCE`.
+5. Required `UNKNOWN`, `KNOWN FACT`, or `USER REPORTED` hardware and missing essential live tests return `LIVE TEST REQUIRED`.
+6. Remaining software, gaming, data, or manual checks return `READY WITH CHECKS`.
+7. Only resolved required evidence with no remaining checks returns `READY`.
+
+The migration strategy then respects the recorded test/dual-boot/replace intent without ever performing a disk or boot action.
 
 Current raw tier boundaries in `recommend.ts` are `>=20` strong, `>=13` possible, `>=7` exploratory, otherwise not recommended. These boundaries are implementation details and require persona-test review when changed.
 
@@ -36,7 +50,10 @@ Current raw tier boundaries in `recommend.ts` are `>=20` strong, `>=13` possible
 - A “no” to rolling release blocks rolling profiles from recommendation tiers regardless of their point total.
 - NVIDIA increases the need for a supported driver workflow; it does not imply a gaming/enthusiast distro.
 - Essential software with no reliable equivalent becomes a hard software blocker.
-- Any recorded live-test issue blocks readiness. Untested functions keep readiness incomplete.
+- Any recorded live-test issue blocks readiness. Untested essential functions require a live test.
+- `KNOWN FACT` and `USER REPORTED` never equal `LIVE VERIFIED`.
+- Required hardware cannot simultaneously be `NOT APPLICABLE`; Passport validation rejects that contradiction.
+- Data inventory absence is an open check, not an implicit pass.
 
 ## Persona regression set
 

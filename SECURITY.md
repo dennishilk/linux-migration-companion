@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-This is an experimental Alpha. Only the latest commit on `main` is maintained.
+`0.2.0-rc.1` is a website release candidate. Until a public version is explicitly tagged, only the latest reviewed commit on `main` is maintained.
 
 ## Reporting a vulnerability
 
@@ -24,11 +24,11 @@ The application is intentionally static and unprivileged. It must never:
 
 Any proposal crossing this boundary requires a separate threat model, explicit consent design, signed release process, least-privilege implementation, and an independent security review. It is not an incremental UI feature.
 
-## Defensive controls in Alpha
+## Defensive controls in the release candidate
 
 - Strict TypeScript and deterministic pure decision functions.
-- Zod validation for both stored and imported Passport data.
-- 256 KiB import cap, depth cap, string limits, closed enums, strict objects, and known-ID validation.
+- Zod validation for stored/imported Passport v2 data plus an explicit strict v1 migration path.
+- 256 KiB import cap, depth-12 cap, string limits, closed enums, strict objects, known-ID validation, unique comparison IDs, and contradictory-evidence rejection.
 - No HTML injection from imported content and no use of `dangerouslySetInnerHTML`.
 - External links open with `rel="noreferrer"`.
 - No runtime third-party scripts, fonts, analytics, or service worker.
