@@ -53,7 +53,7 @@ export function MediaGuide({
     {
       id: "verify",
       title: copy(locale, "Verify the image before writing", "Abbild vor dem Schreiben prüfen"),
-      body: copy(locale, "Follow the project's current checksum or signature instructions. Do not trust a checksum copied into this Alpha.", "Aktuelle Prüfsummen- oder Signaturanleitung des Projekts befolgen. Keiner in diese Alpha kopierten Prüfsumme vertrauen."),
+      body: copy(locale, "Follow the project's current checksum or signature instructions. Do not trust a checksum copied into this Companion.", "Aktuelle Prüfsummen- oder Signaturanleitung des Projekts befolgen. Keiner in diesen Companion kopierten Prüfsumme vertrauen."),
       ...(distro ? { link: { label: t(locale, "officialVerify"), url: distro.verifyUrl } } : {})
     },
     {
@@ -83,7 +83,7 @@ export function MediaGuide({
     <section aria-labelledby="media-title">
       <div className="page-heading split-heading">
         <div>
-          <p className="eyebrow">05 / SAFE MEDIA HANDOFF</p>
+          <p className="eyebrow">08 / SAFE MEDIA HANDOFF</p>
           <h1 id="media-title">{t(locale, "mediaTitle")}</h1>
           <p>{t(locale, "mediaLead")}</p>
         </div>

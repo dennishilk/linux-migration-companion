@@ -8,28 +8,22 @@ interface FirstBootPanelProps {
   passport: MigrationPassport;
 }
 
+const copy = (locale: Locale, en: string, de: string) =>
+  locale === "de" ? de : en;
+
 export function FirstBootPanel({ locale, passport }: FirstBootPanelProps) {
   const [explain, setExplain] = useState(false);
-  const plan = useMemo(
-    () =>
-      buildFirstBootPlan(
-        passport.selectedDistroId,
-        passport.answers,
-        passport.softwareSelections,
-        passport.liveTests
-      ),
-    [passport]
-  );
+  const plan = useMemo(() => buildFirstBootPlan(passport), [passport]);
 
   return (
     <section aria-labelledby="first-boot-title">
       <div className="page-heading split-heading">
         <div>
-          <p className="eyebrow">07 / FIRST BOOT PLAN</p>
+          <p className="eyebrow">10 / FIRST BOOT PLAN 2.0</p>
           <h1 id="first-boot-title">{t(locale, "firstBootTitle")}</h1>
           <p>{t(locale, "noExecution")}</p>
         </div>
-        <div className="mode-switch" role="group" aria-label={locale === "de" ? "Erklärmodus" : "Explanation mode"}>
+        <div className="mode-switch" role="group" aria-label={copy(locale, "Explanation mode", "Erklärmodus")}>
           <button
             type="button"
             className={!explain ? "active" : ""}
@@ -50,28 +44,40 @@ export function FirstBootPanel({ locale, passport }: FirstBootPanelProps) {
       </div>
 
       <div className="notice notice-info">
-        <strong>{locale === "de" ? "Plan, kein Skript" : "Plan, not a script"}</strong>
-        <p>{t(locale, "noExecution")}</p>
+        <strong>{copy(locale, "Plan, not a script", "Plan, kein Skript")}</strong>
+        <p>{copy(locale, "No command is generated or executed. For volatile steps, re-check the selected distribution's current official documentation.", "Kein Befehl wird erzeugt oder ausgeführt. Bei volatilen Schritten aktuelle offizielle Dokumentation der gewählten Distribution erneut prüfen.")}</p>
       </div>
 
-      <ol className="first-boot-plan">
-        {plan.map((step, index) => (
-          <li key={step.id}>
+      <ol className="first-boot-plan first-boot-v2">
+        {plan.map((item, index) => (
+          <li key={item.id}>
             <div className="plan-index">{String(index + 1).padStart(2, "0")}</div>
             <article>
-              <h2>{localize(step.title, locale)}</h2>
-              <p>{localize(step.summary, locale)}</p>
+              <h2>{localize(item.title, locale)}</h2>
+              <p>{localize(item.what, locale)}</p>
               {explain ? (
-                <div className="plan-explanation">
-                  <strong>{t(locale, "why")}</strong>
-                  <p>{localize(step.explanation, locale)}</p>
-                  {step.caution ? (
-                    <aside>
-                      <strong>{t(locale, "safety")}</strong>
-                      <p>{localize(step.caution, locale)}</p>
-                    </aside>
-                  ) : null}
-                </div>
+                <dl className="plan-explanation-grid">
+                  <div>
+                    <dt>{copy(locale, "WHAT?", "WAS?")}</dt>
+                    <dd>{localize(item.what, locale)}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy(locale, "WHY?", "WARUM?")}</dt>
+                    <dd>{localize(item.why, locale)}</dd>
+                  </div>
+                  <div className="plan-risk">
+                    <dt>{copy(locale, "RISK?", "RISIKO?")}</dt>
+                    <dd>{localize(item.risk, locale)}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy(locale, "VERIFY SUCCESS", "ERFOLG PRÜFEN")}</dt>
+                    <dd>{localize(item.verify, locale)}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy(locale, "BACK OUT", "RÜCKWEG")}</dt>
+                    <dd>{localize(item.backOut, locale)}</dd>
+                  </div>
+                </dl>
               ) : null}
             </article>
           </li>
@@ -81,8 +87,8 @@ export function FirstBootPanel({ locale, passport }: FirstBootPanelProps) {
       <div className="completion-card">
         <span aria-hidden="true">✓</span>
         <div>
-          <strong>{locale === "de" ? "Der Plan bleibt lokal und unverbindlich" : "The plan stays local and non-executing"}</strong>
-          <p>{locale === "de" ? "Vor jedem Schritt aktuelle offizielle Dokumentation der gewählten Distribution prüfen." : "Check the selected distribution's current official documentation before every step."}</p>
+          <strong>{copy(locale, "The plan stays local and non-executing", "Der Plan bleibt lokal und führt nichts aus")}</strong>
+          <p>{copy(locale, "Back up first. Test real hardware. Keep Windows until important workflows are verified.", "Zuerst sichern. Echte Hardware testen. Windows behalten, bis wichtige Arbeitsabläufe verifiziert sind.")}</p>
         </div>
       </div>
     </section>

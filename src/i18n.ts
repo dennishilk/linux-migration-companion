@@ -3,14 +3,17 @@ import type { Locale, LocalizedText } from "./domain/types";
 export const messages = {
   en: {
     appName: "Linux Migration Companion",
-    alpha: "ALPHA / TEST PREVIEW",
+    releaseStatus: "WEBSITE RELEASE CANDIDATE",
     localOnly: "Runs locally in your browser. No account. No tracking.",
     language: "Language",
     sections: {
       advisor: "Fit advisor",
+      compare: "Compare",
       software: "Software",
       hardware: "Hardware",
       live: "Live test",
+      readiness: "Readiness",
+      data: "Data plan",
       media: "USB guide",
       passport: "Passport",
       first_boot: "First boot"
@@ -46,9 +49,9 @@ export const messages = {
     softwareReady: "No software blocker selected",
     softwareReview: "Trade-offs need representative testing",
     softwareBlocked: "Linux may not be a good primary fit for this workflow yet",
-    scannerDeferred: "Read-only Windows scanner deferred for Alpha",
+    scannerDeferred: "Read-only Windows scanner intentionally deferred",
     scannerWhy:
-      "The web browser cannot obtain trustworthy PCI/USB IDs or Secure Boot state. Alpha records manual facts and honestly keeps compatibility UNKNOWN.",
+      "The web browser cannot obtain trustworthy PCI/USB IDs or Secure Boot state. The Companion records manual facts and honestly keeps compatibility UNKNOWN.",
     neverCollected:
       "Never collected: username, hostname, serials, MAC addresses, documents, browser history or accounts.",
     evidenceState: "Evidence state",
@@ -71,7 +74,7 @@ export const messages = {
     doNotRemove: "Do not remove Windows yet.",
     mediaTitle: "Prepare a safe live USB",
     mediaLead:
-      "Alpha guides official downloads and established writers. It never writes disks itself.",
+      "The Companion guides official downloads and established writers. It never writes disks itself.",
     officialDownload: "Official download page",
     officialVerify: "Official verification guide",
     writer: "Established media writer",
@@ -101,7 +104,7 @@ export const messages = {
     guided: "GUIDED SETUP",
     explain: "EXPLAIN EACH STEP",
     noExecution:
-      "Alpha does not execute commands, install packages or request administrator rights.",
+      "The Companion does not execute commands, install packages or request administrator rights.",
     why: "Why this matters",
     safety: "Safety note",
     previous: "Previous",
@@ -109,20 +112,23 @@ export const messages = {
     selectedCount: "selected",
     openNew: "Opens official site in a new tab",
     privacyFooter:
-      "Local-first Alpha · no backend · no analytics · no destructive actions",
+      "Local-first release candidate · no backend · no analytics · no destructive actions",
     notAffiliated:
       "Not affiliated with or endorsed by the listed Linux distributions or software vendors."
   },
   de: {
     appName: "Linux Migration Companion",
-    alpha: "ALPHA / TESTVORSCHAU",
+    releaseStatus: "WEBSITE-RELEASE-CANDIDATE",
     localOnly: "Läuft lokal im Browser. Kein Konto. Kein Tracking.",
     language: "Sprache",
     sections: {
       advisor: "Eignungscheck",
+      compare: "Vergleich",
       software: "Software",
       hardware: "Hardware",
       live: "Live-Test",
+      readiness: "Bereitschaft",
+      data: "Datenplan",
       media: "USB-Anleitung",
       passport: "Passport",
       first_boot: "Erster Start"
@@ -158,9 +164,9 @@ export const messages = {
     softwareReady: "Kein Software-Blocker ausgewählt",
     softwareReview: "Kompromisse müssen mit echten Dateien und Abläufen getestet werden",
     softwareBlocked: "Linux ist für diesen Arbeitsablauf derzeit vermutlich kein guter Hauptarbeitsplatz",
-    scannerDeferred: "Read-only-Windows-Scanner für Alpha zurückgestellt",
+    scannerDeferred: "Read-only-Windows-Scanner bewusst zurückgestellt",
     scannerWhy:
-      "Der Browser erhält keine verlässlichen PCI-/USB-IDs und keinen sicheren Secure-Boot-Status. Alpha erfasst manuelle Angaben und lässt Kompatibilität ehrlich auf UNBEKANNT.",
+      "Der Browser erhält keine verlässlichen PCI-/USB-IDs und keinen sicheren Secure-Boot-Status. Der Companion erfasst manuelle Angaben und lässt Kompatibilität ehrlich auf UNBEKANNT.",
     neverCollected:
       "Niemals erfasst: Benutzername, Hostname, Seriennummern, MAC-Adressen, Dokumente, Browserverlauf oder Konten.",
     evidenceState: "Evidenzstatus",
@@ -183,7 +189,7 @@ export const messages = {
     doNotRemove: "Windows noch nicht entfernen.",
     mediaTitle: "Sicheren Live-USB-Stick vorbereiten",
     mediaLead:
-      "Alpha führt durch offizielle Downloads und bewährte Schreibprogramme. Es schreibt niemals selbst auf Datenträger.",
+      "Der Companion führt durch offizielle Downloads und bewährte Schreibprogramme. Er schreibt niemals selbst auf Datenträger.",
     officialDownload: "Offizielle Downloadseite",
     officialVerify: "Offizielle Prüfanleitung",
     writer: "Bewährtes Schreibprogramm",
@@ -213,7 +219,7 @@ export const messages = {
     guided: "GEFÜHRTE EINRICHTUNG",
     explain: "JEDEN SCHRITT ERKLÄREN",
     noExecution:
-      "Alpha führt keine Befehle aus, installiert keine Pakete und fordert keine Administratorrechte an.",
+      "Der Companion führt keine Befehle aus, installiert keine Pakete und fordert keine Administratorrechte an.",
     why: "Warum das wichtig ist",
     safety: "Sicherheitshinweis",
     previous: "Zurück",
@@ -221,7 +227,7 @@ export const messages = {
     selectedCount: "ausgewählt",
     openNew: "Öffnet die offizielle Seite in einem neuen Tab",
     privacyFooter:
-      "Lokale Alpha · kein Backend · keine Analyse · keine destruktiven Aktionen",
+      "Lokaler Release Candidate · kein Backend · keine Analyse · keine destruktiven Aktionen",
     notAffiliated:
       "Keine Verbindung zu oder Empfehlung durch die genannten Linux-Distributionen oder Softwareanbieter."
   }

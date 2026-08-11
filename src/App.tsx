@@ -1,17 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { FirstBootPanel } from "./components/FirstBootPanel";
+import { DataMigrationPanel } from "./components/DataMigrationPanel";
+import { DistroComparison } from "./components/DistroComparison";
 import { HardwarePanel } from "./components/HardwarePanel";
 import { Layout } from "./components/Layout";
 import { LiveTestPanel } from "./components/LiveTestPanel";
 import { MediaGuide } from "./components/MediaGuide";
 import { PassportPanel } from "./components/PassportPanel";
 import { Questionnaire } from "./components/Questionnaire";
+import { ReadinessPanel } from "./components/ReadinessPanel";
 import { RecommendationResults } from "./components/RecommendationResults";
 import { SoftwareAssessmentPanel } from "./components/SoftwareAssessment";
 import { createDefaultHardware, createDefaultPassport } from "./domain/defaults";
+import { hardwareClasses } from "./data/hardware";
 import type {
   AdvisorAnswers,
   AppSection,
+  DataMigrationSelections,
   HardwareProfile,
   LiveTestResults,
   Locale,
@@ -21,7 +26,29 @@ import type {
 } from "./domain/types";
 import { assessLiveReadiness, assessSoftware } from "./engine/assess";
 import { recommendDistros } from "./engine/recommend";
+import { assessMigrationReadiness } from "./engine/readiness";
 import { clearPassport, loadPassport, savePassport } from "./passport/storage";
+import { sectionLabel } from "./i18n";
+
+const appSections: AppSection[] = [
+  "advisor",
+  "compare",
+  "software",
+  "hardware",
+  "live",
+  "readiness",
+  "data",
+  "media",
+  "passport",
+  "first_boot"
+];
+
+function sectionFromLocation(): AppSection {
+  const candidate = new URLSearchParams(window.location.search).get("step");
+  return appSections.includes(candidate as AppSection)
+    ? (candidate as AppSection)
+    : "advisor";
+}
 
 function stamp(passport: MigrationPassport): MigrationPassport {
   return { ...passport, updatedAt: new Date().toISOString() };
@@ -31,7 +58,7 @@ export function App() {
   const [passport, setPassport] = useState<MigrationPassport>(
     () => loadPassport() ?? createDefaultPassport()
   );
-  const [section, setSection] = useState<AppSection>("advisor");
+  const [section, setSection] = useState<AppSection>(sectionFromLocation);
   const [advisorComplete, setAdvisorComplete] = useState(
     () => passport.selectedDistroId !== null
   );
@@ -48,6 +75,10 @@ export function App() {
     () => assessLiveReadiness(passport.liveTests),
     [passport.liveTests]
   );
+  const migrationReadiness = useMemo(
+    () => assessMigrationReadiness(passport, softwareAssessment),
+    [passport, softwareAssessment]
+  );
 
   useEffect(() => {
     document.documentElement.lang = passport.locale;
@@ -58,8 +89,21 @@ export function App() {
     }
   }, [passport]);
 
+  useEffect(() => {
+    const handleHistory = () => setSection(sectionFromLocation());
+    window.addEventListener("popstate", handleHistory);
+    return () => window.removeEventListener("popstate", handleHistory);
+  }, []);
+
+  useEffect(() => {
+    document.title = `${sectionLabel(passport.locale, section)} — Linux Migration Companion`;
+  }, [passport.locale, section]);
+
   const navigate = (nextSection: AppSection) => {
     setSection(nextSection);
+    const url = new URL(window.location.href);
+    url.searchParams.set("step", nextSection);
+    window.history.pushState({ step: nextSection }, "", url);
     window.requestAnimationFrame(() => {
       document.getElementById("main-content")?.focus();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -98,19 +142,78 @@ export function App() {
   };
 
   const updateLiveTests = (liveTests: LiveTestResults) => {
-    setPassport((current) => stamp({ ...current, liveTests }));
+    setPassport((current) => {
+      const evidence = { ...current.hardware.evidence };
+      for (const definition of hardwareClasses) {
+        if (!definition.liveTestId) continue;
+        const status = liveTests[definition.liveTestId];
+        const currentEvidence = evidence[definition.id];
+        const state =
+          status === "works"
+            ? "live_verified"
+            : status === "issue"
+              ? "failed_test"
+              : status === "not_applicable"
+                ? "not_applicable"
+                : ["live_verified", "failed_test", "not_applicable"].includes(
+                      currentEvidence.state
+                    )
+                  ? "unknown"
+                  : currentEvidence.state;
+        evidence[definition.id] = {
+          ...currentEvidence,
+          state,
+          required: status === "not_applicable" ? false : currentEvidence.required
+        };
+      }
+      return stamp({
+        ...current,
+        liveTests,
+        hardware: { ...current.hardware, evidence }
+      });
+    });
   };
 
   const updateMedia = (mediaProgress: MediaProgress) => {
     setPassport((current) => stamp({ ...current, mediaProgress }));
   };
 
+  const updateComparison = (comparisonDistroIds: string[]) => {
+    setPassport((current) => stamp({ ...current, comparisonDistroIds }));
+  };
+
+  const updateDataMigration = (dataMigration: DataMigrationSelections) => {
+    setPassport((current) => stamp({ ...current, dataMigration }));
+  };
+
   const selectDistro = (selectedDistroId: string) => {
-    setPassport((current) => stamp({ ...current, selectedDistroId }));
+    setPassport((current) => {
+      const comparisonDistroIds = current.comparisonDistroIds.includes(
+        selectedDistroId
+      )
+        ? current.comparisonDistroIds
+        : [
+            selectedDistroId,
+            ...current.comparisonDistroIds.filter(
+              (id) => id !== selectedDistroId
+            )
+          ].slice(0, 3);
+      return stamp({ ...current, selectedDistroId, comparisonDistroIds });
+    });
   };
 
   const analyze = () => {
-    if (!passport.selectedDistroId) selectDistro(recommendations[0].distro.id);
+    const selectedDistroId =
+      passport.selectedDistroId ?? recommendations[0].distro.id;
+    setPassport((current) =>
+      stamp({
+        ...current,
+        selectedDistroId,
+        comparisonDistroIds: current.comparisonDistroIds.length
+          ? current.comparisonDistroIds
+          : recommendations.slice(0, 3).map((item) => item.distro.id)
+      })
+    );
     setAdvisorComplete(true);
     window.requestAnimationFrame(() => document.getElementById("results-title")?.focus());
   };
@@ -140,7 +243,7 @@ export function App() {
           selectedDistroId={passport.selectedDistroId}
           onSelect={selectDistro}
           onEdit={() => setAdvisorComplete(false)}
-          onContinue={() => navigate("software")}
+          onContinue={() => navigate("compare")}
         />
       ) : (
         <Questionnaire
@@ -148,6 +251,17 @@ export function App() {
           answers={passport.answers}
           onChange={updateAnswers}
           onAnalyze={analyze}
+        />
+      );
+      break;
+    case "compare":
+      content = (
+        <DistroComparison
+          locale={passport.locale}
+          recommendations={recommendations}
+          selectedIds={passport.comparisonDistroIds}
+          onChange={updateComparison}
+          onContinue={() => navigate("software")}
         />
       );
       break;
@@ -177,6 +291,27 @@ export function App() {
           locale={passport.locale}
           results={passport.liveTests}
           onChange={updateLiveTests}
+          onContinue={() => navigate("readiness")}
+        />
+      );
+      break;
+    case "readiness":
+      content = (
+        <ReadinessPanel
+          locale={passport.locale}
+          passport={passport}
+          readiness={migrationReadiness}
+          software={softwareAssessment}
+          onContinue={() => navigate("data")}
+        />
+      );
+      break;
+    case "data":
+      content = (
+        <DataMigrationPanel
+          locale={passport.locale}
+          selections={passport.dataMigration}
+          onChange={updateDataMigration}
           onContinue={() => navigate("media")}
         />
       );
@@ -200,6 +335,7 @@ export function App() {
           recommendations={recommendations}
           softwareAssessment={softwareAssessment}
           liveReadiness={liveReadiness}
+          migrationReadiness={migrationReadiness}
           onImport={importPassport}
           onClear={reset}
           onContinue={() => navigate("first_boot")}

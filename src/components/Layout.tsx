@@ -3,9 +3,12 @@ import { messages, sectionLabel, t } from "../i18n";
 
 const sections: AppSection[] = [
   "advisor",
+  "compare",
   "software",
   "hardware",
   "live",
+  "readiness",
+  "data",
   "media",
   "passport",
   "first_boot"
@@ -28,6 +31,9 @@ export function Layout({
 }: LayoutProps) {
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        {locale === "de" ? "Zum Hauptinhalt springen" : "Skip to main content"}
+      </a>
       <header className="topbar">
         <button
           className="brand"
@@ -40,7 +46,7 @@ export function Layout({
           </span>
           <span>
             <strong>{t(locale, "appName")}</strong>
-            <small>{t(locale, "alpha")}</small>
+            <small>{t(locale, "releaseStatus")}</small>
           </span>
         </button>
 
@@ -49,7 +55,7 @@ export function Layout({
             <span className="status-dot" aria-hidden="true" />
             {t(locale, "localOnly")}
           </span>
-          <div className="language-switch" aria-label={t(locale, "language")}>
+          <div className="language-switch" role="group" aria-label={t(locale, "language")}>
             <button
               type="button"
               className={locale === "de" ? "active" : ""}
@@ -71,7 +77,10 @@ export function Layout({
       </header>
 
       <div className="workspace">
-        <aside className="side-nav" aria-label="Migration journey">
+        <aside
+          className="side-nav"
+          aria-label={locale === "de" ? "Migrationsweg" : "Migration journey"}
+        >
           <div className="terminal-status" aria-hidden="true">
             <span>migration@nebunix:~$ analyze</span>
             <strong>LOCAL MODE</strong>
@@ -97,7 +106,7 @@ export function Layout({
             </ol>
           </nav>
           <div className="boundary-note">
-            <strong>SAFE ALPHA</strong>
+            <strong>SAFE RELEASE CANDIDATE</strong>
             <span>
               {locale === "de"
                 ? "Keine Datenträger-Schreibzugriffe. Keine Befehlsausführung."
