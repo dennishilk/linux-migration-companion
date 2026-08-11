@@ -23,7 +23,7 @@ The executable is one AnyCPU PE file containing managed IL. It is not an install
 
 ## Runtime and authority
 
-- Target: Windows 10 22H2 and Windows 11, x86-64 or ARM64 through the installed .NET Framework runtime.
+- Target: Windows 10 22H2 and Windows 11 on supported .NET Framework platforms. The artifact is AnyCPU managed IL; ARM64 has not been separately validated on real hardware.
 - Runtime: .NET Framework 4.8 or later in the in-place .NET Framework 4 family.
 - Manifest: `requestedExecutionLevel="asInvoker"`, `uiAccess="false"`.
 - Administrator rights: not requested and not required for the normal path.
@@ -63,8 +63,8 @@ A customized driver/device description can still contain personally chosen text.
 CI builds on `windows-2022` with the installed Visual Studio 2022 MSBuild and the .NET Framework 4.8 reference assemblies:
 
 ```powershell
-msbuild collectors/windows-exe/LinuxMigrationCompanion.WindowsCollector.csproj /m /t:Rebuild /p:Configuration=Release /p:ContinuousIntegrationBuild=true
-msbuild collectors/windows-exe/tests/LinuxMigrationCompanion.WindowsCollector.Tests.csproj /m /t:Rebuild /p:Configuration=Release /p:ContinuousIntegrationBuild=true
+msbuild collectors/windows-exe/LinuxMigrationCompanion.WindowsCollector.csproj /m /t:Rebuild /p:Configuration=Release "/p:PathMap=<repository-root>=."
+msbuild collectors/windows-exe/tests/LinuxMigrationCompanion.WindowsCollector.Tests.csproj /m /t:Rebuild /p:Configuration=Release "/p:PathMap=<repository-root>=."
 collectors/windows-exe/tests/bin/Release/LinuxMigrationCompanion.WindowsCollector.Tests.exe <repository-root>
 ```
 
@@ -73,6 +73,8 @@ The project enables deterministic compilation, release optimization, no PDB and 
 - the unsigned executable;
 - `LinuxMigrationCompanion-HardwareSnapshot.exe.sha256`;
 - `BUILD-INFO.txt` containing source commit, runner image/version, MSBuild version, target and checksum.
+
+The checked-in unsigned RC artifact is 39,936 bytes with SHA-256 `19b69cfe8c9ebfa22ce3e002af734a036dfc102e8934c47fb70cf5a201602ea7`. It was built from branch commit `d679ce9ff7dec65017e0f64e057f39b9b44c1ca8` on runner image `windows-2022` version `20260802.262.1` with MSBuild `17.14.51.32402`. The adjacent `.sha256` file is the browser-downloadable checksum. Two independent CI builds with that toolchain produced byte-identical executable files; this is useful evidence, not a claim of hermetic reproducibility across future runner images.
 
 This gives traceable and repeatable builds with the same toolchain. The GitHub-hosted runner image is still a moving dependency, so the project does not claim hermetic byte-for-byte reproducibility across arbitrary future runner revisions. A tagged release should preserve its build-info record and artifact attestation.
 

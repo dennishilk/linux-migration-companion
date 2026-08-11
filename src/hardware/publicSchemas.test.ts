@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { cwd } from "node:process";
@@ -29,5 +30,21 @@ describe("published JSON schema contracts", () => {
     expect(compact).toContain("windows-powershell");
     expect(compact).toContain("linux-python");
     expect(compact).toContain('"additionalProperties":false');
+  });
+
+  it("publishes the CI-built Windows executable with its exact SHA-256", () => {
+    const artifactDirectory = resolve(cwd(), "public", "collectors", "windows");
+    const artifactName = "LinuxMigrationCompanion-HardwareSnapshot.exe";
+    const executable = readFileSync(resolve(artifactDirectory, artifactName));
+    const publishedChecksum = readFileSync(
+      resolve(artifactDirectory, `${artifactName}.sha256`),
+      "utf8"
+    ).trim();
+    const digest = createHash("sha256").update(executable).digest("hex");
+
+    expect(executable.subarray(0, 2).toString("ascii")).toBe("MZ");
+    expect(executable.byteLength).toBe(39_936);
+    expect(digest).toBe("19b69cfe8c9ebfa22ce3e002af734a036dfc102e8934c47fb70cf5a201602ea7");
+    expect(publishedChecksum).toBe(`${digest}  ${artifactName}`);
   });
 });
