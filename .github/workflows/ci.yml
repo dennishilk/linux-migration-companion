@@ -34,8 +34,12 @@ jobs:
   windows-collector:
     runs-on: windows-2022
     timeout-minutes: 10
+    env:
+      BUILD_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.BUILD_SOURCE_COMMIT }}
       - name: Locate MSBuild
         shell: pwsh
         run: |
@@ -66,7 +70,7 @@ jobs:
           "$hash  LinuxMigrationCompanion-HardwareSnapshot.exe" | Set-Content -Path (Join-Path $stage "LinuxMigrationCompanion-HardwareSnapshot.exe.sha256") -Encoding utf8NoBOM
           $msbuildVersion = (& $env:MSBUILD_PATH -version -nologo | Select-Object -Last 1).Trim()
           @(
-            "source_commit=$env:GITHUB_SHA"
+            "source_commit=$env:BUILD_SOURCE_COMMIT"
             "runner_image=$env:ImageOS"
             "runner_image_version=$env:ImageVersion"
             "msbuild_version=$msbuildVersion"
@@ -76,7 +80,7 @@ jobs:
           ) | Set-Content -Path (Join-Path $stage "BUILD-INFO.txt") -Encoding utf8NoBOM
       - uses: actions/upload-artifact@v6
         with:
-          name: windows-hardware-snapshot-unsigned-${{ github.sha }}
+          name: windows-hardware-snapshot-unsigned-${{ env.BUILD_SOURCE_COMMIT }}
           path: ${{ runner.temp }}/windows-hardware-snapshot
           if-no-files-found: error
           retention-days: 14
