@@ -2,6 +2,7 @@ import { z } from "zod";
 import { distroById } from "../data/distros";
 import { softwareById } from "../data/software";
 import { createDefaultHardware, createDefaultPassport } from "../domain/defaults";
+import { storedHardwareSnapshotSchema } from "../hardware/snapshotSchema";
 import type {
   DataMigrationId,
   HardwareEvidenceState,
@@ -191,7 +192,7 @@ const migrationPassportV1Schema = z
   })
   .strict();
 
-export const migrationPassportSchema = z
+const migrationPassportV2Schema = z
   .object({
     schemaVersion: z.literal(2),
     product: z.literal("linux-migration-companion"),
@@ -206,6 +207,33 @@ export const migrationPassportSchema = z
         scannerStatus: z.literal("deferred"),
         evidence: hardwareEvidenceSchema,
         notes: z.string().max(1000)
+      })
+      .strict(),
+    liveTests: liveTestsSchema,
+    mediaProgress: mediaProgressSchema,
+    selectedDistroId: distroIdSchema.nullable(),
+    comparisonDistroIds: z
+      .array(distroIdSchema)
+      .max(3)
+      .refine((ids) => new Set(ids).size === ids.length),
+    dataMigration: dataMigrationSchema
+  })
+  .strict();
+
+export const migrationPassportSchema: z.ZodType<MigrationPassport> = z
+  .object({
+    schemaVersion: z.literal(3),
+    product: z.literal("linux-migration-companion"),
+    locale: z.enum(["en", "de"]),
+    updatedAt: z.string().datetime(),
+    answers: advisorAnswersSchema,
+    softwareSelections: softwareSelectionsSchema(100),
+    hardware: z
+      .object({
+        gpuVendor: z.enum(["unknown", "nvidia", "amd", "intel"]),
+        evidence: hardwareEvidenceSchema,
+        notes: z.string().max(1000),
+        snapshot: storedHardwareSnapshotSchema.nullable()
       })
       .strict(),
     liveTests: liveTestsSchema,
@@ -268,6 +296,28 @@ function migrateV1(value: z.infer<typeof migrationPassportV1Schema>): MigrationP
   };
 }
 
+function migrateV2(value: z.infer<typeof migrationPassportV2Schema>): MigrationPassport {
+  return {
+    schemaVersion: 3,
+    product: value.product,
+    locale: value.locale,
+    updatedAt: value.updatedAt,
+    answers: value.answers,
+    softwareSelections: value.softwareSelections,
+    hardware: {
+      gpuVendor: value.hardware.gpuVendor,
+      evidence: value.hardware.evidence,
+      notes: value.hardware.notes,
+      snapshot: null
+    },
+    liveTests: value.liveTests,
+    mediaProgress: value.mediaProgress,
+    selectedDistroId: value.selectedDistroId,
+    comparisonDistroIds: value.comparisonDistroIds,
+    dataMigration: value.dataMigration
+  };
+}
+
 export function parsePassportText(text: string): MigrationPassport {
   if (new TextEncoder().encode(text).byteLength > MAX_PASSPORT_BYTES) {
     throw new Error("passport_too_large");
@@ -293,6 +343,12 @@ export function parsePassportText(text: string): MigrationPassport {
     const parsedV1 = migrationPassportV1Schema.safeParse(value);
     if (!parsedV1.success) throw new Error("passport_schema_invalid");
     return migrateV1(parsedV1.data);
+  }
+
+  if (version === 2) {
+    const parsedV2 = migrationPassportV2Schema.safeParse(value);
+    if (!parsedV2.success) throw new Error("passport_schema_invalid");
+    return migrateV2(parsedV2.data);
   }
 
   const parsed = migrationPassportSchema.safeParse(value);

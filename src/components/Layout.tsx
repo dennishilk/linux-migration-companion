@@ -137,8 +137,8 @@ export function Layout({
             <strong>SAFE RELEASE CANDIDATE</strong>
             <span>
               {locale === "de"
-                ? "Keine Datenträger-Schreibzugriffe. Keine Befehlsausführung."
-                : "No disk writes. No command execution."}
+                ? "Web-App: keine Datenträger-Schreibzugriffe oder Befehlsausführung."
+                : "Web app: no disk writes or command execution."}
             </span>
           </div>
         </aside>

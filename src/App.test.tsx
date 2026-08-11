@@ -3,8 +3,11 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { App } from "./App";
 import { createDefaultPassport } from "./domain/defaults";
+import { applyHardwareSnapshot } from "./hardware/integration";
+import { makeWindowsSnapshot } from "./test/hardwareFixtures";
 import { migrationPassportSchema } from "./passport/schema";
 
+const PASSPORT_V3_KEY = "linux-migration-companion:passport:v3";
 const PASSPORT_V2_KEY = "linux-migration-companion:passport:v2";
 const PASSPORT_V1_KEY = "linux-migration-companion:passport:v1";
 
@@ -25,6 +28,11 @@ function storePopulatedPassport(locale: "en" | "de" = "en") {
     required: true,
     details: "Tested on the target laptop"
   };
+  passport.hardware.snapshot = {
+    acquisition: "file_import",
+    acquiredAt: "2026-08-11T12:01:00.000Z",
+    snapshot: makeWindowsSnapshot()
+  };
   passport.liveTests.wifi = "works";
   passport.dataMigration.documents = {
     importance: "essential",
@@ -32,7 +40,7 @@ function storePopulatedPassport(locale: "en" | "de" = "en") {
     notes: "Backup checked"
   };
   passport.mediaProgress.download = true;
-  window.localStorage.setItem(PASSPORT_V2_KEY, JSON.stringify(passport));
+  window.localStorage.setItem(PASSPORT_V3_KEY, JSON.stringify(passport));
   return passport;
 }
 
@@ -48,7 +56,7 @@ describe("release-candidate application flow", () => {
   it("opens with the local-only and non-destructive boundary visible", () => {
     render(<App />);
     expect(screen.getByText("Runs locally in your browser. No account. No tracking.")).toBeInTheDocument();
-    expect(screen.getByText("No disk writes. No command execution.")).toBeInTheDocument();
+    expect(screen.getByText("Web app: no disk writes or command execution.")).toBeInTheDocument();
   });
 
   it("opens reset confirmation without changing progress on the first click", async () => {
@@ -63,7 +71,7 @@ describe("release-candidate application flow", () => {
       screen.getByRole("dialog", { name: "Start over?" })
     ).toBeInTheDocument();
     expect(
-      JSON.parse(window.localStorage.getItem(PASSPORT_V2_KEY) ?? "{}").selectedDistroId
+      JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "{}").selectedDistroId
     ).toBe(passport.selectedDistroId);
     expect(new URLSearchParams(window.location.search).get("step")).toBe("data");
   });
@@ -74,13 +82,13 @@ describe("release-candidate application flow", () => {
     window.history.replaceState({}, "", "/?step=data");
     render(<App />);
     const startOver = screen.getByRole("button", { name: "Start over" });
-    const before = window.localStorage.getItem(PASSPORT_V2_KEY);
+    const before = window.localStorage.getItem(PASSPORT_V3_KEY);
 
     await user.click(startOver);
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(window.localStorage.getItem(PASSPORT_V2_KEY)).toBe(before);
+    expect(window.localStorage.getItem(PASSPORT_V3_KEY)).toBe(before);
     expect(screen.getByRole("heading", { name: "Plan the data, not just the operating system" })).toBeInTheDocument();
     expect(new URLSearchParams(window.location.search).get("step")).toBe("data");
     await waitFor(() => expect(startOver).toHaveFocus());
@@ -92,6 +100,7 @@ describe("release-candidate application flow", () => {
     window.history.replaceState({}, "", "/?step=data");
     render(<App />);
     window.localStorage.setItem(PASSPORT_V1_KEY, "legacy-owned-data");
+    window.localStorage.setItem(PASSPORT_V2_KEY, "legacy-v2-owned-data");
     window.localStorage.setItem("another-app:setting", "keep-me");
 
     await user.click(screen.getByRole("button", { name: "Neu beginnen" }));
@@ -104,11 +113,12 @@ describe("release-candidate application flow", () => {
     ).toBeInTheDocument();
     expect(new URLSearchParams(window.location.search).get("step")).toBeNull();
     expect(window.localStorage.getItem(PASSPORT_V1_KEY)).toBeNull();
+    expect(window.localStorage.getItem(PASSPORT_V2_KEY)).toBeNull();
     expect(window.localStorage.getItem("another-app:setting")).toBe("keep-me");
 
     await waitFor(() => {
       const parsed = migrationPassportSchema.parse(
-        JSON.parse(window.localStorage.getItem(PASSPORT_V2_KEY) ?? "")
+        JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "")
       );
       expect(parsed.locale).toBe("de");
       expect(parsed.selectedDistroId).toBeNull();
@@ -117,6 +127,7 @@ describe("release-candidate application flow", () => {
       expect(parsed.dataMigration).toEqual({});
       expect(Object.values(parsed.liveTests).every((state) => state === "not_tested")).toBe(true);
       expect(Object.values(parsed.hardware.evidence).every((item) => item.state === "unknown")).toBe(true);
+      expect(parsed.hardware.snapshot).toBeNull();
       expect(Object.values(parsed.mediaProgress).every((state) => state === false)).toBe(true);
     });
   });
@@ -160,7 +171,7 @@ describe("release-candidate application flow", () => {
     await user.click(screen.getByRole("button", { name: "DE" }));
     expect(screen.getByRole("heading", { name: "Könnte Linux Windows für dich realistisch ersetzen?" })).toBeInTheDocument();
     await waitFor(() => {
-      const saved = window.localStorage.getItem("linux-migration-companion:passport:v2");
+      const saved = window.localStorage.getItem(PASSPORT_V3_KEY);
       expect(saved).not.toBeNull();
       expect(JSON.parse(saved ?? "{}").locale).toBe("de");
     });
@@ -224,9 +235,46 @@ describe("release-candidate application flow", () => {
     expect(wifiRow).not.toBeNull();
     await user.click(within(wifiRow as HTMLElement).getByRole("button", { name: "Works" }));
     await waitFor(() => {
-      const saved = JSON.parse(window.localStorage.getItem("linux-migration-companion:passport:v2") ?? "{}");
+      const saved = JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "{}");
       expect(saved.hardware.evidence.wifi.state).toBe("live_verified");
     });
+  });
+
+  it("moves detected required Wi-Fi through live pass, rollback and problem conservatively", async () => {
+    const user = userEvent.setup();
+    const passport = createDefaultPassport();
+    passport.hardware = applyHardwareSnapshot(passport.hardware, {
+      acquisition: "file_import",
+      acquiredAt: "2026-08-11T12:01:00.000Z",
+      snapshot: makeWindowsSnapshot()
+    });
+    passport.hardware.evidence.wifi.required = true;
+    window.localStorage.setItem(PASSPORT_V3_KEY, JSON.stringify(passport));
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    await user.click(within(navigation).getByRole("button", { name: /Live test/ }));
+    const wifiRow = screen.getByRole("heading", { name: "Wi-Fi" }).closest("article");
+    expect(wifiRow).not.toBeNull();
+
+    await user.click(within(wifiRow as HTMLElement).getByRole("button", { name: "Works" }));
+    await waitFor(() => {
+      const saved = JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "{}");
+      expect(saved.liveTests.wifi).toBe("works");
+      expect(saved.hardware.evidence.wifi.state).toBe("live_verified");
+    });
+
+    await user.click(within(wifiRow as HTMLElement).getByRole("button", { name: "Not tested" }));
+    await waitFor(() => {
+      const saved = JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "{}");
+      expect(saved.hardware.evidence.wifi.state).toBe("known_fact");
+    });
+
+    await user.click(within(wifiRow as HTMLElement).getByRole("button", { name: "Issue" }));
+    await user.click(within(navigation).getByRole("button", { name: /Readiness/ }));
+    expect(screen.getAllByText("BLOCKED").length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("heading", { name: "Migration is currently blocked" })
+    ).toBeInTheDocument();
   });
 
   it("records a data migration method without performing a migration", async () => {
@@ -238,18 +286,99 @@ describe("release-candidate application flow", () => {
     expect(documentsCard).not.toBeNull();
     await user.click(within(documentsCard as HTMLElement).getByRole("button", { name: "Add as COPY" }));
     await waitFor(() => {
-      const saved = JSON.parse(window.localStorage.getItem("linux-migration-companion:passport:v2") ?? "{}");
+      const saved = JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "{}");
       expect(saved.dataMigration.documents.method).toBe("copy");
     });
   });
 
-  it("renders all 19 manual hardware evidence classes without claiming a scan", async () => {
+  it("renders all 19 manual hardware evidence classes alongside optional snapshots", async () => {
     const user = userEvent.setup();
     render(<App />);
     const navigation = screen.getByLabelText("Migration journey");
     await user.click(within(navigation).getByRole("button", { name: /Hardware/ }));
-    expect(screen.getByText(/performs no fake hardware scan/)).toBeInTheDocument();
+    expect(screen.getByText(/deliberately limited browser report/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Record browser facts" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Choose snapshot JSON" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose hardware snapshot JSON file")).toHaveAttribute(
+      "tabindex",
+      "-1"
+    );
     expect(screen.getAllByText("Evidence state")).toHaveLength(19);
+  });
+
+  it("imports detected hardware without requiring it or passing a live test", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    await user.click(within(navigation).getByRole("button", { name: /Hardware/ }));
+    await user.upload(
+      screen.getByLabelText("Choose hardware snapshot JSON file"),
+      jsonFile("windows-hardware.json", JSON.stringify(makeWindowsSnapshot()))
+    );
+
+    expect(
+      await screen.findByText(/Snapshot structure validated and imported/)
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("SNAPSHOT DETECTED").length).toBeGreaterThan(3);
+    expect(screen.queryByText(/LINUX COMPATIBLE/i)).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      const saved = migrationPassportSchema.parse(
+        JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "")
+      );
+      expect(saved.hardware.evidence.wifi.state).toBe("known_fact");
+      expect(saved.hardware.evidence.hybrid_graphics.state).toBe("known_fact");
+      expect(saved.hardware.evidence.wifi.required).toBe(false);
+      expect(saved.liveTests.wifi).toBe("not_tested");
+      expect(saved.hardware.snapshot?.snapshot.source).toBe("windows_collector");
+    });
+  });
+
+  it("renders markup-like imported device names as text, never active HTML", async () => {
+    const user = userEvent.setup();
+    const snapshot = makeWindowsSnapshot();
+    snapshot.facts[0].name = '<img src=x onerror="alert(1)"><script>bad()</script>';
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    await user.click(within(navigation).getByRole("button", { name: /Hardware/ }));
+    await user.upload(
+      screen.getByLabelText("Choose hardware snapshot JSON file"),
+      jsonFile("inert.json", JSON.stringify(snapshot))
+    );
+    expect(await screen.findByText(/<img src=x onerror=/)).toBeInTheDocument();
+    expect(document.querySelector("script")).toBeNull();
+    expect(document.querySelector("img[src='x']")).toBeNull();
+  });
+
+  it("records a limited browser report with unavailable APIs and no device identity", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    await user.click(within(navigation).getByRole("button", { name: /Hardware/ }));
+    await user.click(screen.getByRole("button", { name: "Record browser facts" }));
+    expect(
+      await screen.findByText(/Limited browser-reported facts recorded/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("No device identity was exposed by this browser snapshot.")).toBeInTheDocument();
+    const saved = migrationPassportSchema.parse(
+      JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "")
+    );
+    expect(saved.hardware.snapshot?.snapshot.source).toBe("browser_reported");
+    expect(saved.hardware.snapshot?.snapshot.facts).toEqual([]);
+    expect(Object.values(saved.hardware.evidence).every((item) => item.state === "unknown")).toBe(true);
+  });
+
+  it("provides complete German snapshot controls, limits and provenance copy", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "DE" }));
+    const navigation = screen.getByLabelText("Migrationsweg");
+    await user.click(within(navigation).getByRole("button", { name: /Hardware/ }));
+    expect(screen.getByRole("heading", { name: "Hardware-Snapshot" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Browser-Fakten erfassen" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Snapshot-JSON auswählen" })).toBeInTheDocument();
+    expect(screen.getByText(/Erkennung erfasst ausschließlich Hardware-Fakten/)).toBeInTheDocument();
+    expect(screen.getByText(/Nicht erfasst:/)).toBeInTheDocument();
   });
 
   it("shows the complete explanatory contract in First Boot 2.0", async () => {
@@ -276,7 +405,7 @@ describe("release-candidate application flow", () => {
     ).toBeInTheDocument();
   });
 
-  it("imports a valid Passport v2 and applies its local locale", async () => {
+  it("imports a valid Passport v3 and applies its local locale", async () => {
     const user = userEvent.setup();
     const imported = createDefaultPassport();
     imported.locale = "de";
@@ -287,7 +416,7 @@ describe("release-candidate application flow", () => {
     const input = screen.getByLabelText("Choose Passport JSON file");
     await user.upload(
       input,
-      jsonFile("passport-v2.json", JSON.stringify(imported))
+      jsonFile("passport-v3.json", JSON.stringify(imported))
     );
     expect(
       await screen.findByText("Passport wurde importiert und validiert.")

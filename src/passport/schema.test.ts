@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { makePassport } from "../test/fixtures";
+import { makeWindowsSnapshot } from "../test/hardwareFixtures";
 import {
   MAX_PASSPORT_BYTES,
   migrationPassportSchema,
@@ -29,8 +30,23 @@ function makeV1(overall: "verified" | "probably_supported" | "unknown" | "known_
   };
 }
 
+function makeV2() {
+  const passport = makePassport();
+  return {
+    ...passport,
+    schemaVersion: 2,
+    hardware: {
+      source: "manual",
+      gpuVendor: passport.hardware.gpuVendor,
+      scannerStatus: "deferred",
+      evidence: passport.hardware.evidence,
+      notes: passport.hardware.notes
+    }
+  };
+}
+
 describe("Migration Passport schema", () => {
-  it("round-trips a valid version 2 Passport", () => {
+  it("round-trips a valid version 3 Passport", () => {
     const passport = makePassport();
     passport.selectedDistroId = "linux-mint-cinnamon";
     passport.softwareSelections.firefox = "essential";
@@ -102,12 +118,37 @@ describe("Migration Passport schema", () => {
     }
   });
 
-  it("migrates a strict Passport v1 file to schema v2", () => {
+  it("migrates a strict Passport v1 file to schema v3", () => {
     const migrated = parsePassportText(JSON.stringify(makeV1("verified")));
-    expect(migrated.schemaVersion).toBe(2);
+    expect(migrated.schemaVersion).toBe(3);
     expect(migrated.hardware.evidence.graphics.state).toBe("known_fact");
     expect(migrated.comparisonDistroIds).toEqual(["linux-mint-cinnamon"]);
     expect(migrated.dataMigration).toEqual({});
+    expect(migrated.hardware.snapshot).toBeNull();
+  });
+
+  it("migrates a strict Passport v2 without inventing snapshot evidence", () => {
+    const v2 = makeV2();
+    v2.hardware.evidence.wifi = {
+      state: "user_reported",
+      required: true,
+      details: "Existing v2 report"
+    };
+    const migrated = parsePassportText(JSON.stringify(v2));
+    expect(migrated.schemaVersion).toBe(3);
+    expect(migrated.hardware.snapshot).toBeNull();
+    expect(migrated.hardware.evidence.wifi).toEqual(v2.hardware.evidence.wifi);
+    expect(Object.values(migrated.liveTests).every((item) => item === "not_tested")).toBe(true);
+  });
+
+  it("round-trips current snapshot provenance through Passport v3", () => {
+    const passport = makePassport();
+    passport.hardware.snapshot = {
+      acquisition: "file_import",
+      acquiredAt: "2026-08-11T12:01:00.000Z",
+      snapshot: makeWindowsSnapshot()
+    };
+    expect(parsePassportText(serializePassport(passport))).toEqual(passport);
   });
 
   it("does not invent live verification while migrating v1", () => {
@@ -120,7 +161,7 @@ describe("Migration Passport schema", () => {
   });
 
   it("rejects stale or future schema versions", () => {
-    for (const schemaVersion of [0, 3, 99]) {
+    for (const schemaVersion of [0, 4, 99]) {
       expect(() => parsePassportText(JSON.stringify({ ...makePassport(), schemaVersion }))).toThrow("passport_schema_invalid");
     }
   });

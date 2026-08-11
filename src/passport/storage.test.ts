@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { makePassport } from "../test/fixtures";
 import { clearPassport, loadPassport, savePassport } from "./storage";
 
+const V3 = "linux-migration-companion:passport:v3";
 const V2 = "linux-migration-companion:passport:v2";
 const V1 = "linux-migration-companion:passport:v1";
 
@@ -27,18 +28,34 @@ function legacyPassport() {
   };
 }
 
+function versionTwoPassport() {
+  const current = makePassport();
+  return {
+    ...current,
+    schemaVersion: 2,
+    hardware: {
+      source: "manual",
+      gpuVendor: current.hardware.gpuVendor,
+      scannerStatus: "deferred",
+      evidence: current.hardware.evidence,
+      notes: current.hardware.notes
+    }
+  };
+}
+
 describe("Passport local persistence", () => {
   beforeEach(() => window.localStorage.clear());
 
-  it("loads a valid schema-v2 Passport", () => {
-    const passport = makePassport();
+  it("loads and migrates a valid schema-v2 Passport", () => {
+    const passport = versionTwoPassport();
     window.localStorage.setItem(V2, JSON.stringify(passport));
-    expect(loadPassport()).toEqual(passport);
+    expect(loadPassport()).toMatchObject({ schemaVersion: 3, locale: passport.locale });
+    expect(loadPassport()?.hardware.snapshot).toBeNull();
   });
 
   it("loads and migrates a legacy schema-v1 Passport", () => {
     window.localStorage.setItem(V1, JSON.stringify(legacyPassport()));
-    expect(loadPassport()?.schemaVersion).toBe(2);
+    expect(loadPassport()?.schemaVersion).toBe(3);
   });
 
   it("returns null for malformed stored data", () => {
@@ -46,18 +63,24 @@ describe("Passport local persistence", () => {
     expect(loadPassport()).toBeNull();
   });
 
-  it("saves v2 and removes the legacy key", () => {
+  it("saves v3 and removes both legacy keys", () => {
     window.localStorage.setItem(V1, JSON.stringify(legacyPassport()));
+    window.localStorage.setItem(V2, JSON.stringify(versionTwoPassport()));
     savePassport(makePassport());
-    expect(window.localStorage.getItem(V2)).not.toBeNull();
+    expect(window.localStorage.getItem(V3)).not.toBeNull();
     expect(window.localStorage.getItem(V1)).toBeNull();
+    expect(window.localStorage.getItem(V2)).toBeNull();
   });
 
-  it("clears both current and legacy storage", () => {
+  it("clears all app-owned Passport versions and no foreign key", () => {
     window.localStorage.setItem(V1, "legacy");
-    window.localStorage.setItem(V2, "current");
+    window.localStorage.setItem(V2, "legacy-current");
+    window.localStorage.setItem(V3, "current");
+    window.localStorage.setItem("another-app:data", "keep");
     clearPassport();
     expect(window.localStorage.getItem(V1)).toBeNull();
     expect(window.localStorage.getItem(V2)).toBeNull();
+    expect(window.localStorage.getItem(V3)).toBeNull();
+    expect(window.localStorage.getItem("another-app:data")).toBe("keep");
   });
 });

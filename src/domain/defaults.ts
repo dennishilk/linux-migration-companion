@@ -93,17 +93,16 @@ export function createDefaultHardware(
   gpuVendor: AdvisorAnswers["gpuVendor"] = "unknown"
 ): HardwareProfile {
   return {
-    source: "manual",
     gpuVendor,
-    scannerStatus: "deferred",
     evidence: createDefaultEvidence(),
-    notes: ""
+    notes: "",
+    snapshot: null
   };
 }
 
 export function createDefaultPassport(): MigrationPassport {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     product: "linux-migration-companion",
     locale: "en",
     updatedAt: new Date().toISOString(),

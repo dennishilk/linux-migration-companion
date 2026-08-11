@@ -3,9 +3,13 @@ import { HARDWARE_CLASS_IDS } from "../domain/defaults";
 import type {
   HardwareClassId,
   HardwareEvidenceState,
-  MigrationPassport
+  MigrationPassport,
+  StoredHardwareSnapshot
 } from "../domain/types";
+import { applyHardwareSnapshot } from "../hardware/integration";
+import { parseHardwareSnapshotText } from "../hardware/snapshotSchema";
 import { parsePassportText } from "../passport/schema";
+import { makeLinuxSnapshot, makeWindowsSnapshot } from "../test/hardwareFixtures";
 import { makeAnswers, makePassport } from "../test/fixtures";
 import { assessSoftware } from "./assess";
 import { assessMigrationReadiness } from "./readiness";
@@ -45,6 +49,16 @@ function passportWithHardwareCheck(
     details: state === "user_reported" ? "Reported, not verified here" : ""
   };
   return passport;
+}
+
+function stored(
+  snapshot: ReturnType<typeof makeWindowsSnapshot> | ReturnType<typeof makeLinuxSnapshot>
+): StoredHardwareSnapshot {
+  return {
+    acquisition: "file_import",
+    acquiredAt: "2026-08-11T12:01:00.000Z",
+    snapshot
+  };
 }
 
 const personas: Array<{ name: string; verify: () => void }> = [
@@ -273,6 +287,137 @@ const personas: Array<{ name: string; verify: () => void }> = [
       expect(() => parsePassportText(JSON.stringify(passport))).toThrow(
         "passport_schema_invalid"
       );
+    }
+  },
+  {
+    name: "21 Windows 11 hybrid laptop remains detected, not verified",
+    verify: () => {
+      const passport = makePassport();
+      passport.answers.deviceType = "laptop";
+      passport.hardware = applyHardwareSnapshot(
+        passport.hardware,
+        stored(makeWindowsSnapshot())
+      );
+      expect(passport.hardware.evidence.hybrid_graphics.state).toBe("known_fact");
+      expect(passport.hardware.evidence.graphics.state).not.toBe("live_verified");
+      expect(passport.liveTests.graphics).toBe("not_tested");
+    }
+  },
+  {
+    name: "22 NVIDIA desktop with USB Wi-Fi gains facts but no requirement",
+    verify: () => {
+      const snapshot = makeWindowsSnapshot();
+      snapshot.system.formFactor = "desktop";
+      const wifi = snapshot.facts.find((fact) => fact.category === "wifi");
+      if (!wifi) throw new Error("Missing fixture Wi-Fi");
+      wifi.name = "USB 0bda:c811";
+      wifi.bus = "usb";
+      wifi.vendorId = "0bda";
+      wifi.deviceId = "c811";
+      const hardware = applyHardwareSnapshot(makePassport().hardware, stored(snapshot));
+      expect(hardware.gpuVendor).toBe("nvidia");
+      expect(hardware.evidence.wifi.state).toBe("known_fact");
+      expect(hardware.evidence.wifi.required).toBe(false);
+    }
+  },
+  {
+    name: "23 detected Wi-Fi with a live problem blocks migration",
+    verify: () => {
+      const passport = passportWithHardwareCheck("wifi", "known_fact");
+      passport.liveTests.wifi = "issue";
+      passport.hardware.evidence.wifi.state = "failed_test";
+      const result = assessMigrationReadiness(
+        passport,
+        assessSoftware(passport.softwareSelections)
+      );
+      expect(result.state).toBe("blocked");
+      expect(result.strategy).toBe("migration_blocked");
+    }
+  },
+  {
+    name: "24 detected fingerprint reader remains untested",
+    verify: () => {
+      const passport = passportWithHardwareCheck("fingerprint", "known_fact");
+      const result = assessMigrationReadiness(
+        passport,
+        assessSoftware(passport.softwareSelections)
+      );
+      expect(result.state).toBe("live_test_required");
+      expect(passport.hardware.evidence.fingerprint.state).toBe("known_fact");
+    }
+  },
+  {
+    name: "25 multiple storage devices remain factual Passport data only",
+    verify: () => {
+      const snapshot = makeWindowsSnapshot();
+      snapshot.facts.push({ category: "storage", name: "SATA SSD (476.9 GiB)" });
+      const hardware = applyHardwareSnapshot(makePassport().hardware, stored(snapshot));
+      expect(hardware.snapshot?.snapshot.facts.filter((fact) => fact.category === "storage")).toHaveLength(2);
+      expect(Object.keys(hardware.evidence)).not.toContain("storage");
+    }
+  },
+  {
+    name: "26 current Linux host can evaluate another target without a support shortcut",
+    verify: () => {
+      const passport = makePassport();
+      passport.hardware = applyHardwareSnapshot(
+        passport.hardware,
+        stored(makeLinuxSnapshot())
+      );
+      const result = assessMigrationReadiness(passport, assessSoftware({}));
+      expect(passport.hardware.snapshot?.snapshot.system.osFamily).toBe("linux");
+      expect(passport.hardware.evidence.graphics.state).toBe("known_fact");
+      expect(result.state).toBe("live_test_required");
+    }
+  },
+  {
+    name: "27 manually modified valid snapshot remains an untrusted source claim",
+    verify: () => {
+      const snapshot = makeWindowsSnapshot();
+      snapshot.facts[3].name = "User-edited adapter description";
+      const parsed = parseHardwareSnapshotText(JSON.stringify(snapshot));
+      const record = stored(parsed);
+      const hardware = applyHardwareSnapshot(makePassport().hardware, record);
+      expect(record.acquisition).toBe("file_import");
+      expect(record.snapshot.source).toBe("windows_collector");
+      expect(hardware.evidence.wifi.state).toBe("known_fact");
+      expect(hardware.evidence.wifi.state).not.toBe("live_verified");
+    }
+  },
+  {
+    name: "28 unknown new device strings survive without widening category IDs",
+    verify: () => {
+      const snapshot = makeLinuxSnapshot();
+      snapshot.facts[1].name = "Future Adapter Ω revision 2040";
+      const parsed = parseHardwareSnapshotText(JSON.stringify(snapshot));
+      expect(parsed.facts[1].name).toContain("Future Adapter Ω");
+      expect(applyHardwareSnapshot(makePassport().hardware, stored(parsed)).evidence.wifi.state).toBe("known_fact");
+    }
+  },
+  {
+    name: "29 detected is never serialized as compatible or live verified",
+    verify: () => {
+      const passport = makePassport();
+      passport.hardware = applyHardwareSnapshot(
+        passport.hardware,
+        stored(makeWindowsSnapshot())
+      );
+      expect(JSON.stringify(passport.hardware)).not.toMatch(/compatible/i);
+      expect(Object.values(passport.hardware.evidence).some((item) => item.state === "live_verified")).toBe(false);
+    }
+  },
+  {
+    name: "30 missing important device identity remains UNKNOWN",
+    verify: () => {
+      const passport = makePassport();
+      passport.hardware = applyHardwareSnapshot(
+        passport.hardware,
+        stored(makeWindowsSnapshot())
+      );
+      passport.hardware.evidence.printer.required = true;
+      const result = assessMigrationReadiness(passport, assessSoftware({}));
+      expect(passport.hardware.evidence.printer.state).toBe("unknown");
+      expect(result.state).toBe("live_test_required");
     }
   }
 ];

@@ -26,6 +26,8 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] Essential Photoshop/Creative Cloud produces a hard blocker and keep-Windows-for-workflows strategy.
 - [ ] Essential enterprise VPN produces Windows-retained-until-tested, not a false vendor-support claim.
 - [ ] All 19 hardware classes support required, evidence state, and 500-character details.
+- [ ] Hardware Snapshot offers manual, limited browser, and validated JSON-import routes; the manual route remains complete.
+- [ ] `DETECTED FACT ≠ LINUX VERIFIED` is visible and no import marks a class required, compatible, or live-verified.
 - [ ] Selecting a GPU vendor alone leaves graphics compatibility `UNKNOWN`.
 - [ ] Required + `NOT APPLICABLE` cannot coexist through the UI.
 - [ ] NVIDIA guidance never hard-codes a driver version.
@@ -36,16 +38,58 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] Empty/default evidence produces `INSUFFICIENT EVIDENCE`.
 - [ ] Data plan covers all 19 categories, six methods, backup warning, cloud placeholders, encryption, Fast Startup/NTFS, and active databases.
 - [ ] Media guide uses selected distro’s official links and offers no raw-write action.
-- [ ] Passport 2.0 summarizes distros, software, blockers, required hardware, live tests, strategy, data, gaming, and unknowns.
-- [ ] Passport preview matches stored data; export downloads valid schema-v2 JSON.
-- [ ] Strict v1 import migrates; valid v2 imports; malformed/extra/oversized/deep/unknown/stale/contradictory files fail safely.
+- [ ] Passport 3.0 summarizes distros, software, blockers, required hardware, snapshot provenance, live tests, strategy, data, gaming, and unknowns.
+- [ ] Passport preview matches stored data; export downloads valid schema-v3 JSON.
+- [ ] Strict v1/v2 imports migrate without a snapshot or invented live evidence; valid v3 imports; malformed/extra/oversized/deep/unknown/stale/contradictory files fail safely.
 - [ ] Markup-like notes render as text and create no DOM element or console error.
 - [ ] `Start over` / `Neu beginnen` opens the reset dialog without changing progress on the first click.
 - [ ] Cancel or Escape preserves progress, traps focus while open, and returns focus to the reset control.
-- [ ] Confirmed reset clears only the app-owned v1/v2 keys, preserves the locale and unrelated storage, removes `?step=`, and creates a schema-valid default Passport at step 1.
+- [ ] Confirmed reset clears only the app-owned v1/v2/v3 keys including snapshot state, preserves locale/unrelated storage, removes `?step=`, and creates a schema-valid default Passport at step 1.
 - [ ] First Boot 2.0 responds to blockers, NVIDIA, Steam, browser/office, identity, cloud, printer, Bluetooth, displays, development, media, unresolved hardware, and NixOS.
 - [ ] Guided mode stays concise; explanation mode shows WHAT, WHY, RISK, VERIFY SUCCESS, and BACK OUT for every step.
 - [ ] No control executes commands, installs software, requests privilege, partitions, writes media, or changes a bootloader.
+
+## Hardware Snapshot release procedure
+
+### A. Windows 10 and Windows 11
+
+- [ ] On one ordinary non-administrator Windows 10 machine and one Windows 11 machine, download the `.ps1`, open it in a text editor, and compare it to `public/collectors/windows/Collect-LinuxMigrationHardware.ps1` at the candidate SHA.
+- [ ] Do not change execution policy and do not use `Bypass`. If policy permits, run `powershell.exe -NoProfile -File .\Collect-LinuxMigrationHardware.ps1`; if policy blocks it, record the policy/error and verify the UI directs the user to browser/manual evidence.
+- [ ] Confirm no UAC/elevation prompt, installer, package/driver/configuration change, browser/backend request, telemetry, or additional output file appears. The only write should be one new timestamped JSON file in the current directory.
+- [ ] Open the JSON as text before import. Search case-insensitively for username, real/host/computer name, email, IP/MAC/SSID, serial, product/activation key, machine GUID, TPM, file/document names/content, tokens and credentials; confirm none exists.
+- [ ] Compare CPU, GPU(s), Wi-Fi/Ethernet/Bluetooth, audio, storage, USB controller, webcam/fingerprint and monitor count against Device Manager/System Information. Record every absent, extra/inactive or ambiguous entry. Secure Boot must say `unavailable`, not guess.
+- [ ] Import the JSON in EN and DE. Confirm source is explicitly a claimed Windows collector, detected facts are visible, required flags/live tests are unchanged, and readiness remains conservative.
+- [ ] Delete the JSON normally and confirm the system configuration is unchanged.
+
+### B. Linux
+
+- [ ] On a representative physical Linux laptop or desktop, open and compare the Python source at the candidate SHA; run `python3 ./collect-linux-hardware.py` as a normal user, without `sudo` or package installation.
+- [ ] Confirm no network request, privilege prompt, shell/subprocess, temporary file or system change. Confirm one new mode-`0600` JSON is created and an existing filename is never overwritten.
+- [ ] Inspect/search JSON for the same prohibited fields as Windows. Compare reported CPU, PCI graphics/audio/storage/USB controllers, network/Bluetooth controllers, block storage, USB class devices, firmware/Secure Boot and display count against known local hardware. Record kernel/permission/container omissions as unknown, not failure.
+- [ ] Import, verify provenance/evidence separation, then delete the JSON. Also run `python3 ./collect-linux-hardware.py --stdout` and confirm it creates no file.
+
+### C. Browser
+
+- [ ] In current Chrome/Chromium and Firefox, record a browser snapshot and compare exactly what each exposes. Firefox/missing `deviceMemory`, UA-CH or WebGPU must render as unavailable without an error.
+- [ ] Repeat on a mobile browser. Confirm no permission prompt, device list, renderer name, GPU vendor, USB/HID/media enumeration or network request occurs.
+- [ ] Disable/block an available API where devtools/browser settings permit; confirm graceful unavailable labels and zero device facts.
+
+### D. Evidence and readiness
+
+- [ ] Import a snapshot with Wi-Fi and GPU. Mark Wi-Fi required: detected + not tested must produce `LIVE TEST REQUIRED`, not ready.
+- [ ] Explicitly mark the linked Wi-Fi live test `Works`: evidence becomes `LIVE VERIFIED`. Revert to not tested: it returns to snapshot `KNOWN FACT`.
+- [ ] Mark the same test `Issue`: evidence becomes `FAILED TEST`, readiness blocks/retains Windows as before.
+- [ ] Confirm an unidentified required printer/fingerprint/special device remains `UNKNOWN`.
+
+### E. Passport
+
+- [ ] Export Passport v3, inspect the embedded acquisition/source/collector/facts, reload, and re-import. Provenance and manual/live distinctions must survive exactly.
+- [ ] Import known-good v1 and v2 files. Both must become v3 with `snapshot: null` and no invented live state.
+
+### F. Reset
+
+- [ ] With a snapshot and other progress stored, open Start over; first click changes nothing. Cancel, reopen, press Escape, and verify state/focus are preserved.
+- [ ] Confirm reset and verify snapshot/progress are removed, step 1 is shown without `?step=`, language is retained, Passport v3 is schema-valid, and a foreign `localStorage` test key survives.
 
 ## Adversarial personas
 
@@ -71,6 +115,16 @@ Run each from a reset Passport and record top recommendations, readiness, Window
 18. Keyboard/screen-reader/zoom accessibility user.
 19. User leaving almost everything `UNKNOWN`.
 20. Contradictory/maximum-selection/long-note edge-case user.
+21. Windows 11 hybrid Intel/NVIDIA laptop.
+22. NVIDIA desktop with USB Wi-Fi.
+23. Detected Wi-Fi whose Linux live test fails.
+24. Detected fingerprint reader left untested.
+25. Desktop with multiple storage devices.
+26. Current Linux machine evaluating a different target distribution.
+27. User-modified but structurally valid snapshot.
+28. Unknown/new Unicode device description.
+29. User who assumes detected means supported; verify corrective copy/readiness.
+30. Snapshot that cannot identify an important device; `UNKNOWN` must survive.
 
 Attempt to bypass every specialist gate and force `READY` while Photoshop, failed Wi-Fi, failed suspend, essential `DO NOT ASSUME` data, or other blockers remain.
 
@@ -82,7 +136,7 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] Direct reload at every step succeeds and all assets use the configured base path.
 - [ ] Refresh midway through Advisor, software, hardware, live test, and data plan preserves state.
 - [ ] Storage-disabled/full behavior leaves the in-memory UI usable.
-- [ ] The only application storage key after save is `linux-migration-companion:passport:v2`.
+- [ ] The only application storage key after save is `linux-migration-companion:passport:v3`; legacy v1/v2 keys are removed and foreign keys survive reset.
 
 ## Responsive and accessibility
 
@@ -92,6 +146,7 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] The ten-item desktop navigation remains reachable at short heights.
 - [ ] Visible focus follows a logical order; the reset dialog traps Tab focus only while open and releases it on Cancel, Escape, or confirmation.
 - [ ] Button groups, selects, textareas, checkboxes, summaries, and file input trigger have accessible names.
+- [ ] Snapshot workflow is keyboard-only operable; status/error announcements are read; collector details and hidden file input trigger retain logical focus order.
 - [ ] Heading hierarchy is coherent after direct navigation.
 - [ ] Status uses text and structure, not color alone; contrast remains legible.
 - [ ] Long German labels wrap without overflow.
@@ -104,7 +159,7 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] No analytics, font, telemetry, compatibility API, tracker, or service-worker request occurs.
 - [ ] Console has no errors or warnings during the complete journey.
 - [ ] External links are HTTPS and open with `noreferrer`.
-- [ ] Export contains no automatically collected device, account, file, network, or browser-history identifier.
+- [ ] Export contains only documented optional hardware model/non-unique PCI/USB facts and no account, serial, file, network, browser-history or secret identifier.
 - [ ] Production dependency audit reports no high/critical production vulnerability.
 - [ ] CSP blocks inline script/object/form submission and no component uses unsafe HTML injection.
 
@@ -113,6 +168,8 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] `npm ci && npm run qa` passes from a clean checkout.
 - [ ] `VITE_BASE_PATH=/linux-migration-companion/ npm run build` succeeds.
 - [ ] CI and CodeQL pass on the release-candidate SHA.
+- [ ] Both public JSON schemas parse as JSON and match runtime fixture/output tests.
+- [ ] Real Windows 10/11 and physical Linux collector results above are attached to the private release record; automated/static tests alone do not satisfy this gate.
 - [ ] A branch preview or equivalent serves the exact candidate SHA over HTTPS.
 - [ ] Chromium and Firefox matrix above is performed against that SHA.
 - [ ] Page title, description, canonical URL, favicon, and app identity are correct; the former `LM` mark is absent.

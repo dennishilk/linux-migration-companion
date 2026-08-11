@@ -11,14 +11,17 @@ flowchart TD
     User["User in browser"] --> UI["DE/EN React UI"]
     UI --> Engine["Deterministic recommendation + readiness engines"]
     UI --> Catalog["Bundled distro, software, hardware + data models"]
-    UI <--> Passport["Strict Passport v2"]
+    UI --> BrowserSnapshot["Limited browser-reported facts"]
+    Collectors["Optional read-only Windows/Linux source scripts"] --> SnapshotFile["Strict Hardware Snapshot v1 JSON"]
+    SnapshotFile --> UI
+    UI <--> Passport["Strict Passport v3"]
     Passport <--> Local["Browser localStorage"]
     Passport <--> File["Explicit JSON import/export"]
-    V1["Strict Passport v1"] --> Migrator["Explicit v1 → v2 migration"] --> Passport
+    Legacy["Strict Passport v1 or v2"] --> Migrator["Explicit v1/v2 → v3 migration"] --> Passport
     UI --> Links["Official external handoff links"]
 ```
 
-Only the final link handoff crosses the application origin, and only after a normal user action. The application makes no runtime data API, font, analytics, telemetry, or compatibility request.
+Only an explicit external-link handoff crosses the application origin. Collector downloads are static same-origin source files. The application and collectors make no runtime data API, font, analytics, telemetry, upload, or compatibility request.
 
 ## Modules
 
@@ -31,7 +34,9 @@ Only the final link handoff crosses the application origin, and only after a nor
 | Readiness | `src/engine/readiness.ts` | Explainable readiness and Windows-retention strategy; hard blockers outrank preferences |
 | Data migration | `src/engine/dataMigration.ts` | Non-executing plan items and evidence completeness |
 | First boot | `src/engine/firstBoot.ts` | Personalized what/why/risk/verify/back-out plan with no commands |
-| Passport | `src/passport` | Strict v2 validation, v1 migration, size/depth controls, local persistence |
+| Hardware Snapshot | `src/hardware` | Limited browser collection, strict untrusted JSON validation, evidence mapping |
+| Collectors | `public/collectors` | Read-only Windows/Linux allowlist collection into one local JSON file |
+| Passport | `src/passport` | Strict v3 validation, v1/v2 migrations, size/depth controls, local persistence |
 | UI | `src/components` | Ten-stage accessible migration journey |
 
 ## State and evidence flow
@@ -40,12 +45,14 @@ Only the final link handoff crosses the application origin, and only after a nor
 
 Recommendations, software assessment, data assessment, readiness, and First Boot steps are pure derived results. They are not stored as authoritative claims, so a newer rule set can recompute them from the recorded evidence.
 
-Live-test results update only the corresponding manual evidence class:
+Snapshot integration and live evidence are separate. An imported fact can move an otherwise `unknown` represented class to `known_fact`; it does not change `required`, compatibility, or any live result. Browser snapshots contain no device facts. A newer snapshot replaces the old snapshot and removes only stale detail-free states derived from the old one.
+
+Live-test results update only the corresponding evidence class:
 
 - `works` → `live_verified`;
 - `issue` → `failed_test`;
 - `not_applicable` → not required + `not_applicable`;
-- reverting a linked live result removes only the prior live-derived state.
+- reverting a linked live result removes only the prior live-derived state, returning to `known_fact` when the current snapshot still detects that class and otherwise to `unknown`.
 
 A manufacturer or product name never becomes compatibility evidence. `known_fact` and `user_reported` remain unresolved for required functions until a representative live test succeeds.
 
@@ -59,6 +66,8 @@ Pull requests run lint, strict TypeScript, tests, build, and a production-depend
 
 Search indexing is an explicit separate release gate: `index.html` uses `noindex,nofollow` and `public/robots.txt` disallows crawling until Dennis approves public integration.
 
-## Boundary for future native code
+## Collector boundary and future native code
 
-A Windows hardware companion is not part of this release candidate. If later justified, it must be a separate, signed, open-source, read-only binary with a documented field allowlist, local preview/redaction, no network client, no raw disks, and a separately reviewed threat model. The web UI must continue to work without it and must not convert enumeration into a compatibility guarantee.
+This release candidate includes readable source scripts, not a native binary. Their exact OS interfaces and data fields are reviewed in [HARDWARE_SNAPSHOT.md](HARDWARE_SNAPSHOT.md). They never run inside or automatically from the web app, and the manual path remains complete.
+
+Any later native binary, signing/update mechanism, background service, local IPC or automatic execution would be a new security boundary requiring signed reproducible releases, least privilege, sandbox/network controls and separate review. Enumeration must still never become a compatibility guarantee.

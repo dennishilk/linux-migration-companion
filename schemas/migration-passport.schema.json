@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://www.dennishilk.com/linux-migration-companion/schemas/migration-passport.schema.json",
-  "title": "Linux Migration Companion Passport v2",
-  "description": "Strict public contract for Passport v2 exports. The application also imports and explicitly migrates legacy Passport v1 files.",
+  "title": "Linux Migration Companion Passport v3",
+  "description": "Strict public contract for Passport v3 exports with optional hardware snapshot provenance. The application explicitly migrates legacy Passport v1 and v2 files without inventing snapshot or live evidence.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -20,7 +20,7 @@
     "dataMigration"
   ],
   "properties": {
-    "schemaVersion": { "const": 2 },
+    "schemaVersion": { "const": 3 },
     "product": { "const": "linux-migration-companion" },
     "locale": { "enum": ["en", "de"] },
     "updatedAt": { "type": "string", "format": "date-time" },
@@ -220,14 +220,30 @@
     "hardware": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source", "gpuVendor", "scannerStatus", "evidence", "notes"],
+      "required": ["gpuVendor", "evidence", "notes", "snapshot"],
       "properties": {
-        "source": { "const": "manual" },
         "gpuVendor": { "enum": ["unknown", "nvidia", "amd", "intel"] },
-        "scannerStatus": { "const": "deferred" },
         "evidence": { "$ref": "#/$defs/hardwareEvidence" },
-        "notes": { "type": "string", "maxLength": 1000 }
+        "notes": { "type": "string", "maxLength": 1000 },
+        "snapshot": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/storedHardwareSnapshot" }
+          ]
+        }
       }
+    },
+    "storedHardwareSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["acquisition", "acquiredAt", "snapshot"],
+      "properties": {
+        "acquisition": { "enum": ["browser_runtime", "file_import"] },
+        "acquiredAt": { "type": "string", "format": "date-time" },
+        "snapshot": { "$ref": "hardware-snapshot.schema.json" }
+      },
+      "if": { "properties": { "acquisition": { "const": "browser_runtime" } }, "required": ["acquisition"] },
+      "then": { "properties": { "snapshot": { "properties": { "source": { "const": "browser_reported" } } } } }
     },
     "hardwareEvidence": {
       "type": "object",

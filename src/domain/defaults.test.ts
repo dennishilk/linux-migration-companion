@@ -30,5 +30,7 @@ describe("safe Passport defaults", () => {
       required: true
     });
     expect(Object.entries(passport.hardware.evidence).filter(([, item]) => item.required)).toHaveLength(1);
+    expect(passport.schemaVersion).toBe(3);
+    expect(passport.hardware.snapshot).toBeNull();
   });
 });

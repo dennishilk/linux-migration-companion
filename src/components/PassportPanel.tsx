@@ -4,6 +4,9 @@ import { distroById } from "../data/distros";
 import { hardwareClassById } from "../data/hardware";
 import type {
   DistroRecommendation,
+  HardwareClassId,
+  HardwareSnapshotCategory,
+  HardwareSnapshotSource,
   LiveReadiness,
   Locale,
   MigrationPassport,
@@ -29,6 +32,38 @@ type ImportState = "idle" | "success" | "error";
 
 const copy = (locale: Locale, en: string, de: string) =>
   locale === "de" ? de : en;
+
+const supplementalHardwareLabels: Partial<
+  Record<HardwareSnapshotCategory, { en: string; de: string }>
+> = {
+  cpu: { en: "CPU", de: "CPU" },
+  storage: { en: "Storage", de: "Speichergerät" },
+  usb_controller: { en: "USB controller", de: "USB-Controller" },
+  input_device: { en: "Input device", de: "Eingabegerät" },
+  display: { en: "Display", de: "Bildschirm" }
+};
+
+function snapshotCategoryText(
+  category: HardwareSnapshotCategory,
+  locale: Locale
+): string {
+  const hardware = hardwareClassById.get(category as HardwareClassId);
+  if (hardware) return localize(hardware.title, locale);
+  return supplementalHardwareLabels[category]?.[locale] ?? category;
+}
+
+function snapshotSourceText(
+  source: HardwareSnapshotSource,
+  locale: Locale
+): string {
+  if (source === "browser_reported") {
+    return copy(locale, "Browser reported", "Vom Browser gemeldet");
+  }
+  if (source === "windows_collector") {
+    return copy(locale, "Windows collector", "Windows-Collector");
+  }
+  return copy(locale, "Linux collector", "Linux-Collector");
+}
 
 const strategyText: Record<ReadinessAssessment["strategy"], { en: string; de: string }> = {
   linux_primary: { en: "LINUX PRIMARY", de: "LINUX PRIMÄR" },
@@ -64,6 +99,7 @@ export function PassportPanel({
   const unresolvedHardware = requiredHardware.filter(([, evidence]) =>
     ["unknown", "known_fact", "user_reported"].includes(evidence.state)
   );
+  const hardwareSnapshot = passport.hardware.snapshot;
 
   const exportPassport = () => {
     const text = serializePassport(passport);
@@ -71,7 +107,7 @@ export function PassportPanel({
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `migration-passport-v2-${new Date().toISOString().slice(0, 10)}.json`;
+    link.download = `migration-passport-v3-${new Date().toISOString().slice(0, 10)}.json`;
     document.body.append(link);
     link.click();
     link.remove();
@@ -99,8 +135,8 @@ export function PassportPanel({
     <section aria-labelledby="passport-title">
       <div className="page-heading split-heading">
         <div>
-          <p className="eyebrow">09 / LOCAL EVIDENCE · SCHEMA V2</p>
-          <h1 id="passport-title">{t(locale, "passportTitle")} 2.0</h1>
+          <p className="eyebrow">09 / LOCAL EVIDENCE · SCHEMA V3</p>
+          <h1 id="passport-title">{t(locale, "passportTitle")} 3.0</h1>
           <p>{t(locale, "passportLead")}</p>
         </div>
         <div className="passport-actions">
@@ -125,14 +161,14 @@ export function PassportPanel({
         <div className={`notice ${importState === "success" ? "notice-info" : "notice-blocker"}`} role="status">
           <strong>{importState === "success" ? t(locale, "importSuccess") : t(locale, "importError")}</strong>
           {importState === "error" ? (
-            <p>{copy(locale, "Strict Passport v1 and v2 files up to 256 KiB are accepted. Unknown IDs, extra fields, excessive depth and invalid versions are rejected.", "Strikte Passport-v1- und v2-Dateien bis 256 KiB werden akzeptiert. Unbekannte IDs, zusätzliche Felder, übermäßige Tiefe und ungültige Versionen werden abgewiesen.")}</p>
+            <p>{copy(locale, "Strict Passport v1, v2 and v3 files up to 256 KiB are accepted. Unknown IDs, extra fields, excessive depth and invalid versions are rejected.", "Strikte Passport-v1-, v2- und v3-Dateien bis 256 KiB werden akzeptiert. Unbekannte IDs, zusätzliche Felder, übermäßige Tiefe und ungültige Versionen werden abgewiesen.")}</p>
           ) : (
-            <p>{copy(locale, "Passport v1 imports are explicitly migrated to schema v2 without inventing new evidence.", "Passport-v1-Importe werden ausdrücklich auf Schema v2 migriert, ohne neue Evidenz zu erfinden.")}</p>
+            <p>{copy(locale, "Earlier Passport v1 and v2 imports are explicitly migrated to schema v3 without inventing snapshot or live evidence.", "Ältere Passport-v1- und v2-Importe werden ausdrücklich auf Schema v3 migriert, ohne Snapshot- oder Live-Evidenz zu erfinden.")}</p>
           )}
         </div>
       ) : null}
 
-      <div className="passport-grid passport-grid-v2">
+      <div className="passport-grid passport-grid-v3">
         <article className="passport-card passport-primary">
           <span>{t(locale, "primary")}</span>
           <h2>{selected?.distro.name ?? copy(locale, "Not selected", "Nicht ausgewählt")}</h2>
@@ -151,7 +187,11 @@ export function PassportPanel({
           <span>{t(locale, "hardware")}</span>
           <h2>{verifiedHardware.length} / {requiredHardware.length}</h2>
           <p>{copy(locale, "LIVE VERIFIED", "LIVE VERIFIZIERT")}</p>
-          <small>{unresolvedHardware.length} UNKNOWN · {passport.hardware.gpuVendor.toUpperCase()}</small>
+          <small>
+            {unresolvedHardware.length} UNKNOWN · {passport.hardware.gpuVendor.toUpperCase()} · {hardwareSnapshot
+              ? copy(locale, `${hardwareSnapshot.snapshot.facts.length} snapshot fact(s)`, `${hardwareSnapshot.snapshot.facts.length} Snapshot-Fakt(en)`)
+              : copy(locale, "no snapshot", "kein Snapshot")}
+          </small>
         </article>
 
         <article className={`passport-card readiness-state-${migrationReadiness.state}`}>
@@ -216,6 +256,40 @@ export function PassportPanel({
           ) : <p>{copy(locale, "No hardware class is marked required.", "Keine Hardwareklasse ist als benötigt markiert.")}</p>}
         </details>
 
+        <details open={hardwareSnapshot !== null}>
+          <summary>{copy(locale, "Hardware snapshot provenance", "Herkunft des Hardware-Snapshots")}</summary>
+          {hardwareSnapshot ? (
+            <>
+              <p>
+                {copy(locale, "Acquisition", "Übernahme")}: {hardwareSnapshot.acquisition === "browser_runtime"
+                  ? copy(locale, "created in this browser", "in diesem Browser erstellt")
+                  : copy(locale, "validated file import", "validierter Dateiimport")} · {copy(locale, "Claimed source", "Angegebene Quelle")}: {snapshotSourceText(hardwareSnapshot.snapshot.source, locale)} · {hardwareSnapshot.snapshot.collector.id} {hardwareSnapshot.snapshot.collector.version}
+              </p>
+              <p>
+                {copy(
+                  locale,
+                  "Detected facts remain factual provenance only. Linux support requires a separate live test.",
+                  "Erkannte Fakten bleiben ausschließlich sachliche Herkunftsangaben. Linux-Unterstützung erfordert einen getrennten Live-Test."
+                )}
+              </p>
+              {hardwareSnapshot.snapshot.facts.length ? (
+                <ul>
+                  {hardwareSnapshot.snapshot.facts.map((fact, index) => (
+                    <li key={`${fact.category}-${fact.name}-${index}`}>
+                      <strong>{snapshotCategoryText(fact.category, locale)}</strong>
+                      <span>{fact.vendor ? `${fact.vendor} · ` : ""}{fact.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{copy(locale, "This limited browser snapshot contains no device identity.", "Dieser begrenzte Browser-Snapshot enthält keine Geräteidentität.")}</p>
+              )}
+            </>
+          ) : (
+            <p>{copy(locale, "No hardware snapshot is stored. Manual evidence remains fully supported.", "Es ist kein Hardware-Snapshot gespeichert. Manuelle Evidenz bleibt vollständig unterstützt.")}</p>
+          )}
+        </details>
+
         <details>
           <summary>{copy(locale, "Data migration considerations", "Überlegungen zur Datenmigration")}</summary>
           {dataAssessment.items.length ? (
@@ -233,7 +307,7 @@ export function PassportPanel({
 
       <details className="json-preview">
         <summary>{copy(locale, "Inspect complete exported data", "Vollständige Exportdaten ansehen")}</summary>
-        <p>{copy(locale, "This is the complete local Passport. It contains no automatic device identifiers, accounts or uploaded files. Do not put passwords or private keys in notes.", "Dies ist der vollständige lokale Passport. Er enthält keine automatischen Gerätekennungen, Konten oder hochgeladenen Dateien. Keine Passwörter oder privaten Schlüssel in Notizen eintragen.")}</p>
+        <p>{copy(locale, "This is the complete local Passport. An optional snapshot can contain selected hardware model names and non-unique PCI/USB IDs, but never accounts, serial numbers, network identifiers or uploaded user files. Do not put passwords or private keys in notes.", "Dies ist der vollständige lokale Passport. Ein optionaler Snapshot kann ausgewählte Hardware-Modellnamen und nicht eindeutige PCI-/USB-IDs enthalten, aber niemals Konten, Seriennummern, Netzwerkkennungen oder hochgeladene Benutzerdateien. Keine Passwörter oder privaten Schlüssel in Notizen eintragen.")}</p>
         <pre>{serializePassport(passport)}</pre>
       </details>
 

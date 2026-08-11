@@ -11,7 +11,7 @@ import { Questionnaire } from "./components/Questionnaire";
 import { ReadinessPanel } from "./components/ReadinessPanel";
 import { RecommendationResults } from "./components/RecommendationResults";
 import { SoftwareAssessmentPanel } from "./components/SoftwareAssessment";
-import { createDefaultHardware, createDefaultPassport } from "./domain/defaults";
+import { createDefaultPassport } from "./domain/defaults";
 import { hardwareClasses } from "./data/hardware";
 import type {
   AdvisorAnswers,
@@ -28,6 +28,7 @@ import { assessLiveReadiness, assessSoftware } from "./engine/assess";
 import { recommendDistros } from "./engine/recommend";
 import { assessMigrationReadiness } from "./engine/readiness";
 import { clearPassport, loadPassport, savePassport } from "./passport/storage";
+import { factsForHardwareClass } from "./hardware/integration";
 import { sectionLabel } from "./i18n";
 
 const appSections: AppSection[] = [
@@ -115,10 +116,10 @@ export function App() {
       stamp({
         ...current,
         answers,
-        hardware:
-          answers.gpuVendor === current.hardware.gpuVendor
-            ? current.hardware
-            : createDefaultHardware(answers.gpuVendor)
+        hardware: {
+          ...current.hardware,
+          gpuVendor: answers.gpuVendor
+        }
       })
     );
   };
@@ -158,7 +159,15 @@ export function App() {
                 : ["live_verified", "failed_test", "not_applicable"].includes(
                       currentEvidence.state
                     )
-                  ? "unknown"
+                  ? factsForHardwareClass(
+                        current.hardware.snapshot,
+                        definition.id
+                      ).length > 0 ||
+                      (definition.id === "external_monitors" &&
+                        (current.hardware.snapshot?.snapshot.system
+                          .connectedDisplays ?? 0) > 1)
+                    ? "known_fact"
+                    : "unknown"
                   : currentEvidence.state;
         evidence[definition.id] = {
           ...currentEvidence,
@@ -284,6 +293,7 @@ export function App() {
         <HardwarePanel
           locale={passport.locale}
           hardware={passport.hardware}
+          liveTests={passport.liveTests}
           onChange={updateHardware}
           onContinue={() => navigate("live")}
         />

@@ -31,7 +31,7 @@ The readiness engine is separate from distro ranking:
 2. Blockers return `BLOCKED`; software blockers recommend keeping Windows for those workflows.
 3. Essential medium/high workflows without a hard blocker return `WINDOWS SHOULD BE RETAINED` until representative proof exists.
 4. An otherwise empty evidence record returns `INSUFFICIENT EVIDENCE`.
-5. Required `UNKNOWN`, `KNOWN FACT`, or `USER REPORTED` hardware and missing essential live tests return `LIVE TEST REQUIRED`.
+5. Required `UNKNOWN`, `KNOWN FACT` (including snapshot-detected), or `USER REPORTED` hardware and missing essential live tests return `LIVE TEST REQUIRED`.
 6. Remaining software, gaming, data, or manual checks return `READY WITH CHECKS`.
 7. Only resolved required evidence with no remaining checks returns `READY`.
 
@@ -52,6 +52,8 @@ Current raw tier boundaries in `recommend.ts` are `>=20` strong, `>=13` possible
 - Essential software with no reliable equivalent becomes a hard software blocker.
 - Any recorded live-test issue blocks readiness. Untested essential functions require a live test.
 - `KNOWN FACT` and `USER REPORTED` never equal `LIVE VERIFIED`.
+- Browser/snapshot detection never changes `required`, never passes a live test, and never asserts Linux compatibility. Only explicit live evidence can produce `LIVE VERIFIED`.
+- Reverting a live result returns to a still-present snapshot `KNOWN FACT` rather than erasing provenance or preserving a false pass.
 - Required hardware cannot simultaneously be `NOT APPLICABLE`; Passport validation rejects that contradiction.
 - Data inventory absence is an open check, not an implicit pass.
 

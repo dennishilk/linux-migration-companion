@@ -192,12 +192,88 @@ export interface HardwareEvidence {
 
 export type HardwareEvidenceMap = Record<HardwareClassId, HardwareEvidence>;
 
+export type HardwareSnapshotSource =
+  | "browser_reported"
+  | "windows_collector"
+  | "linux_collector";
+
+export type HardwareSnapshotCategory =
+  | HardwareClassId
+  | "cpu"
+  | "storage"
+  | "usb_controller"
+  | "input_device"
+  | "display";
+
+export type HardwareSnapshotArchitecture =
+  | "x86_64"
+  | "x86"
+  | "arm64"
+  | "arm"
+  | "other"
+  | "unknown";
+
+export type HardwareSnapshotFormFactor =
+  | "desktop"
+  | "laptop"
+  | "tablet"
+  | "virtual"
+  | "unknown";
+
+export interface HardwareSnapshotFact {
+  category: HardwareSnapshotCategory;
+  name: string;
+  vendor?: string;
+  bus?: "pci" | "usb" | "platform" | "unknown";
+  vendorId?: string;
+  deviceId?: string;
+}
+
+export interface HardwareSnapshotSystem {
+  osFamily: "windows" | "linux" | "other" | "unknown";
+  osLabel?: string;
+  architecture: HardwareSnapshotArchitecture;
+  formFactor: HardwareSnapshotFormFactor;
+  logicalProcessors?: number;
+  memoryGiB?: number;
+  firmware: "uefi" | "legacy" | "unknown";
+  secureBoot: "enabled" | "disabled" | "unavailable" | "unknown";
+  virtualization: "enabled" | "supported" | "unavailable" | "unknown";
+  connectedDisplays?: number;
+}
+
+export interface BrowserSnapshotCapabilities {
+  platform: "reported" | "unavailable";
+  hardwareConcurrency: "reported_reduced" | "unavailable";
+  deviceMemory: "reported_reduced" | "unavailable";
+  webgpu: "adapter_available" | "adapter_unavailable" | "api_unavailable";
+}
+
+export interface HardwareSnapshot {
+  schemaVersion: 1;
+  product: "linux-migration-companion-hardware-snapshot";
+  createdAt: string;
+  source: HardwareSnapshotSource;
+  collector: {
+    id: "browser-snapshot" | "windows-powershell" | "linux-python";
+    version: string;
+  };
+  system: HardwareSnapshotSystem;
+  browserCapabilities?: BrowserSnapshotCapabilities;
+  facts: HardwareSnapshotFact[];
+}
+
+export interface StoredHardwareSnapshot {
+  acquisition: "browser_runtime" | "file_import";
+  acquiredAt: string;
+  snapshot: HardwareSnapshot;
+}
+
 export interface HardwareProfile {
-  source: "manual";
   gpuVendor: GpuVendor;
-  scannerStatus: "deferred";
   evidence: HardwareEvidenceMap;
   notes: string;
+  snapshot: StoredHardwareSnapshot | null;
 }
 
 export type LiveTestId =
@@ -317,7 +393,7 @@ export interface DataMigrationAssessment {
 }
 
 export interface MigrationPassport {
-  schemaVersion: 2;
+  schemaVersion: 3;
   product: "linux-migration-companion";
   locale: Locale;
   updatedAt: string;

@@ -4,13 +4,17 @@ import type {
   HardwareClassId,
   HardwareEvidenceState,
   HardwareProfile,
+  LiveTestResults,
   Locale
 } from "../domain/types";
+import { applyHardwareSnapshot, factsForHardwareClass } from "../hardware/integration";
 import { localize, t } from "../i18n";
+import { HardwareSnapshotPanel } from "./HardwareSnapshotPanel";
 
 interface HardwarePanelProps {
   locale: Locale;
   hardware: HardwareProfile;
+  liveTests: LiveTestResults;
   onChange: (hardware: HardwareProfile) => void;
   onContinue: () => void;
 }
@@ -43,6 +47,7 @@ const evidenceStates = Object.keys(evidenceLabels) as HardwareEvidenceState[];
 export function HardwarePanel({
   locale,
   hardware,
+  liveTests,
   onChange,
   onContinue
 }: HardwarePanelProps) {
@@ -86,8 +91,8 @@ export function HardwarePanel({
           <p>
             {copy(
               locale,
-              "The browser performs no fake hardware scan. A detected name or selected manufacturer never becomes a compatibility claim.",
-              "Der Browser führt keinen vorgetäuschten Hardware-Scan durch. Ein erkannter Name oder ausgewählter Hersteller wird niemals zur Kompatibilitätsbehauptung."
+              "Choose manual evidence, a deliberately limited browser report, or a validated collector snapshot. A detected name never becomes a compatibility claim.",
+              "Wähle manuelle Evidenz, einen bewusst begrenzten Browserbericht oder einen validierten Collector-Snapshot. Ein erkannter Name wird niemals zur Kompatibilitätsbehauptung."
             )}
           </p>
         </div>
@@ -97,18 +102,11 @@ export function HardwarePanel({
         </div>
       </div>
 
-      <article className="scanner-card">
-        <div className="scanner-illustration" aria-hidden="true">
-          <span>PCI / USB / SB</span>
-          <strong>?</strong>
-        </div>
-        <div>
-          <span className="tier tier-exploratory">MANUAL EVIDENCE ONLY</span>
-          <h2>{t(locale, "scannerDeferred")}</h2>
-          <p>{t(locale, "scannerWhy")}</p>
-          <p className="privacy-line">{t(locale, "neverCollected")}</p>
-        </div>
-      </article>
+      <HardwareSnapshotPanel
+        locale={locale}
+        record={hardware.snapshot}
+        onSnapshot={(record) => onChange(applyHardwareSnapshot(hardware, record))}
+      />
 
       <div className="manual-hardware-card hardware-basics">
         <h2>{copy(locale, "Graphics context", "Grafikkontext")}</h2>
@@ -147,6 +145,18 @@ export function HardwarePanel({
       <div className="hardware-evidence-grid">
         {hardwareClasses.map((definition) => {
           const evidence = hardware.evidence[definition.id];
+          const detectedFacts = factsForHardwareClass(
+            hardware.snapshot,
+            definition.id
+          );
+          const detectedDisplayCount =
+            definition.id === "external_monitors" &&
+            (hardware.snapshot?.snapshot.system.connectedDisplays ?? 0) > 1
+              ? hardware.snapshot?.snapshot.system.connectedDisplays
+              : undefined;
+          const liveStatus = definition.liveTestId
+            ? liveTests[definition.liveTestId]
+            : null;
           return (
             <article
               className={`hardware-evidence-card evidence-${evidence.state}`}
@@ -175,6 +185,39 @@ export function HardwarePanel({
                 </label>
               </header>
 
+              {detectedFacts.length || detectedDisplayCount ? (
+                <div className="snapshot-detected-facts">
+                  <strong>
+                    {copy(locale, "SNAPSHOT DETECTED", "SNAPSHOT ERKANNT")}
+                  </strong>
+                  <ul>
+                    {detectedFacts.map((fact, index) => (
+                      <li key={`${fact.name}-${index}`}>
+                        {fact.vendor ? `${fact.vendor} · ` : ""}{fact.name}
+                      </li>
+                    ))}
+                    {detectedDisplayCount ? (
+                      <li>
+                        {copy(
+                          locale,
+                          `${detectedDisplayCount} connected displays reported`,
+                          `${detectedDisplayCount} verbundene Bildschirme gemeldet`
+                        )}
+                      </li>
+                    ) : null}
+                  </ul>
+                  <span>
+                    {liveStatus
+                      ? `${copy(locale, "Live test", "Live-Test")}: ${t(locale, liveStatus)}`
+                      : copy(
+                          locale,
+                          "No linked automatic live result; verify deliberately.",
+                          "Kein verknüpftes automatisches Live-Ergebnis; bewusst prüfen."
+                        )}
+                  </span>
+                </div>
+              ) : null}
+
               <label className="stacked-field">
                 <span>{t(locale, "evidenceState")}</span>
                 <select
@@ -197,8 +240,18 @@ export function HardwarePanel({
                 </select>
               </label>
 
+              {detectedFacts.length || detectedDisplayCount ? (
+                <small className="snapshot-manual-override">
+                  {copy(
+                    locale,
+                    "Manual state/details may correct the assessment; the original detected fact remains visible in the current snapshot.",
+                    "Manueller Status und Details können die Bewertung korrigieren; der ursprünglich erkannte Fakt bleibt im aktuellen Snapshot sichtbar."
+                  )}
+                </small>
+              ) : null}
+
               <label className="stacked-field">
-                <span>{copy(locale, "Evidence details", "Evidenzdetails")}</span>
+                <span>{copy(locale, "Manual evidence details", "Manuelle Evidenzdetails")}</span>
                 <textarea
                   rows={2}
                   maxLength={500}

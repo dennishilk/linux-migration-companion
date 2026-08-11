@@ -13,7 +13,7 @@ export const messages = {
       "This deletes all local Linux Migration Companion progress from this browser, including:",
     resetAdvisor: "Advisor answers and selected comparisons",
     resetSoftware: "Software and workflow selections",
-    resetHardware: "Hardware evidence and live-test state",
+    resetHardware: "Hardware evidence, imported snapshot facts and live-test state",
     resetPlans: "Migration, media and data-plan state",
     resetPassport: "The local Migration Passport state",
     resetExportFirst:
@@ -63,11 +63,6 @@ export const messages = {
     softwareReady: "No software blocker selected",
     softwareReview: "Trade-offs need representative testing",
     softwareBlocked: "Linux may not be a good primary fit for this workflow yet",
-    scannerDeferred: "Read-only Windows scanner intentionally deferred",
-    scannerWhy:
-      "The web browser cannot obtain trustworthy PCI/USB IDs or Secure Boot state. The Companion records manual facts and honestly keeps compatibility UNKNOWN.",
-    neverCollected:
-      "Never collected: username, hostname, serials, MAC addresses, documents, browser history or accounts.",
     evidenceState: "Evidence state",
     notes: "Private local notes",
     notesPlaceholder: "Optional notes stay in this browser and export only with your Passport.",
@@ -141,7 +136,7 @@ export const messages = {
       "Dadurch werden alle lokalen Fortschritte des Linux Migration Companion in diesem Browser gelöscht, einschließlich:",
     resetAdvisor: "Antworten im Eignungscheck und ausgewählte Vergleiche",
     resetSoftware: "Software- und Arbeitsablauf-Auswahl",
-    resetHardware: "Hardware-Evidenz und Live-Test-Status",
+    resetHardware: "Hardware-Evidenz, importierte Snapshot-Fakten und Live-Test-Status",
     resetPlans: "Migrations-, Medien- und Datenplan-Status",
     resetPassport: "Lokaler Status des Migration Passport",
     resetExportFirst:
@@ -191,11 +186,6 @@ export const messages = {
     softwareReady: "Kein Software-Blocker ausgewählt",
     softwareReview: "Kompromisse müssen mit echten Dateien und Abläufen getestet werden",
     softwareBlocked: "Linux ist für diesen Arbeitsablauf derzeit vermutlich kein guter Hauptarbeitsplatz",
-    scannerDeferred: "Read-only-Windows-Scanner bewusst zurückgestellt",
-    scannerWhy:
-      "Der Browser erhält keine verlässlichen PCI-/USB-IDs und keinen sicheren Secure-Boot-Status. Der Companion erfasst manuelle Angaben und lässt Kompatibilität ehrlich auf UNBEKANNT.",
-    neverCollected:
-      "Niemals erfasst: Benutzername, Hostname, Seriennummern, MAC-Adressen, Dokumente, Browserverlauf oder Konten.",
     evidenceState: "Evidenzstatus",
     notes: "Private lokale Notizen",
     notesPlaceholder: "Optionale Notizen bleiben im Browser und werden nur mit dem Passport exportiert.",
