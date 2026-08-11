@@ -122,10 +122,15 @@ export interface SoftwareRecord {
     | "gaming"
     | "communication"
     | "media"
-    | "professional";
+    | "professional"
+    | "hardware"
+    | "cloud"
+    | "security";
   routes: SoftwareRoute[];
   baseRisk: Exclude<MigrationRisk, "blocker">;
   blockerWhenEssential?: boolean;
+  scope: "application" | "workflow";
+  freshness: "stable" | "volatile";
   summary: LocalizedText;
   verify: LocalizedText;
   sourceLabel: string;
@@ -150,17 +155,48 @@ export interface SoftwareAssessment {
 }
 
 export type HardwareEvidenceState =
-  | "verified"
-  | "probably_supported"
   | "unknown"
+  | "known_fact"
+  | "user_reported"
+  | "live_verified"
+  | "failed_test"
   | "known_issue"
-  | "proprietary_driver_required";
+  | "not_applicable";
+
+export type HardwareClassId =
+  | "graphics"
+  | "hybrid_graphics"
+  | "wifi"
+  | "bluetooth"
+  | "ethernet"
+  | "audio"
+  | "usb_audio"
+  | "webcam"
+  | "microphone"
+  | "fingerprint"
+  | "dock"
+  | "external_monitors"
+  | "hidpi"
+  | "printer"
+  | "scanner"
+  | "capture_device"
+  | "game_controller"
+  | "racing_wheel"
+  | "special_usb";
+
+export interface HardwareEvidence {
+  state: HardwareEvidenceState;
+  required: boolean;
+  details: string;
+}
+
+export type HardwareEvidenceMap = Record<HardwareClassId, HardwareEvidence>;
 
 export interface HardwareProfile {
   source: "manual";
   gpuVendor: GpuVendor;
-  overall: HardwareEvidenceState;
   scannerStatus: "deferred";
+  evidence: HardwareEvidenceMap;
   notes: string;
 }
 
@@ -179,7 +215,7 @@ export type LiveTestId =
 export type LiveTestStatus = "not_tested" | "works" | "issue" | "not_applicable";
 export type LiveTestResults = Record<LiveTestId, LiveTestStatus>;
 
-export type LiveReadiness = "ready" | "keep_windows" | "blocked" | "incomplete";
+export type LiveReadiness = "ready" | "blocked" | "incomplete";
 
 export type MediaStepId =
   | "download"
@@ -193,13 +229,95 @@ export type MediaProgress = Record<MediaStepId, boolean>;
 export interface FirstBootStep {
   id: string;
   title: LocalizedText;
-  summary: LocalizedText;
-  explanation: LocalizedText;
-  caution?: LocalizedText;
+  what: LocalizedText;
+  why: LocalizedText;
+  risk: LocalizedText;
+  verify: LocalizedText;
+  backOut: LocalizedText;
+}
+
+export type ReadinessState =
+  | "ready"
+  | "ready_with_checks"
+  | "live_test_required"
+  | "windows_should_be_retained"
+  | "blocked"
+  | "insufficient_evidence";
+
+export type MigrationStrategy =
+  | "linux_primary"
+  | "test_first"
+  | "dual_boot"
+  | "keep_windows_temporarily"
+  | "keep_windows_for_workflows"
+  | "migration_blocked";
+
+export interface ReadinessAssessment {
+  state: ReadinessState;
+  strategy: MigrationStrategy;
+  reasons: LocalizedText[];
+  checks: LocalizedText[];
+  blockers: LocalizedText[];
+}
+
+export type DataMigrationId =
+  | "documents"
+  | "photos"
+  | "videos"
+  | "browser_profile"
+  | "password_manager"
+  | "email"
+  | "outlook_archives"
+  | "cloud_storage"
+  | "onedrive"
+  | "google_drive"
+  | "dropbox"
+  | "steam_libraries"
+  | "game_saves"
+  | "ssh_keys"
+  | "git_repositories"
+  | "development_projects"
+  | "local_databases"
+  | "application_data"
+  | "backups";
+
+export type DataMigrationMethod =
+  | "copy"
+  | "sync"
+  | "export_import"
+  | "reconfigure"
+  | "manual_check"
+  | "do_not_assume";
+
+export interface DataMigrationSelection {
+  importance: "important" | "essential";
+  method: DataMigrationMethod;
+  notes: string;
+}
+
+export type DataMigrationSelections = Partial<
+  Record<DataMigrationId, DataMigrationSelection>
+>;
+
+export interface DataMigrationPlanItem {
+  id: DataMigrationId;
+  title: LocalizedText;
+  importance: "important" | "essential";
+  method: DataMigrationMethod;
+  action: LocalizedText;
+  warning: LocalizedText;
+  notes: string;
+}
+
+export interface DataMigrationAssessment {
+  items: DataMigrationPlanItem[];
+  hasEssentialItems: boolean;
+  needsManualChecks: boolean;
+  evidenceComplete: boolean;
 }
 
 export interface MigrationPassport {
-  schemaVersion: 1;
+  schemaVersion: 2;
   product: "linux-migration-companion";
   locale: Locale;
   updatedAt: string;
@@ -209,13 +327,18 @@ export interface MigrationPassport {
   liveTests: LiveTestResults;
   mediaProgress: MediaProgress;
   selectedDistroId: string | null;
+  comparisonDistroIds: string[];
+  dataMigration: DataMigrationSelections;
 }
 
 export type AppSection =
   | "advisor"
+  | "compare"
   | "software"
   | "hardware"
   | "live"
+  | "readiness"
+  | "data"
   | "media"
   | "passport"
   | "first_boot";

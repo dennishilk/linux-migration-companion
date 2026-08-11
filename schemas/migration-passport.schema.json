@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://dennishilk.github.io/linux-migration-companion/schemas/migration-passport.schema.json",
-  "title": "Linux Migration Companion Passport",
+  "$id": "https://www.dennishilk.com/linux-migration-companion/schemas/migration-passport.schema.json",
+  "title": "Linux Migration Companion Passport v2",
+  "description": "Strict public contract for Passport v2 exports. The application also imports and explicitly migrates legacy Passport v1 files.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,42 +15,44 @@
     "hardware",
     "liveTests",
     "mediaProgress",
-    "selectedDistroId"
+    "selectedDistroId",
+    "comparisonDistroIds",
+    "dataMigration"
   ],
   "properties": {
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "const": 2 },
     "product": { "const": "linux-migration-companion" },
     "locale": { "enum": ["en", "de"] },
     "updatedAt": { "type": "string", "format": "date-time" },
     "answers": { "$ref": "#/$defs/advisorAnswers" },
     "softwareSelections": {
       "type": "object",
-      "maxProperties": 60,
-      "propertyNames": {
-        "enum": [
-          "microsoft-365", "outlook", "onedrive", "microsoft-teams",
-          "libreoffice", "onlyoffice", "thunderbird", "google-drive",
-          "dropbox", "acrobat-pro", "photoshop", "lightroom",
-          "creative-cloud", "illustrator", "premiere-pro", "after-effects",
-          "affinity-suite", "davinci-resolve", "blender", "gimp", "inkscape",
-          "krita", "audacity", "obs-studio", "fl-studio", "ableton-live",
-          "visual-studio", "vscode", "jetbrains", "github-desktop",
-          "docker-desktop", "wsl", "powershell", "putty", "notepad-plus-plus",
-          "steam", "battle-net", "epic-games", "xbox-pc", "ea-app",
-          "ubisoft-connect", "riot-vanguard", "roblox", "steamvr", "gog-galaxy",
-          "minecraft", "discord", "spotify", "firefox", "chrome", "edge",
-          "vlc", "zoom", "slack", "whatsapp", "itunes", "autocad",
-          "solidworks", "quickbooks", "sketchup"
-        ]
-      },
+      "maxProperties": 100,
+      "propertyNames": { "$ref": "#/$defs/softwareId" },
       "additionalProperties": { "enum": ["important", "essential"] }
     },
     "hardware": { "$ref": "#/$defs/hardware" },
     "liveTests": { "$ref": "#/$defs/liveTests" },
     "mediaProgress": { "$ref": "#/$defs/mediaProgress" },
     "selectedDistroId": {
+      "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/distroId" }]
+    },
+    "comparisonDistroIds": {
+      "type": "array",
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/distroId" }
+    },
+    "dataMigration": {
+      "type": "object",
+      "maxProperties": 19,
+      "propertyNames": { "$ref": "#/$defs/dataMigrationId" },
+      "additionalProperties": { "$ref": "#/$defs/dataMigrationSelection" }
+    }
+  },
+  "$defs": {
+    "distroId": {
       "enum": [
-        null,
         "linux-mint-cinnamon",
         "zorin-os",
         "ubuntu-lts",
@@ -62,19 +65,127 @@
         "arch-linux",
         "gentoo"
       ]
-    }
-  },
-  "$defs": {
+    },
+    "softwareId": {
+      "enum": [
+        "microsoft-365",
+        "outlook",
+        "onedrive",
+        "microsoft-teams",
+        "libreoffice",
+        "onlyoffice",
+        "thunderbird",
+        "google-drive",
+        "dropbox",
+        "acrobat-pro",
+        "photoshop",
+        "lightroom",
+        "creative-cloud",
+        "illustrator",
+        "premiere-pro",
+        "after-effects",
+        "affinity-suite",
+        "davinci-resolve",
+        "blender",
+        "gimp",
+        "inkscape",
+        "krita",
+        "audacity",
+        "obs-studio",
+        "fl-studio",
+        "ableton-live",
+        "visual-studio",
+        "vscode",
+        "jetbrains",
+        "github-desktop",
+        "docker-desktop",
+        "wsl",
+        "powershell",
+        "putty",
+        "notepad-plus-plus",
+        "steam",
+        "battle-net",
+        "epic-games",
+        "xbox-pc",
+        "ea-app",
+        "ubisoft-connect",
+        "riot-vanguard",
+        "roblox",
+        "steamvr",
+        "gog-galaxy",
+        "minecraft",
+        "discord",
+        "spotify",
+        "firefox",
+        "chrome",
+        "edge",
+        "vlc",
+        "zoom",
+        "slack",
+        "whatsapp",
+        "itunes",
+        "autocad",
+        "solidworks",
+        "quickbooks",
+        "sketchup",
+        "excel-vba-addins",
+        "microsoft-access",
+        "power-bi-desktop",
+        "sharepoint-sync",
+        "fusion-360",
+        "autodesk-inventor",
+        "revit",
+        "arcgis-pro",
+        "vmware-workstation",
+        "hyper-v",
+        "sql-server-localdb",
+        "windows-desktop-development",
+        "git-cli",
+        "openssh",
+        "podman",
+        "logitech-control",
+        "corsair-icue",
+        "razer-synapse",
+        "asus-armoury-crate",
+        "openrgb",
+        "printer-scanner-suite",
+        "audio-interface-control",
+        "capture-device-control",
+        "racing-peripherals",
+        "enterprise-vpn",
+        "password-manager",
+        "backup-imaging",
+        "remote-desktop",
+        "bitlocker-data",
+        "yubikey-security-key"
+      ]
+    },
     "advisorAnswers": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "currentWindows", "deviceType", "experience", "terminalComfort",
-        "troubleshooting", "maintenance", "freshness", "rollingTolerance",
-        "desktopPreference", "windowsLikeUi", "gaming", "gameLaunchers",
-        "office", "development", "creative", "mediaProduction",
-        "professionalDependencies", "gpuVendor", "secureBoot",
-        "proprietaryTolerance", "systemInterest", "migrationMode"
+        "currentWindows",
+        "deviceType",
+        "experience",
+        "terminalComfort",
+        "troubleshooting",
+        "maintenance",
+        "freshness",
+        "rollingTolerance",
+        "desktopPreference",
+        "windowsLikeUi",
+        "gaming",
+        "gameLaunchers",
+        "office",
+        "development",
+        "creative",
+        "mediaProduction",
+        "professionalDependencies",
+        "gpuVendor",
+        "secureBoot",
+        "proprietaryTolerance",
+        "systemInterest",
+        "migrationMode"
       ],
       "properties": {
         "currentWindows": { "enum": ["windows10", "windows11", "other"] },
@@ -109,13 +220,78 @@
     "hardware": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source", "gpuVendor", "overall", "scannerStatus", "notes"],
+      "required": ["source", "gpuVendor", "scannerStatus", "evidence", "notes"],
       "properties": {
         "source": { "const": "manual" },
         "gpuVendor": { "enum": ["unknown", "nvidia", "amd", "intel"] },
-        "overall": { "enum": ["verified", "probably_supported", "unknown", "known_issue", "proprietary_driver_required"] },
         "scannerStatus": { "const": "deferred" },
+        "evidence": { "$ref": "#/$defs/hardwareEvidence" },
         "notes": { "type": "string", "maxLength": 1000 }
+      }
+    },
+    "hardwareEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "graphics",
+        "hybrid_graphics",
+        "wifi",
+        "bluetooth",
+        "ethernet",
+        "audio",
+        "usb_audio",
+        "webcam",
+        "microphone",
+        "fingerprint",
+        "dock",
+        "external_monitors",
+        "hidpi",
+        "printer",
+        "scanner",
+        "capture_device",
+        "game_controller",
+        "racing_wheel",
+        "special_usb"
+      ],
+      "properties": {
+        "graphics": { "$ref": "#/$defs/evidence" },
+        "hybrid_graphics": { "$ref": "#/$defs/evidence" },
+        "wifi": { "$ref": "#/$defs/evidence" },
+        "bluetooth": { "$ref": "#/$defs/evidence" },
+        "ethernet": { "$ref": "#/$defs/evidence" },
+        "audio": { "$ref": "#/$defs/evidence" },
+        "usb_audio": { "$ref": "#/$defs/evidence" },
+        "webcam": { "$ref": "#/$defs/evidence" },
+        "microphone": { "$ref": "#/$defs/evidence" },
+        "fingerprint": { "$ref": "#/$defs/evidence" },
+        "dock": { "$ref": "#/$defs/evidence" },
+        "external_monitors": { "$ref": "#/$defs/evidence" },
+        "hidpi": { "$ref": "#/$defs/evidence" },
+        "printer": { "$ref": "#/$defs/evidence" },
+        "scanner": { "$ref": "#/$defs/evidence" },
+        "capture_device": { "$ref": "#/$defs/evidence" },
+        "game_controller": { "$ref": "#/$defs/evidence" },
+        "racing_wheel": { "$ref": "#/$defs/evidence" },
+        "special_usb": { "$ref": "#/$defs/evidence" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "required", "details"],
+      "properties": {
+        "state": {
+          "enum": ["unknown", "known_fact", "user_reported", "live_verified", "failed_test", "known_issue", "not_applicable"]
+        },
+        "required": { "type": "boolean" },
+        "details": { "type": "string", "maxLength": 500 }
+      },
+      "not": {
+        "properties": {
+          "state": { "const": "not_applicable" },
+          "required": { "const": true }
+        },
+        "required": ["state", "required"]
       }
     },
     "liveTests": {
@@ -147,6 +323,39 @@
         "boot": { "type": "boolean" },
         "test": { "type": "boolean" },
         "return": { "type": "boolean" }
+      }
+    },
+    "dataMigrationId": {
+      "enum": [
+        "documents",
+        "photos",
+        "videos",
+        "browser_profile",
+        "password_manager",
+        "email",
+        "outlook_archives",
+        "cloud_storage",
+        "onedrive",
+        "google_drive",
+        "dropbox",
+        "steam_libraries",
+        "game_saves",
+        "ssh_keys",
+        "git_repositories",
+        "development_projects",
+        "local_databases",
+        "application_data",
+        "backups"
+      ]
+    },
+    "dataMigrationSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["importance", "method", "notes"],
+      "properties": {
+        "importance": { "enum": ["important", "essential"] },
+        "method": { "enum": ["copy", "sync", "export_import", "reconfigure", "manual_check", "do_not_assume"] },
+        "notes": { "type": "string", "maxLength": 500 }
       }
     }
   }
