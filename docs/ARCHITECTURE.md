@@ -65,7 +65,7 @@ The active numbered section is mirrored in the `?step=` query parameter. This pr
 
 Pull requests run lint, strict TypeScript, web tests/build, production-dependency audit, a Windows executable build and its independent C# core tests. CodeQL analyzes JavaScript/TypeScript and C#. Pushes to `main` are the only automatic Pages deployment trigger. Release-candidate work on another branch cannot deploy unless a human explicitly changes the workflow or merges it.
 
-Search indexing is an explicit separate release gate: `index.html` uses `noindex,nofollow` and `public/robots.txt` disallows crawling until Dennis approves public integration.
+The approved crawler-readiness configuration exposes one canonical indexable URL: `https://www.dennishilk.com/linux-migration-companion/`. Every query-driven `?step=` state keeps its deep link while the static canonical points to that root, preventing the ten application states from becoming intended search documents. The single client-stored DE/EN surface publishes no fake localized URLs or `hreflang` pairs. This repository ships a one-URL subpath sitemap; the authoritative origin-root `robots.txt`, main sitemap and inbound site navigation remain integration responsibilities of the main website.
 
 ## Collector executable boundary
 

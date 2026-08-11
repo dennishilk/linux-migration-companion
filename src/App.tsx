@@ -104,6 +104,10 @@ export function App() {
   useEffect(() => {
     document.title = supportOpen
       ? "Support | Linux Migration Companion"
+      : section === "advisor"
+        ? passport.locale === "de"
+          ? "Linux Migration Companion | Windows-zu-Linux-Planung"
+          : "Linux Migration Companion | Windows-to-Linux Planning"
       : `${sectionLabel(passport.locale, section)} | Linux Migration Companion`;
   }, [passport.locale, section, supportOpen]);
 

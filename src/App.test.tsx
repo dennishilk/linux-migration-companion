@@ -53,10 +53,15 @@ describe("release-candidate application flow", () => {
     document.documentElement.lang = "en";
   });
 
-  it("opens with the local-only and non-destructive boundary visible", () => {
+  it("opens with the local-only boundary and canonical root title", async () => {
     render(<App />);
     expect(screen.getByText("Runs locally in your browser. No account. No tracking.")).toBeInTheDocument();
     expect(screen.getByText("Web app: no disk writes or command execution.")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(document.title).toBe(
+        "Linux Migration Companion | Windows-to-Linux Planning"
+      )
+    );
   });
 
   it("opens reset confirmation without changing progress on the first click", async () => {
@@ -528,6 +533,9 @@ describe("release-candidate application flow", () => {
     const user = userEvent.setup();
     render(<App />);
     expect(screen.getByRole("heading", { name: "Plan the data, not just the operating system" })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(document.title).toBe("Data plan | Linux Migration Companion")
+    );
     const navigation = screen.getByLabelText("Migration journey");
     await user.click(within(navigation).getByRole("button", { name: /Software/ }));
     expect(new URLSearchParams(window.location.search).get("step")).toBe("software");

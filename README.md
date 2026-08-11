@@ -135,7 +135,7 @@ Browser storage is convenience, not backup. Snapshot model names and non-unique 
 - The catalog is a maintained snapshot reviewed on **2026-08-11**, not a live compatibility service. Volatile entries are labelled and must be rechecked.
 - Live-session success does not prove that an installed system will behave identically after future updates or driver changes.
 - The app cannot make dual boot, firmware, backups, or partitioning risk-free.
-- Search indexing remains intentionally disabled in both page metadata and `robots.txt`. Dennis must explicitly remove that gate only when public integration is approved.
+- Search indexing is enabled for the single canonical application URL. Query-driven `?step=` states retain deep-linking but canonicalize to the application root; no artificial localized URLs or `hreflang` alternates are published. The project ships a one-URL subpath sitemap, while the production root sitemap remains owned by the main website integration.
 - Real-browser QA of the release-candidate branch is required before public linking; automated DOM tests are not a substitute.
 
 ## Documentation

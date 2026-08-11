@@ -190,5 +190,6 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] Chromium and Firefox matrix above is performed against that SHA.
 - [ ] Page title, description, canonical URL, favicon, and app identity are correct; the former `LM` mark is absent.
 - [ ] The footer visibly presents `© 2026 Dennis Hilk`, `Linux Migration Companion`, and `Licensed under the MIT License`.
-- [ ] `noindex,nofollow` and `robots.txt` remain in place until Dennis explicitly authorizes public indexing.
-- [ ] Only after approval: remove both indexing gates in one reviewed change; do not change them implicitly during deployment.
+- [ ] The deployed page uses `index, follow`, keeps every `?step=` URL canonicalized to the application root, and serves the expected Open Graph, X card and `WebApplication` JSON-LD metadata.
+- [ ] The production origin-root `robots.txt` allows the application, and the main-site sitemap lists or advertises the shipped application sitemap before search-engine submission.
+- [ ] Both HTTPS host variants resolve to one preferred host through a permanent redirect, matching the canonical URL and sitemap host.

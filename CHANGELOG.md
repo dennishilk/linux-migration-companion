@@ -9,7 +9,8 @@
 - Extended Hardware Snapshot v1 to accept the `windows-dotnet` collector provenance while preserving the existing browser, PowerShell and Linux source pairs and conservative evidence behavior.
 - Replaced the affected English em-dash separators with natural colons, semicolons, commas or parentheses without changing terminal syntax or German copy.
 - Added a voluntary, unnumbered DE/EN Support page after stages 01–10 with an original inline tea-cup icon and the support URL verified from Dennis Hilk's existing website.
-- Expanded CI and CodeQL to cover the C# collector. No deployment, merge, indexing or production-site change is included.
+- Expanded CI and CodeQL to cover the C# collector. No deployment, merge or production-site repository change is included.
+- Completed the approved crawler-readiness pass with one canonical indexable URL, a one-URL sitemap, conservative `WebApplication` JSON-LD, complete social-preview metadata and a local identity-matched preview image; no analytics, tracking or application behavior changed.
 
 ## 0.3.0-rc.1 — 2026-08-11
 
