@@ -24,6 +24,8 @@ MANUAL / BROWSER REPORTED / SNAPSHOT DETECTED
 
 Hardware Snapshot schema v1 is published at [`schemas/hardware-snapshot.schema.json`](../schemas/hardware-snapshot.schema.json) and enforced in [`src/hardware/snapshotSchema.ts`](../src/hardware/snapshotSchema.ts). A snapshot has a fixed product ID, version, timestamp, source/collector pair, bounded system facts, at most 64 bounded hardware facts, and—for browser snapshots only—four closed capability labels.
 
+Closed source/collector pairs are `browser_reported` + `browser-snapshot`, `windows_collector` + `windows-dotnet` or the advanced `windows-powershell`, and `linux_collector` + `linux-python`. Supporting two Windows implementations changes provenance only; neither receives compatibility or live-test authority.
+
 The browser rejects input over 128 KiB, depth 8, unknown versions, extra properties, unknown enums, duplicate facts, unpaired PCI/USB IDs, contradictory source/collector pairs, control characters, malformed surrogate sequences, and known private/prototype-pollution key names. React renders imported strings as text; no field becomes HTML, a URL, a path operation, or a command. A Passport containing a snapshot remains under the stricter existing 256 KiB/depth-12 Passport boundary.
 
 Schema categories are closed to the 19 evidence classes plus `cpu`, `storage`, `usb_controller`, `input_device`, and `display`. A current snapshot is stored, not an unbounded history. A replacement clears only stale, detail-free `known_fact` states derived from the previous snapshot; manual details, required flags, issues, and live outcomes remain.
@@ -43,12 +45,14 @@ No WebGL renderer extension, media-device enumeration, WebUSB, WebHID, Bluetooth
 
 ## Windows 10/11 collector
 
-[`Collect-LinuxMigrationHardware.ps1`](../public/collectors/windows/Collect-LinuxMigrationHardware.ps1) is the downloadable artifact and its complete unminified source. There is no generated binary, auto-update channel, network client, installer, or administrator prompt. It uses Windows PowerShell and explicit WQL `SELECT` property lists through documented [`Get-CimInstance`](https://learn.microsoft.com/en-us/powershell/module/cimcmdlets/get-ciminstance) behavior.
+The normal Windows path is [`LinuxMigrationCompanion-HardwareSnapshot.exe`](../public/collectors/windows/LinuxMigrationCompanion-HardwareSnapshot.exe), built from the complete C# source in [`collectors/windows-exe`](../collectors/windows-exe). It is a framework-dependent .NET Framework 4.8 WinForms executable: one small portable file, no installer, no PowerShell wrapper, no third-party package, no network client, no update channel, and an `asInvoker` manifest. Collection logic uses local `System.Management` WMI queries and documented Win32 APIs directly.
+
+.NET Framework 4.8 is included with Windows 10 22H2, while Windows 11 includes 4.8 or 4.8.1. This avoids shipping an opaque self-contained runtime while requiring no developer tooling or package install on the target systems. The architectural, build, checksum and signing rationale is in [WINDOWS_COLLECTOR_RELEASE.md](WINDOWS_COLLECTOR_RELEASE.md).
 
 | Provider/class | Selected fields | Purpose | Deliberately discarded |
 |---|---|---|---|
 | `Win32_OperatingSystem` | `Caption`, `OSArchitecture` | Coarse OS label and architecture | Version/install/user/system paths and every other property |
-| `Win32_ComputerSystem` | `PCSystemType`, `TotalPhysicalMemory`, `HypervisorPresent` | Form factor, memory, active-hypervisor signal | `Name`, `UserName`, domain/workgroup, owner, model/SKU, OEM strings, roles and every other property |
+| `Win32_ComputerSystem` | `Model`, `Manufacturer`, `PCSystemType`, `TotalPhysicalMemory`, `HypervisorPresent` | Form factor, coarse VM classification, memory, active-hypervisor signal | Raw model/manufacturer are used only for VM classification and are not exported; `Name`, `UserName`, domain/workgroup, owner, SKU, roles and every other property are not read |
 | `Win32_Processor` | `Name`, `Manufacturer`, `NumberOfLogicalProcessors`, `VMMonitorModeExtensions`, `VirtualizationFirmwareEnabled` | CPU fact/count and coarse virtualization state | Processor IDs, serial-like IDs and every other property |
 | `Win32_VideoController` | `Name`, `AdapterCompatibility` | Display-adapter facts | PNP/device IDs, driver files/versions, video memory and every other property |
 | `MSFT_NetAdapter` | `InterfaceDescription`, `NdisPhysicalMedium`, `HardwareInterface` | Physical Wi-Fi/Ethernet/Bluetooth classification | Interface alias/name, MAC/permanent address, IP configuration, connection state/profile and every other property |
@@ -58,19 +62,25 @@ No WebGL renderer extension, media-device enumeration, WebUSB, WebHID, Bluetooth
 | `Win32_USBController` | `Name`, `Manufacturer` | USB-controller fact | Device/PNP IDs and every other property |
 | filtered `Win32_PnPEntity` | `Name`, `Manufacturer`, `PNPClass`, `Service`; query limited to USB video or biometric class | Webcam/fingerprint facts | PNP/device IDs and all unrelated PnP devices/properties |
 | `Win32_DesktopMonitor` | `Status` only | Approximate connected-display count | Monitor names, IDs, EDID, serials and every other property |
-| `Get-ComputerInfo -Property BiosFirmwareType` | `BiosFirmwareType` only | UEFI/legacy label where available | Every other ComputerInfo field |
+| Win32 `GetFirmwareType` | Firmware enum only | UEFI/legacy label where available | No firmware variables, identifiers or settings |
 
-[`Confirm-SecureBootUEFI`](https://learn.microsoft.com/en-us/powershell/module/secureboot/confirm-securebootuefi) is deliberately **not** called because Microsoft documents that it requires an elevated PowerShell session. The collector does not elevate; Windows Secure Boot is therefore exported as `unavailable`.
+Windows Secure Boot is deliberately exported as `unavailable`; the collector does not elevate merely to inspect it. WMI errors, missing classes and denied fields degrade to missing facts or `unknown`, not a compatibility failure.
 
-The normal command, if local policy permits scripts, is:
+The normal flow is: download `.exe`, double-click, choose **Create hardware snapshot**, then import the JSON. A new timestamped file is written to the Windows Downloads known folder. If Downloads is unavailable, Desktop and then Documents are tried. `FileMode.CreateNew` and exclusive sharing prevent overwrite, collisions receive a numeric suffix, no temporary file is used, and the exact path is shown after success. The OS-resolved known-folder target, including any Windows-managed redirection/junction, is trusted as the destination.
+
+The executable artifact in this release candidate is **unsigned**. Windows can show SmartScreen or low-reputation warnings. The project does not recommend disabling or bypassing Defender, SmartScreen or organization policy. A properly Authenticode-signed artifact, verified signature, published signed-byte checksum and clean-machine QA remain required for public release.
+
+### Advanced PowerShell reference
+
+[`Collect-LinuxMigrationHardware.ps1`](../public/collectors/windows/Collect-LinuxMigrationHardware.ps1) remains the complete readable PowerShell reference implementation, advanced manual method and debugging aid. It is not the beginner path. If local policy permits scripts, its command remains:
 
 ```powershell
 powershell.exe -NoProfile -File .\Collect-LinuxMigrationHardware.ps1
 ```
 
-The default output is a new timestamped JSON file in the current directory. `FileMode.CreateNew` prevents overwrite; the file inherits that directory's Windows ACL. A user-selected parent directory or junction is trusted as the destination. Inspect the source before running, inspect JSON before import, then delete the JSON normally when no longer needed.
+Its default output is a new timestamped JSON file in the current directory. `FileMode.CreateNew` prevents overwrite; the file inherits that directory's Windows ACL. A user-selected parent directory or junction is trusted as the destination. Inspect the source before running, inspect JSON before import, then delete the JSON normally when no longer needed.
 
-Windows 10/11 client execution policy is commonly `Restricted`, and downloaded unsigned scripts may also be blocked under `RemoteSigned`; see Microsoft's [`about_Execution_Policies`](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies). The project does not recommend `Bypass`, global policy changes, or weakening organizational policy. If the script is blocked, use browser-reported or manual evidence. Signing/distribution usability remains a release-review item.
+Manual QA on Windows 11 in Microsoft Edge on a Proxmox VM confirmed that the browser snapshot worked and correctly exposed only limited facts. The PowerShell collector then failed because local execution policy disabled scripts. This is not a PowerShell defect; it showed that a script/terminal workflow was inappropriate as the beginner-facing primary path. The project does not recommend `Bypass`, global policy changes, or weakening organizational policy. Use the executable, browser or manual evidence instead.
 
 ## Linux collector
 
@@ -100,14 +110,16 @@ It creates one timestamped JSON file in the current directory with mode `0600`, 
 
 ## Exact exclusions
 
-Neither collector exports a username, real name, hostname/computer name, account, email, IP address, MAC address, SSID, Wi-Fi password/history, serial number, system/board/disk serial, product key, activation ID, machine GUID, TPM endorsement ID, browser history, file/document/directory listing, user-file content, shell history, environment secret, token, credential, SSH key, or cloud account. They do not dump raw command/API output. Both perform a recursive prohibited-key self-check before output, and tests validate the same denylist independently.
+No OS collector exports a username, real name, hostname/computer name, account, email, IP address, MAC address, SSID, Wi-Fi password/history, serial number, system/board/disk serial, product key, activation ID, machine GUID, TPM endorsement ID, browser history, file/document/directory listing, user-file content, shell history, environment secret, token, credential, SSH key, or cloud account. They do not dump raw command/API output. Each performs a recursive prohibited-key self-check before output, and tests validate the same denylist independently.
 
 Hardware model names and four-digit PCI/USB vendor/device IDs are intentionally allowed because they are non-unique and materially useful for migration planning. A customized device description can still contain unexpected text; imported strings are bounded and inert, and users should inspect the JSON before import or sharing.
 
 ## Known limitations
 
 - Collector source can be modified; an imported `source` value is not authenticated.
-- Windows PowerShell policy may block the unsigned script. The project provides no bypass.
+- The release-candidate Windows executable is unsigned and may trigger SmartScreen/reputation warnings. It must be signed and manually verified before beginner-facing public release.
+- The executable has automated Windows-runner build/core coverage but has not yet received ordinary-user double-click QA on real Windows 10 and Windows 11 systems.
+- Windows PowerShell policy may block the advanced script. The project provides no bypass.
 - Windows Secure Boot remains unavailable without elevation; monitor count and CIM device lists can be incomplete or include inactive devices.
 - Linux `/proc`/`/sys` availability varies by kernel, container, permissions, architecture and firmware. Missing data stays unknown/unavailable.
 - USB class codes do not identify every peripheral precisely. Ambiguous classes are not upgraded into specific compatibility claims.

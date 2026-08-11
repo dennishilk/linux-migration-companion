@@ -105,7 +105,7 @@ export const distroComparisonById: Record<string, DistroComparisonProfile> = {
   },
   gentoo: {
     nvidia: text("Kernel, driver and userspace integration are expert-owned; no beginner driver path is promised.", "Kernel-, Treiber- und Userspace-Integration liegen beim Experten; kein Einsteiger-Treiberweg wird versprochen."),
-    gaming: text("Maximum control can serve a specialist, but compilation/control—not a gaming checkbox—is the reason to choose it.", "Maximale Kontrolle kann Spezialisten dienen; Kompilierung/Kontrolle, nicht ein Gaming-Häkchen, ist der Grund."),
+    gaming: text("Maximum control can serve a specialist, but compilation and control, not a gaming checkbox, are the reasons to choose it.", "Maximale Kontrolle kann Spezialisten dienen; Kompilierung/Kontrolle, nicht ein Gaming-Häkchen, ist der Grund."),
     ecosystem: text("Gentoo Handbook, wiki, Portage and USE-flag model; substantial local decision ownership.", "Gentoo-Handbook, Wiki, Portage und USE-Flag-Modell; umfangreiche lokale Eigenverantwortung."),
     beginner: text("None. The complete expert/compile-control persona is required.", "Keine. Das vollständige Experten-/Compile-Control-Profil ist erforderlich."),
     troubleshooting: text("Reading build logs, dependency choices, kernel configuration and upstream documentation is normal work.", "Build-Logs, Abhängigkeiten, Kernelkonfiguration und Upstream-Dokumentation zu lesen ist normaler Arbeitsalltag."),

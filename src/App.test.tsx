@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { App } from "./App";
 import { createDefaultPassport } from "./domain/defaults";
 import { applyHardwareSnapshot } from "./hardware/integration";
-import { makeWindowsSnapshot } from "./test/hardwareFixtures";
+import { makeWindowsExeSnapshot, makeWindowsSnapshot } from "./test/hardwareFixtures";
 import { migrationPassportSchema } from "./passport/schema";
 
 const PASSPORT_V3_KEY = "linux-migration-companion:passport:v3";
@@ -199,10 +199,53 @@ describe("release-candidate application flow", () => {
   it("exposes the complete ten-step journey without a hidden route", () => {
     render(<App />);
     const navigation = screen.getByLabelText("Migration journey");
-    expect(within(navigation).getAllByRole("button")).toHaveLength(10);
+    const numberedJourney = within(navigation).getByRole("list");
+    expect(within(numberedJourney).getAllByRole("button")).toHaveLength(10);
+    expect(within(navigation).getAllByRole("button")).toHaveLength(11);
     expect(within(navigation).getByRole("button", { name: /Compare/ })).toBeInTheDocument();
     expect(within(navigation).getByRole("button", { name: /Readiness/ })).toBeInTheDocument();
     expect(within(navigation).getByRole("button", { name: /Data plan/ })).toBeInTheDocument();
+    expect(within(navigation).getByRole("button", { name: "Support" })).toBeInTheDocument();
+  });
+
+  it("opens voluntary support outside the numbered journey with verified safe links", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    const support = within(navigation).getByRole("button", { name: "Support" });
+    support.focus();
+    await user.keyboard("{Enter}");
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Did the Linux Migration Companion help you?"
+      })
+    ).toBeInTheDocument();
+    expect(screen.getByText("The tool stays free, local-first and tracking-free.")).toBeInTheDocument();
+    expect(screen.getByText(/entirely voluntary/)).toBeInTheDocument();
+    const tea = screen.getByRole("link", {
+      name: "Buy Dennis an East Frisian tea (opens in a new tab)"
+    });
+    expect(tea).toHaveAttribute("href", "https://buymeacoffee.com/dennishilk");
+    expect(tea).toHaveAttribute("target", "_blank");
+    expect(tea).toHaveAttribute("rel", "noopener noreferrer");
+    expect(tea.querySelector(".support-button-icon")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /dennishilk.com/ })).toHaveAttribute(
+      "href",
+      "https://dennishilk.com/"
+    );
+    expect(screen.getByRole("link", { name: /GitHub repository/ })).toHaveAttribute(
+      "href",
+      "https://github.com/dennishilk/linux-migration-companion"
+    );
+    expect(new URLSearchParams(window.location.search).get("step")).toBeNull();
+    expect(within(within(navigation).getByRole("list")).getAllByRole("button")).toHaveLength(10);
+    await waitFor(() => expect(document.getElementById("main-content")).toHaveFocus());
+
+    await user.click(screen.getByRole("button", { name: "DE" }));
+    expect(screen.getByRole("heading", { name: "Hilft dir der Linux Migration Companion?" })).toBeInTheDocument();
+    expect(screen.getByText("Das Tool bleibt kostenlos, lokal und ohne Tracking.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /ostfriesischen Tee ausgeben/ })).toHaveTextContent("Tee ausgeben");
   });
 
   it("limits side-by-side distro comparison to three choices", async () => {
@@ -299,11 +342,56 @@ describe("release-candidate application flow", () => {
     expect(screen.getByText(/deliberately limited browser report/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Record browser facts" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Choose snapshot JSON" })).toBeInTheDocument();
+    const windowsDownload = screen.getByRole("link", {
+      name: "Download Windows Hardware Snapshot executable"
+    });
+    expect(windowsDownload).toHaveAttribute(
+      "href",
+      "/collectors/windows/LinuxMigrationCompanion-HardwareSnapshot.exe"
+    );
+    const primaryWindowsPath = windowsDownload.closest(".collector-primary");
+    expect(primaryWindowsPath).toHaveTextContent("portable, open-source and read-only");
+    expect(primaryWindowsPath).toHaveTextContent("no installation or administrator rights");
+    expect(primaryWindowsPath).toHaveTextContent("Detection is not Linux compatibility");
+    expect(primaryWindowsPath).not.toHaveTextContent("PowerShell");
+    expect(screen.getByText("Advanced / source / manual PowerShell method")).toBeInTheDocument();
     expect(screen.getByLabelText("Choose hardware snapshot JSON file")).toHaveAttribute(
       "tabindex",
       "-1"
     );
     expect(screen.getAllByText("Evidence state")).toHaveLength(19);
+  });
+
+  it("imports a Windows executable snapshot with the same conservative provenance behavior", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    await user.click(within(navigation).getByRole("button", { name: /Hardware/ }));
+    await user.upload(
+      screen.getByLabelText("Choose hardware snapshot JSON file"),
+      jsonFile("windows-exe-hardware.json", JSON.stringify(makeWindowsExeSnapshot()))
+    );
+
+    expect(await screen.findByText(/Snapshot structure validated and imported/)).toBeInTheDocument();
+    await waitFor(() => {
+      const saved = migrationPassportSchema.parse(
+        JSON.parse(window.localStorage.getItem(PASSPORT_V3_KEY) ?? "")
+      );
+      expect(saved.hardware.snapshot?.snapshot.collector.id).toBe("windows-dotnet");
+      expect(saved.hardware.evidence.wifi.state).toBe("known_fact");
+      expect(saved.hardware.evidence.wifi.required).toBe(false);
+      expect(saved.liveTests.wifi).toBe("not_tested");
+    });
+  });
+
+  it("uses natural English punctuation in the affected evidence labels", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    await user.click(within(navigation).getByRole("button", { name: /Hardware/ }));
+    expect(screen.getAllByText("UNKNOWN: not verified")).toHaveLength(19);
+    expect(screen.getByRole("heading", { name: "Record what is known; leave the rest UNKNOWN" })).toBeInTheDocument();
+    expect(screen.queryByText(/UNKNOWN — not verified/)).not.toBeInTheDocument();
   });
 
   it("imports detected hardware without requiring it or passing a live test", async () => {

@@ -56,6 +56,13 @@ export function makeWindowsSnapshot(): HardwareSnapshot {
   };
 }
 
+export function makeWindowsExeSnapshot(): HardwareSnapshot {
+  return {
+    ...makeWindowsSnapshot(),
+    collector: { id: "windows-dotnet", version: "1.1.0" }
+  };
+}
+
 export function makeLinuxSnapshot(): HardwareSnapshot {
   return {
     schemaVersion: 1,

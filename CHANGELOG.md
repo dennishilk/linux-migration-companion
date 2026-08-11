@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0-rc.2 — 2026-08-11
+
+- Replaced the normal Windows PowerShell workflow with a portable, framework-dependent .NET Framework 4.8 executable that implements its read-only WMI/Win32 collector logic directly and needs no terminal, installer, elevation, network or account.
+- Added a calm automatic DE/EN WinForms interface, predictable create-new output in Downloads, privacy boundary, success handoff, SHA-256 publication, Windows CI build and 18 executable-core regression tests.
+- Kept the readable PowerShell collector as an advanced/reference/manual method and documented the real Windows 11 execution-policy failure without recommending a bypass.
+- Added explicit unsigned-artifact/SmartScreen warnings plus a reproducible-build, checksum, provenance and Authenticode signing release plan. Signing remains a public-release gate.
+- Extended Hardware Snapshot v1 to accept the `windows-dotnet` collector provenance while preserving the existing browser, PowerShell and Linux source pairs and conservative evidence behavior.
+- Replaced the affected English em-dash separators with natural colons, semicolons, commas or parentheses without changing terminal syntax or German copy.
+- Added a voluntary, unnumbered DE/EN Support page after stages 01–10 with an original inline tea-cup icon and the support URL verified from Dennis Hilk's existing website.
+- Expanded CI and CodeQL to cover the C# collector. No deployment, merge, indexing or production-site change is included.
+
 ## 0.3.0-rc.1 — 2026-08-11
 
 - Added an optional privacy-first Hardware Snapshot workflow while preserving the complete manual evidence path.

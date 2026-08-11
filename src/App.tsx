@@ -11,6 +11,7 @@ import { Questionnaire } from "./components/Questionnaire";
 import { ReadinessPanel } from "./components/ReadinessPanel";
 import { RecommendationResults } from "./components/RecommendationResults";
 import { SoftwareAssessmentPanel } from "./components/SoftwareAssessment";
+import { SupportPanel } from "./components/SupportPanel";
 import { createDefaultPassport } from "./domain/defaults";
 import { hardwareClasses } from "./data/hardware";
 import type {
@@ -60,6 +61,7 @@ export function App() {
     () => loadPassport() ?? createDefaultPassport()
   );
   const [section, setSection] = useState<AppSection>(sectionFromLocation);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [advisorComplete, setAdvisorComplete] = useState(
     () => passport.selectedDistroId !== null
   );
@@ -91,20 +93,34 @@ export function App() {
   }, [passport]);
 
   useEffect(() => {
-    const handleHistory = () => setSection(sectionFromLocation());
+    const handleHistory = () => {
+      setSupportOpen(false);
+      setSection(sectionFromLocation());
+    };
     window.addEventListener("popstate", handleHistory);
     return () => window.removeEventListener("popstate", handleHistory);
   }, []);
 
   useEffect(() => {
-    document.title = `${sectionLabel(passport.locale, section)} — Linux Migration Companion`;
-  }, [passport.locale, section]);
+    document.title = supportOpen
+      ? "Support | Linux Migration Companion"
+      : `${sectionLabel(passport.locale, section)} | Linux Migration Companion`;
+  }, [passport.locale, section, supportOpen]);
 
   const navigate = (nextSection: AppSection) => {
+    setSupportOpen(false);
     setSection(nextSection);
     const url = new URL(window.location.href);
     url.searchParams.set("step", nextSection);
     window.history.pushState({ step: nextSection }, "", url);
+    window.requestAnimationFrame(() => {
+      document.getElementById("main-content")?.focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  };
+
+  const showSupport = () => {
+    setSupportOpen(true);
     window.requestAnimationFrame(() => {
       document.getElementById("main-content")?.focus();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -233,6 +249,7 @@ export function App() {
     next.locale = passport.locale;
     setPassport(next);
     setAdvisorComplete(false);
+    setSupportOpen(false);
     setSection("advisor");
     const url = new URL(window.location.href);
     url.searchParams.delete("step");
@@ -360,12 +377,18 @@ export function App() {
       break;
   }
 
+  if (supportOpen) {
+    content = <SupportPanel locale={passport.locale} />;
+  }
+
   return (
     <Layout
       locale={passport.locale}
       section={section}
+      supportOpen={supportOpen}
       onLocaleChange={updateLocale}
       onSectionChange={navigate}
+      onSupport={showSupport}
       onReset={reset}
     >
       {content}

@@ -209,7 +209,12 @@ export const hardwareSnapshotSchema: z.ZodType<HardwareSnapshot> = z
     ]),
     collector: z
       .object({
-        id: z.enum(["browser-snapshot", "windows-powershell", "linux-python"]),
+        id: z.enum([
+          "browser-snapshot",
+          "windows-dotnet",
+          "windows-powershell",
+          "linux-python"
+        ]),
         version: z
           .string()
           .max(32)
@@ -239,12 +244,12 @@ export const hardwareSnapshotSchema: z.ZodType<HardwareSnapshot> = z
   })
   .strict()
   .superRefine((snapshot, context) => {
-    const expectedCollector = {
-      browser_reported: "browser-snapshot",
-      windows_collector: "windows-powershell",
-      linux_collector: "linux-python"
+    const expectedCollectors = {
+      browser_reported: ["browser-snapshot"],
+      windows_collector: ["windows-dotnet", "windows-powershell"],
+      linux_collector: ["linux-python"]
     } as const;
-    if (snapshot.collector.id !== expectedCollector[snapshot.source]) {
+    if (!(expectedCollectors[snapshot.source] as readonly string[]).includes(snapshot.collector.id)) {
       context.addIssue({
         code: "custom",
         message: "collector/source mismatch",

@@ -255,7 +255,11 @@ export interface HardwareSnapshot {
   createdAt: string;
   source: HardwareSnapshotSource;
   collector: {
-    id: "browser-snapshot" | "windows-powershell" | "linux-python";
+    id:
+      | "browser-snapshot"
+      | "windows-dotnet"
+      | "windows-powershell"
+      | "linux-python";
     version: string;
   };
   system: HardwareSnapshotSystem;

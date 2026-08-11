@@ -14,12 +14,27 @@ permissions:
 
 jobs:
   analyze:
-    name: JavaScript / TypeScript
-    runs-on: ubuntu-latest
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript
+            label: JavaScript / TypeScript
+            os: ubuntu-latest
+            build-mode: none
+          - language: csharp
+            label: C# Windows collector
+            os: windows-2022
+            build-mode: none
     steps:
       - uses: actions/checkout@v6
       - uses: github/codeql-action/init@v4
         with:
-          languages: javascript-typescript
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
       - uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}

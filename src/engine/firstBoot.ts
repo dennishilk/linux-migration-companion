@@ -151,7 +151,7 @@ export function buildFirstBootPlan(
         "browser",
         message("Set up the browser without assuming profile parity", "Browser ohne angenommene Profilgleichheit einrichten"),
         message("Install the chosen browser from its official or distribution-supported source, then deliberately restore bookmarks, extensions and certificates.", "Den gewählten Browser aus offizieller oder distributionsunterstützter Quelle installieren und Lesezeichen, Erweiterungen sowie Zertifikate bewusst wiederherstellen."),
-        message("The browser may carry office, identity, passkey, DRM and organization workflows—not just bookmarks.", "Der Browser kann Office-, Identitäts-, Passkey-, DRM- und Organisationsabläufe tragen – nicht nur Lesezeichen."),
+        message("The browser may carry office, identity, passkey, DRM and organization workflows, not just bookmarks.", "Der Browser kann Office-, Identitäts-, Passkey-, DRM- und Organisationsabläufe tragen – nicht nur Lesezeichen."),
         message("Blind profile-folder copying can import stale locks, incompatible extensions or secrets with unsafe permissions.", "Blindes Kopieren des Profilordners kann alte Sperren, inkompatible Erweiterungen oder Geheimnisse mit unsicheren Berechtigungen importieren."),
         message("Test sign-in, required sites, downloads, printing, video calls, DRM media and any organization certificate.", "Anmeldung, benötigte Websites, Downloads, Druck, Videoanrufe, DRM-Medien und Organisationszertifikate testen."),
         message("Keep the Windows browser profile and a bookmarks export until every required browser workflow works.", "Windows-Browserprofil und Lesezeichenexport behalten, bis jeder benötigte Browserablauf funktioniert.")

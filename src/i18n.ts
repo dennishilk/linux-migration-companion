@@ -39,7 +39,7 @@ export const messages = {
     results: "Your explained matches",
     noPercent: "No fake percentages. Hard blockers always win.",
     strong: "STRONG FIT",
-    possible: "POSSIBLE FIT — TRADE-OFFS",
+    possible: "POSSIBLE FIT: TRADE-OFFS",
     exploratory: "EXPLORATORY",
     not_recommended: "NOT RECOMMENDED",
     whyFits: "Why it fits",

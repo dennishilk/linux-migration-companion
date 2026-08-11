@@ -127,7 +127,7 @@ export function DataMigrationPanel({
                       rows={2}
                       maxLength={500}
                       value={selection.notes}
-                      placeholder={copy(locale, "Location, export status or restore evidence—never passwords or private keys.", "Ort, Exportstatus oder Wiederherstellungsnachweis – niemals Passwörter oder private Schlüssel.")}
+                      placeholder={copy(locale, "Location, export status or restore evidence; never passwords or private keys.", "Ort, Exportstatus oder Wiederherstellungsnachweis – niemals Passwörter oder private Schlüssel.")}
                       onChange={(event) => update(definition.id, { notes: event.target.value })}
                     />
                     <small>{selection.notes.length} / 500</small>

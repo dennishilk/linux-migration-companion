@@ -17,7 +17,7 @@ The application and optional collectors deliberately do **not** collect or expor
 
 The optional collectors may export selected non-unique hardware model names, coarse system facts, and four-digit PCI/USB vendor/device IDs because those facts materially support migration planning. The browser-only route uses a few feature-detected APIs and labels processor/memory values as possibly privacy-reduced; it does not use aggressive fingerprinting or identify a GPU renderer. Every exact read and discard decision is in [the Hardware Snapshot audit](docs/HARDWARE_SNAPSHOT.md).
 
-Static hosting infrastructure may process ordinary HTTP connection data under the host’s own policies. Following an external source/download link leaves this application and is subject to the destination’s privacy policy.
+Static hosting infrastructure may process ordinary HTTP connection data under the host’s own policies. Following an external source or voluntary Support link leaves this application and is subject to the destination’s privacy policy. The Support page embeds no payment script, image, tracker or remote content; the third-party destination is contacted only after the user activates its link.
 
 ## Browser storage
 
@@ -37,7 +37,7 @@ Hardware snapshot import is separately limited to 128 KiB and depth 8. It reject
 
 The collectors are optional, local and read-only. They have no network client, account, analytics, telemetry or auto-update. Each writes one new JSON file, performs a deterministic prohibited-key self-check, and never dumps raw command/API output. The user is told to inspect and delete that file when finished. Hardware detection remains factual provenance, not Linux compatibility.
 
-The Windows script does not request administrator rights and deliberately leaves Secure Boot unavailable because the documented check requires elevation. It may be blocked by execution policy; the project recommends no bypass or policy weakening. The Linux script uses standard-library Python only, no `sudo`, packages, shell/subprocess or network, and creates output mode `0600` without overwriting an existing final path.
+The primary Windows executable requests ordinary-user `asInvoker` execution, directly reads a closed local WMI/Win32 allowlist, enumerates no user files, and creates a fixed-name, create-new JSON file in the OS-resolved Downloads folder (Desktop/Documents fallback). It deliberately leaves Secure Boot unavailable rather than elevating. The artifact is currently unsigned; the project recommends no SmartScreen/Defender bypass. The PowerShell source remains an advanced reference and may be blocked by execution policy; the project recommends no execution-policy bypass. The Linux script uses standard-library Python only, no `sudo`, packages, shell/subprocess or network, and creates output mode `0600` without overwriting an existing final path.
 
 ## Deletion
 

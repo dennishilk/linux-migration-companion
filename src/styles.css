@@ -370,6 +370,23 @@ button:disabled {
   color: #77e7c7;
 }
 
+.support-nav {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #29443c;
+}
+
+.support-nav-icon {
+  width: 21px;
+  height: 21px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.3;
+}
+
 .boundary-note {
   display: grid;
   gap: 0.35rem;
@@ -391,6 +408,100 @@ button:disabled {
   max-width: 1320px;
   min-height: 100%;
   padding: clamp(2rem, 4vw, 4.5rem);
+}
+
+.support-page {
+  display: grid;
+  min-height: min(660px, calc(100vh - 190px));
+  align-items: center;
+}
+
+.support-card {
+  position: relative;
+  width: min(100%, 780px);
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.support-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: linear-gradient(var(--teal), #d8993e);
+  content: "";
+}
+
+.support-card h1 {
+  max-width: 650px;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+}
+
+.support-card > p {
+  max-width: 650px;
+  color: var(--muted);
+}
+
+.support-visual {
+  display: grid;
+  width: 70px;
+  height: 70px;
+  place-items: center;
+  margin: 0.2rem 0 1.1rem;
+  border: 1px solid #d9b476;
+  border-radius: 16px;
+  color: #81511b;
+  background: #fff4df;
+}
+
+.support-visual svg {
+  width: 42px;
+  height: 42px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+
+.support-tea-button {
+  gap: 0.65rem;
+  margin-top: 0.7rem;
+  border-color: #9d6b2b;
+  color: #fffdf8;
+  background: #80501b;
+}
+
+.support-tea-button:hover {
+  background: #653e13;
+}
+
+.support-button-icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+
+.support-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.35rem;
+  font-size: 0.82rem;
+}
+
+.support-boundary {
+  margin: 1.4rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
 }
 
 .footer {
@@ -1700,11 +1811,30 @@ button:disabled {
 }
 
 .collector-instructions details,
+.collector-primary,
 .snapshot-result {
   padding: 0.9rem 1rem;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(248, 250, 249, 0.9);
+}
+
+.collector-primary > h3 {
+  margin: 0 0 0.45rem;
+  color: var(--teal-dark);
+  font-size: 1rem;
+}
+
+.collector-primary .button {
+  margin: 0.15rem 0 0.2rem;
+}
+
+.collector-signing-note {
+  margin-top: 0.8rem;
+  padding: 0.75rem;
+  border-left: 3px solid var(--amber);
+  color: #704106 !important;
+  background: var(--amber-bg);
 }
 
 .collector-instructions summary,
@@ -2392,6 +2522,8 @@ button:disabled {
   .side-nav ol { display: flex; min-width: max-content; }
   .side-nav li + li { margin: 0 0 0 0.2rem; }
   .side-nav button { width: auto; padding: 0.55rem 0.65rem; font-size: 0.68rem; }
+  .side-nav nav { display: flex; min-width: max-content; }
+  .support-nav { margin: 0 0 0 0.5rem; padding: 0 0 0 0.5rem; border-top: 0; border-left: 1px solid #29443c; }
   .main-content { padding: 1.5rem 1rem 2.5rem; }
   .split-heading { display: grid; }
   .question-progress { grid-template-columns: 1fr; }

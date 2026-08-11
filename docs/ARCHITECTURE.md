@@ -12,7 +12,7 @@ flowchart TD
     UI --> Engine["Deterministic recommendation + readiness engines"]
     UI --> Catalog["Bundled distro, software, hardware + data models"]
     UI --> BrowserSnapshot["Limited browser-reported facts"]
-    Collectors["Optional read-only Windows/Linux source scripts"] --> SnapshotFile["Strict Hardware Snapshot v1 JSON"]
+    Collectors["Optional read-only Windows EXE + source collectors"] --> SnapshotFile["Strict Hardware Snapshot v1 JSON"]
     SnapshotFile --> UI
     UI <--> Passport["Strict Passport v3"]
     Passport <--> Local["Browser localStorage"]
@@ -21,7 +21,7 @@ flowchart TD
     UI --> Links["Official external handoff links"]
 ```
 
-Only an explicit external-link handoff crosses the application origin. Collector downloads are static same-origin source files. The application and collectors make no runtime data API, font, analytics, telemetry, upload, or compatibility request.
+Only an explicit external-link handoff crosses the application origin. Collector downloads are static same-origin files. The application and collectors make no runtime data API, font, analytics, telemetry, upload, or compatibility request. The voluntary Support page is another explicit external-link boundary; it is not a payment integration and does not load third-party content until a user activates a link.
 
 ## Modules
 
@@ -35,9 +35,10 @@ Only an explicit external-link handoff crosses the application origin. Collector
 | Data migration | `src/engine/dataMigration.ts` | Non-executing plan items and evidence completeness |
 | First boot | `src/engine/firstBoot.ts` | Personalized what/why/risk/verify/back-out plan with no commands |
 | Hardware Snapshot | `src/hardware` | Limited browser collection, strict untrusted JSON validation, evidence mapping |
-| Collectors | `public/collectors` | Read-only Windows/Linux allowlist collection into one local JSON file |
+| Windows executable | `collectors/windows-exe` | Dependency-free C#/.NET Framework 4.8 source, WinForms UI, local WMI/Win32 allowlist collection, create-new JSON output and Windows tests |
+| Downloadable collectors | `public/collectors` | Built Windows executable/checksum, advanced PowerShell source and Linux Python source |
 | Passport | `src/passport` | Strict v3 validation, v1/v2 migrations, size/depth controls, local persistence |
-| UI | `src/components` | Ten-stage accessible migration journey |
+| UI | `src/components` | Ten-stage accessible migration journey plus a separated, unnumbered voluntary Support page |
 
 ## State and evidence flow
 
@@ -58,16 +59,18 @@ A manufacturer or product name never becomes compatibility evidence. `known_fact
 
 ## Navigation and static hosting
 
-The active section is mirrored in the `?step=` query parameter. This provides stable direct URLs, refresh behavior, and browser back/forward support without a server router. Unknown step IDs fall back to the advisor. Static project-subpath builds use `VITE_BASE_PATH=/linux-migration-companion/`; the favicon also respects that base.
+The active numbered section is mirrored in the `?step=` query parameter. This provides stable direct URLs, refresh behavior, and browser back/forward support without a server router. Unknown step IDs fall back to the advisor. Support is deliberately not an `AppSection`, receives no number and does not write a `?step=` value. Returning to any numbered destination closes it. Static project-subpath builds use `VITE_BASE_PATH=/linux-migration-companion/`; the favicon also respects that base.
 
 ## Deployment boundary
 
-Pull requests run lint, strict TypeScript, tests, build, and a production-dependency audit. Pushes to `main` are the only automatic Pages deployment trigger. Release-candidate work on another branch cannot deploy unless a human explicitly changes the workflow or merges it.
+Pull requests run lint, strict TypeScript, web tests/build, production-dependency audit, a Windows executable build and its independent C# core tests. CodeQL analyzes JavaScript/TypeScript and C#. Pushes to `main` are the only automatic Pages deployment trigger. Release-candidate work on another branch cannot deploy unless a human explicitly changes the workflow or merges it.
 
 Search indexing is an explicit separate release gate: `index.html` uses `noindex,nofollow` and `public/robots.txt` disallows crawling until Dennis approves public integration.
 
-## Collector boundary and future native code
+## Collector executable boundary
 
-This release candidate includes readable source scripts, not a native binary. Their exact OS interfaces and data fields are reviewed in [HARDWARE_SNAPSHOT.md](HARDWARE_SNAPSHOT.md). They never run inside or automatically from the web app, and the manual path remains complete.
+This release candidate includes a framework-dependent Windows `.exe` built from readable C# source, an advanced PowerShell reference and a Linux Python source collector. Their exact OS interfaces and fields are reviewed in [HARDWARE_SNAPSHOT.md](HARDWARE_SNAPSHOT.md). They never run inside or automatically from the web app, and the manual path remains complete.
 
-Any later native binary, signing/update mechanism, background service, local IPC or automatic execution would be a new security boundary requiring signed reproducible releases, least privilege, sandbox/network controls and separate review. Enumeration must still never become a compatibility guarantee.
+The executable directly queries only local WMI and two small Win32 boundaries: firmware type and the Downloads known folder. A third explicit Win32 call opens that fixed folder only after the user presses **Open folder**. It requests no elevation, ships no app DLL/plugin, never interprets device data as code and has no network/update path. Build/checksum/signing details are in [WINDOWS_COLLECTOR_RELEASE.md](WINDOWS_COLLECTOR_RELEASE.md).
+
+Any later auto-update mechanism, background service, local IPC, automatic execution, privilege request or network client would be a new security boundary requiring separate review. Enumeration must still never become a compatibility guarantee.

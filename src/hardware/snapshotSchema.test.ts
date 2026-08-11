@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { makeLinuxSnapshot, makeWindowsSnapshot } from "../test/hardwareFixtures";
+import {
+  makeLinuxSnapshot,
+  makeWindowsExeSnapshot,
+  makeWindowsSnapshot
+} from "../test/hardwareFixtures";
 import {
   MAX_HARDWARE_SNAPSHOT_BYTES,
   findProhibitedSnapshotPaths,
@@ -11,6 +15,11 @@ import {
 describe("hardware snapshot schema", () => {
   it("validates and round-trips a Windows collector snapshot", () => {
     const snapshot = makeWindowsSnapshot();
+    expect(parseHardwareSnapshotText(serializeHardwareSnapshot(snapshot))).toEqual(snapshot);
+  });
+
+  it("validates and round-trips the primary Windows executable snapshot", () => {
+    const snapshot = makeWindowsExeSnapshot();
     expect(parseHardwareSnapshotText(serializeHardwareSnapshot(snapshot))).toEqual(snapshot);
   });
 

@@ -54,7 +54,7 @@ export function ReadinessPanel({
           <h1 id="readiness-title">
             {copy(locale, "Can Windows safely stop being the proven path?", "Kann Windows sicher aufhören, der bewährte Weg zu sein?")}
           </h1>
-          <p>{copy(locale, "Hard blockers outrank preferences and distro scores. The result below is derived from the evidence you recorded—and explains itself.", "Harte Blocker stehen über Vorlieben und Distro-Scores. Das Ergebnis unten wird aus deiner erfassten Evidenz abgeleitet – und erklärt sich selbst.")}</p>
+          <p>{copy(locale, "Hard blockers outrank preferences and distro scores. The result below is derived from the evidence you recorded and explains itself.", "Harte Blocker stehen über Vorlieben und Distro-Scores. Das Ergebnis unten wird aus deiner erfassten Evidenz abgeleitet – und erklärt sich selbst.")}</p>
         </div>
         <div className={`readiness-hero readiness-state-${readiness.state}`} role="status">
           <span>{copy(locale, "Current state", "Aktueller Status")}</span>

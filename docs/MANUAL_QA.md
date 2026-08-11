@@ -47,19 +47,25 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] Confirmed reset clears only the app-owned v1/v2/v3 keys including snapshot state, preserves locale/unrelated storage, removes `?step=`, and creates a schema-valid default Passport at step 1.
 - [ ] First Boot 2.0 responds to blockers, NVIDIA, Steam, browser/office, identity, cloud, printer, Bluetooth, displays, development, media, unresolved hardware, and NixOS.
 - [ ] Guided mode stays concise; explanation mode shows WHAT, WHY, RISK, VERIFY SUCCESS, and BACK OUT for every step.
+- [ ] Support follows First Boot after a visual separator but remains outside the ordered 01–10 list and never becomes `?step=11`.
+- [ ] Support is voluntary, opens no popup/interstitial, locks no feature, loads no third-party content before link activation, and shows the verified tea, website and GitHub destinations in DE/EN.
+- [ ] English evidence/freshness/options/readiness copy uses the reviewed colon, semicolon, comma and parenthetical forms with no visually excessive dash run. Command options such as `--stdout` remain unchanged.
 - [ ] No control executes commands, installs software, requests privilege, partitions, writes media, or changes a bootloader.
 
 ## Hardware Snapshot release procedure
 
 ### A. Windows 10 and Windows 11
 
-- [ ] On one ordinary non-administrator Windows 10 machine and one Windows 11 machine, download the `.ps1`, open it in a text editor, and compare it to `public/collectors/windows/Collect-LinuxMigrationHardware.ps1` at the candidate SHA.
-- [ ] Do not change execution policy and do not use `Bypass`. If policy permits, run `powershell.exe -NoProfile -File .\Collect-LinuxMigrationHardware.ps1`; if policy blocks it, record the policy/error and verify the UI directs the user to browser/manual evidence.
-- [ ] Confirm no UAC/elevation prompt, installer, package/driver/configuration change, browser/backend request, telemetry, or additional output file appears. The only write should be one new timestamped JSON file in the current directory.
+- [ ] On one ordinary non-administrator Windows 10 machine and one Windows 11 machine, download `LinuxMigrationCompanion-HardwareSnapshot.exe` from the candidate site and verify its SHA-256 against the published checksum and candidate commit/build record.
+- [ ] Confirm the release candidate is visibly documented as unsigned. Record the exact Defender/SmartScreen/reputation UX. Do not disable or bypass any control. Repeat the public-release pass only after Authenticode signing and confirm the expected Dennis Hilk publisher identity.
+- [ ] Double-click the `.exe` without a terminal. Confirm the calm DE/EN UI, complete privacy list, predictable Downloads destination, Create hardware snapshot, success filename, Open folder and Close all work by mouse and keyboard at 100% and 200% scaling.
+- [ ] Confirm no UAC/elevation prompt, installer, service, registry/package/driver/configuration change, browser/backend request, telemetry, update check, child command process, temporary file or additional output appears. The only write should be one new timestamped JSON file in Downloads.
+- [ ] Create twice within one second or pre-create the expected name; confirm the first file is never overwritten and a numeric suffix is used. Make Downloads unavailable in a disposable account and verify the documented fallback/failure UI without stray output.
 - [ ] Open the JSON as text before import. Search case-insensitively for username, real/host/computer name, email, IP/MAC/SSID, serial, product/activation key, machine GUID, TPM, file/document names/content, tokens and credentials; confirm none exists.
 - [ ] Compare CPU, GPU(s), Wi-Fi/Ethernet/Bluetooth, audio, storage, USB controller, webcam/fingerprint and monitor count against Device Manager/System Information. Record every absent, extra/inactive or ambiguous entry. Secure Boot must say `unavailable`, not guess.
 - [ ] Import the JSON in EN and DE. Confirm source is explicitly a claimed Windows collector, detected facts are visible, required flags/live tests are unchanged, and readiness remains conservative.
-- [ ] Delete the JSON normally and confirm the system configuration is unchanged.
+- [ ] Delete the `.exe` and JSON normally and confirm the system configuration is unchanged.
+- [ ] Separately inspect the advanced PowerShell source. Do not change execution policy and do not use `Bypass`; if policy blocks it, record that expected limitation and confirm the website points ordinary users to the executable/browser/manual paths.
 
 ### B. Linux
 
@@ -73,6 +79,13 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] In current Chrome/Chromium and Firefox, record a browser snapshot and compare exactly what each exposes. Firefox/missing `deviceMemory`, UA-CH or WebGPU must render as unavailable without an error.
 - [ ] Repeat on a mobile browser. Confirm no permission prompt, device list, renderer name, GPU vendor, USB/HID/media enumeration or network request occurs.
 - [ ] Disable/block an available API where devtools/browser settings permit; confirm graceful unavailable labels and zero device facts.
+
+### Recorded real-world context before 0.3.0-rc.2
+
+- Real Windows 11 in Microsoft Edge on a Proxmox VM: browser snapshot succeeded and correctly reported limited facts.
+- The PowerShell collector on that same ordinary Windows 11 test path was blocked because local execution policy disabled scripts. This is recorded as a beginner-path product/release issue, not a PowerShell bug; no policy bypass was used.
+- The Linux Python collector ran on real Linux bare metal and its JSON imported correctly.
+- These results do **not** count as manual execution of the new `.exe`. Windows 10 and Windows 11 double-click, output, privacy, scaling and SmartScreen/signature QA above remain open.
 
 ### D. Evidence and readiness
 
@@ -147,6 +160,8 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] Visible focus follows a logical order; the reset dialog traps Tab focus only while open and releases it on Cancel, Escape, or confirmation.
 - [ ] Button groups, selects, textareas, checkboxes, summaries, and file input trigger have accessible names.
 - [ ] Snapshot workflow is keyboard-only operable; status/error announcements are read; collector details and hidden file input trigger retain logical focus order.
+- [ ] Windows executable download and checksum links have clear accessible names; beginner steps wrap without overflow on mobile.
+- [ ] Support is keyboard reachable after the numbered list; focus enters its main heading/content, the tea action has a meaningful accessible name, external links announce the new tab, and returning to a numbered stage works.
 - [ ] Heading hierarchy is coherent after direct navigation.
 - [ ] Status uses text and structure, not color alone; contrast remains legible.
 - [ ] Long German labels wrap without overflow.
@@ -167,9 +182,10 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 
 - [ ] `npm ci && npm run qa` passes from a clean checkout.
 - [ ] `VITE_BASE_PATH=/linux-migration-companion/ npm run build` succeeds.
-- [ ] CI and CodeQL pass on the release-candidate SHA.
+- [ ] CI web quality and Windows executable build/core-test jobs pass; JavaScript/TypeScript and C# CodeQL pass on the release-candidate SHA.
 - [ ] Both public JSON schemas parse as JSON and match runtime fixture/output tests.
-- [ ] Real Windows 10/11 and physical Linux collector results above are attached to the private release record; automated/static tests alone do not satisfy this gate.
+- [ ] Real Windows 10/11 executable and physical Linux collector results above are attached to the private release record; automated/static tests alone do not satisfy this gate.
+- [ ] The public Windows executable is Authenticode-signed, signature-verified, hashed after signing and checked for real clean-machine SmartScreen behavior. Do not ship the current unsigned RC to beginners.
 - [ ] A branch preview or equivalent serves the exact candidate SHA over HTTPS.
 - [ ] Chromium and Firefox matrix above is performed against that SHA.
 - [ ] Page title, description, canonical URL, favicon, and app identity are correct; the former `LM` mark is absent.

@@ -33,9 +33,9 @@ const evidenceLabels: Record<
   HardwareEvidenceState,
   { en: string; de: string }
 > = {
-  unknown: { en: "UNKNOWN — not verified", de: "UNBEKANNT — nicht geprüft" },
-  known_fact: { en: "Known fact — function not proven", de: "Bekannter Fakt — Funktion nicht bewiesen" },
-  user_reported: { en: "User-reported — not independently verified", de: "Nutzerangabe — nicht unabhängig geprüft" },
+  unknown: { en: "UNKNOWN: not verified", de: "UNBEKANNT — nicht geprüft" },
+  known_fact: { en: "Known fact (function not proven)", de: "Bekannter Fakt — Funktion nicht bewiesen" },
+  user_reported: { en: "User-reported (not independently verified)", de: "Nutzerangabe — nicht unabhängig geprüft" },
   live_verified: { en: "Verified in a live session", de: "In einer Live-Sitzung verifiziert" },
   failed_test: { en: "Failed a live test", de: "Live-Test fehlgeschlagen" },
   known_issue: { en: "Known issue", de: "Bekanntes Problem" },
@@ -84,7 +84,7 @@ export function HardwarePanel({
           <h1 id="hardware-title">
             {copy(
               locale,
-              "Record what is known—and leave the rest UNKNOWN",
+              "Record what is known; leave the rest UNKNOWN",
               "Bekanntes erfassen – und den Rest UNBEKANNT lassen"
             )}
           </h1>
@@ -258,7 +258,7 @@ export function HardwarePanel({
                   value={evidence.details}
                   placeholder={copy(
                     locale,
-                    "Exact model, tested function, failure symptom—no secrets.",
+                    "Exact model, tested function and failure symptom; no secrets.",
                     "Genaues Modell, geprüfte Funktion, Fehlersymptom – keine Geheimnisse."
                   )}
                   onChange={(event) =>

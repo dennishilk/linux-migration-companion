@@ -16,7 +16,7 @@
       "additionalProperties": false,
       "required": ["id", "version"],
       "properties": {
-        "id": { "enum": ["browser-snapshot", "windows-powershell", "linux-python"] },
+        "id": { "enum": ["browser-snapshot", "windows-dotnet", "windows-powershell", "linux-python"] },
         "version": { "type": "string", "maxLength": 32, "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$" }
       }
     },
@@ -44,7 +44,7 @@
       "if": { "properties": { "source": { "const": "windows_collector" } }, "required": ["source"] },
       "then": {
         "not": { "required": ["browserCapabilities"] },
-        "properties": { "collector": { "properties": { "id": { "const": "windows-powershell" } } } }
+        "properties": { "collector": { "properties": { "id": { "enum": ["windows-dotnet", "windows-powershell"] } } } }
       }
     },
     {

@@ -152,7 +152,7 @@ export function SoftwareAssessmentPanel({
                 </span>
                 <span className={`freshness-tag freshness-${software.freshness}`}>
                   {software.freshness === "volatile"
-                    ? locale === "de" ? "Volatil – erneut prüfen" : "Volatile — re-check"
+                    ? locale === "de" ? "Volatil – erneut prüfen" : "Volatile: re-check"
                     : locale === "de" ? "Stabile Grundlage" : "Stable baseline"}
                 </span>
                 {software.routes.map((route) => <span key={route}>{pick(locale, routeText[route])}</span>)}

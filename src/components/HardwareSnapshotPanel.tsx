@@ -289,13 +289,74 @@ export function HardwareSnapshotPanel({
       </div>
 
       <div className="collector-instructions">
-        <details>
-          <summary>{copy(locale, "Windows 10 / 11 collector", "Windows-10-/11-Collector")}</summary>
+        <section className="collector-primary" aria-labelledby="windows-collector-title">
+          <h3 id="windows-collector-title">
+            {copy(
+              locale,
+              "Windows 10 / 11 Hardware Snapshot",
+              "Windows 10 / 11 Hardware-Snapshot"
+            )}
+          </h3>
           <p>
             {copy(
               locale,
-              "Download and inspect the readable PowerShell source. It queries an allowlist of built-in CIM classes, makes no network request and writes one new JSON file in the chosen folder.",
-              "Lade den lesbaren PowerShell-Quelltext herunter und prüfe ihn. Er fragt eine Positivliste integrierter CIM-Klassen ab, stellt keine Netzwerkanfrage und schreibt genau eine neue JSON-Datei in den gewählten Ordner."
+              "A portable, open-source and read-only tool. It needs no installation or administrator rights, has no account or upload, and creates one local JSON snapshot in Downloads. Detection is not Linux compatibility.",
+              "Ein portables, quelloffenes und nur lesendes Tool. Es benötigt keine Installation oder Administratorrechte, kein Konto und keinen Upload und erstellt einen lokalen JSON-Snapshot im Downloads-Ordner. Erkennung ist keine Linux-Kompatibilität."
+            )}
+          </p>
+          <a
+            className="button primary compact"
+            href={`${base}collectors/windows/LinuxMigrationCompanion-HardwareSnapshot.exe`}
+            download
+            aria-label={copy(
+              locale,
+              "Download Windows Hardware Snapshot executable",
+              "Windows Hardware-Snapshot als ausführbare Datei herunterladen"
+            )}
+          >
+            {copy(
+              locale,
+              "Download Windows Hardware Snapshot (.exe)",
+              "Windows Hardware-Snapshot herunterladen (.exe)"
+            )}
+          </a>
+          <p>
+            <a
+              href={`${base}collectors/windows/LinuxMigrationCompanion-HardwareSnapshot.exe.sha256`}
+              download
+            >
+              {copy(locale, "SHA-256 checksum", "SHA-256-Prüfsumme")}
+            </a>
+          </p>
+          <ol>
+            <li>{copy(locale, "Download the executable.", "Lade die ausführbare Datei herunter.")}</li>
+            <li>{copy(locale, "Open the file by double-clicking it.", "Öffne die Datei per Doppelklick.")}</li>
+            <li>{copy(locale, "Click “Create hardware snapshot”.", "Klicke auf „Hardware-Snapshot erstellen“.")}</li>
+            <li>{copy(locale, "Import the JSON file here.", "Importiere die JSON-Datei hier.")}</li>
+            <li>{copy(locale, "Delete the collector and snapshot afterward if you no longer need them.", "Lösche Collector und Snapshot anschließend, wenn du sie nicht mehr benötigst.")}</li>
+          </ol>
+          <p className="collector-signing-note">
+            {copy(
+              locale,
+              "Release-candidate status: this executable is currently unsigned. Windows may show a SmartScreen or reputation warning. Do not disable SmartScreen, Defender or organizational policy. A properly signed artifact is still required for a public release.",
+              "Release-Candidate-Status: Diese ausführbare Datei ist derzeit nicht signiert. Windows kann eine SmartScreen- oder Reputationswarnung anzeigen. Deaktiviere weder SmartScreen noch Defender oder Organisationsrichtlinien. Für eine öffentliche Veröffentlichung ist weiterhin ein korrekt signiertes Artefakt erforderlich."
+            )}
+          </p>
+        </section>
+
+        <details>
+          <summary>
+            {copy(
+              locale,
+              "Advanced / source / manual PowerShell method",
+              "Erweitert / Quelltext / manuelle PowerShell-Methode"
+            )}
+          </summary>
+          <p>
+            {copy(
+              locale,
+              "The readable PowerShell collector remains available as a reference implementation, advanced manual method and debugging aid. It queries an allowlist of built-in CIM classes, makes no network request and writes one new JSON file.",
+              "Der lesbare PowerShell-Collector bleibt als Referenzimplementierung, erweiterte manuelle Methode und Debugging-Hilfe verfügbar. Er fragt eine Positivliste integrierter CIM-Klassen ab, stellt keine Netzwerkanfrage und schreibt genau eine neue JSON-Datei."
             )}
           </p>
           <a
@@ -303,7 +364,7 @@ export function HardwareSnapshotPanel({
             href={`${base}collectors/windows/Collect-LinuxMigrationHardware.ps1`}
             download
           >
-            {copy(locale, "Download PowerShell collector", "PowerShell-Collector herunterladen")}
+            {copy(locale, "Download PowerShell source", "PowerShell-Quelltext herunterladen")}
           </a>
           <ol>
             <li>{copy(locale, "Open the file in a text editor and inspect it.", "Datei in einem Texteditor öffnen und prüfen.")}</li>
@@ -313,8 +374,8 @@ export function HardwareSnapshotPanel({
           <p className="privacy-line">
             {copy(
               locale,
-              "If policy blocks unsigned scripts, do not weaken system or organization policy. Use the browser or manual path instead.",
-              "Wenn Richtlinien unsignierte Skripte blockieren, System- oder Organisationsrichtlinien nicht abschwächen. Nutze stattdessen den Browser- oder manuellen Weg."
+              "Windows execution policy may block this script. Never weaken system or organizational policy to run it; use the executable, browser or manual path instead.",
+              "Die Windows-Ausführungsrichtlinie kann dieses Skript blockieren. Schwäche niemals System- oder Organisationsrichtlinien, um es auszuführen; nutze stattdessen die ausführbare Datei, den Browser- oder den manuellen Weg."
             )}
           </p>
         </details>

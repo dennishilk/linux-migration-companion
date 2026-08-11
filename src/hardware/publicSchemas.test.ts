@@ -25,6 +25,7 @@ describe("published JSON schema contracts", () => {
     expect(compact).toContain('"schemaVersion":{"const":1}');
     expect(compact).toContain('"maxItems":64');
     expect(compact).toContain("browser-snapshot");
+    expect(compact).toContain("windows-dotnet");
     expect(compact).toContain("windows-powershell");
     expect(compact).toContain("linux-python");
     expect(compact).toContain('"additionalProperties":false');

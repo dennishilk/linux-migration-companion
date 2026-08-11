@@ -9,7 +9,7 @@ The implementation follows a feasibility review completed before development.
 - Curated 11-profile distro data and 90-workflow software assessment.
 - Local Migration Passport v3 with strict import/export validation and explicit v1/v2 migrations.
 - Nineteen-class manual hardware evidence, optional limited browser facts, strict local snapshot import, and representative live-test checklist.
-- Small auditable Windows PowerShell and Linux standard-library Python collectors with field allowlists, no elevation/network, one inspectable JSON output and complete manual fallbacks.
+- Small auditable C#/.NET Framework 4.8 Windows executable with a beginner WinForms UI and direct local WMI/Win32 allowlists, plus advanced PowerShell reference and Linux standard-library Python collectors. All keep no-elevation/no-network, one inspectable JSON output and complete manual fallbacks.
 - Explainable readiness, Windows-retention decision, data migration, and three-profile comparison.
 - Official download/verification/installation links and established media-writer handoff.
 - Personalized, non-executing First Boot 2.0 plan.
@@ -17,7 +17,7 @@ The implementation follows a feasibility review completed before development.
 
 ## Defer
 
-- Signed/native collector binaries, auto-update, background services, browser-to-local IPC and automatic execution. The release candidate ships readable source scripts only; Windows execution-policy usability remains a manual release-review item.
+- Authenticode production signing credentials, auto-update, background services, browser-to-local IPC and automatic execution. The RC builds and checksums an unsigned managed Windows executable, but public release is blocked until that exact artifact is signed and verified through a protected release process.
 - Automatic compatibility resolution: device/app/game support is volatile and workflow-specific.
 - Install/package automation: crosses privilege and recovery boundaries without being necessary for decision support.
 

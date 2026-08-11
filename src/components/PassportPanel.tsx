@@ -172,7 +172,7 @@ export function PassportPanel({
         <article className="passport-card passport-primary">
           <span>{t(locale, "primary")}</span>
           <h2>{selected?.distro.name ?? copy(locale, "Not selected", "Nicht ausgewählt")}</h2>
-          <p>{selected ? t(locale, selected.tier) : "—"}</p>
+          <p>{selected ? t(locale, selected.tier) : copy(locale, "Not selected", "Nicht ausgewählt")}</p>
           <small>{compared.map((item) => item.name).join(" · ") || copy(locale, "No comparison set", "Kein Vergleichssatz")}</small>
         </article>
 
@@ -211,7 +211,7 @@ export function PassportPanel({
         <article className="passport-card">
           <span>{t(locale, "gaming")}</span>
           <h2>{passport.answers.gaming.toUpperCase()}</h2>
-          <p>{passport.answers.gameLaunchers.join(" · ") || "—"}</p>
+          <p>{passport.answers.gameLaunchers.join(" · ") || copy(locale, "None selected", "Keine ausgewählt")}</p>
           <small>{t(locale, "gamesUnverified")}</small>
         </article>
       </div>

@@ -273,7 +273,7 @@ export const questions: QuestionDefinition[] = [
     options: [
       option("none", "No special dependency", "Keine besondere Abhängigkeit"),
       option("replaceable", "I can test alternatives", "Ich kann Alternativen testen"),
-      option("essential", "No — exact tools/support are required", "Nein — exakte Werkzeuge/Support sind Pflicht")
+      option("essential", "No: exact tools/support are required", "Nein — exakte Werkzeuge/Support sind Pflicht")
     ]
   },
   {

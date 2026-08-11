@@ -2,7 +2,7 @@
 
 An explainable, local-first Windows-to-Linux migration advisor that helps people test whether Linux can replace Windows **before** they remove anything.
 
-> **Website Release Candidate (`0.3.0-rc.1`):** no account, backend, analytics, telemetry, upload, package installation, partitioning, raw USB writing, bootloader changes, or in-app command execution. An optional read-only local collector can create a privacy-minimized hardware JSON file; detection never proves Linux compatibility.
+> **Website Release Candidate (`0.3.0-rc.2`):** no account, backend, analytics, telemetry, upload, package installation, partitioning, raw USB writing, bootloader changes, or in-app command execution. An optional read-only local collector can create a privacy-minimized hardware JSON file; detection never proves Linux compatibility.
 
 [Current standalone test deployment](https://www.dennishilk.com/linux-migration-companion/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Decision model](docs/DECISION_MODEL.md)
 
@@ -24,6 +24,10 @@ The ten-stage DE/EN journey preserves the original visual and technical architec
 10. **First Boot Plan 2.0:** guided and fully explained plans covering what, why, risk, verification, and back-out—without executable commands.
 
 No compatibility percentage is calculated or shown. Preference-based distro recommendations never override software or hardware blockers.
+
+A separate, unnumbered **Support** destination follows the ten-stage journey. Support is voluntary; the complete tool stays free, local-first and tracking-free, with no paid or locked functionality.
+
+The tea action uses Dennis Hilk's existing canonical [Buy Me a Coffee destination](https://buymeacoffee.com/dennishilk), verified from [dennishilk.com](https://dennishilk.com/) on 2026-08-11. The page also links to the website and this repository. It embeds no payment widget or third-party asset.
 
 ## Readiness vocabulary
 
@@ -109,7 +113,7 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) and [THREAT_MODEL.md](docs/THREAT_MO
 
 ## Optional Hardware Snapshot
 
-Manual evidence remains the complete default path. The optional browser route records only coarse, possibly privacy-reduced platform, logical-processor, memory and WebGPU-availability facts; it identifies no device. The downloadable Windows PowerShell and Linux Python collectors are unminified source files, use explicit field allowlists, make no network request, request no elevation/root, and write one new JSON file for the user to inspect.
+Manual evidence remains the complete default path. The optional browser route records only coarse, possibly privacy-reduced platform, logical-processor, memory and WebGPU-availability facts; it identifies no device. The primary Windows path is a small portable `.exe` built from the auditable C# source in [`collectors/windows-exe`](collectors/windows-exe). It implements collection directly through local WMI and documented Win32 APIs, makes no network request, requests no elevation, installs nothing, and writes one create-new JSON file to Downloads. The readable PowerShell implementation remains an advanced reference/manual fallback. The Linux Python collector remains an unminified, standard-library source file.
 
 Snapshot schema v1 is strict, closed, limited to 128 KiB/depth 8 and treated as untrusted input. Imported facts can set an existing class to `KNOWN FACT`; they cannot mark it required, pass a live test, or assert Linux support. The exact APIs, fields, discarded fields, privacy audit, execution-policy limitation and output-path behavior are documented in [Hardware Snapshot design and collector audit](docs/HARDWARE_SNAPSHOT.md). The machine-readable contract is [`schemas/hardware-snapshot.schema.json`](schemas/hardware-snapshot.schema.json).
 
@@ -123,8 +127,10 @@ Browser storage is convenience, not backup. Snapshot model names and non-unique 
 
 ## Current limitations and release gate
 
-- The Windows collector is an unsigned readable PowerShell script. Windows execution policy may block it; the project recommends no bypass or policy weakening. Browser/manual evidence remains available.
-- Windows Secure Boot is deliberately `unavailable` because the documented cmdlet requires elevation. Collector output still requires manual comparison on real Windows 10/11 hardware before public launch.
+- The release-candidate Windows `.exe` is currently **unsigned**. SmartScreen or reputation warnings are therefore a public-release blocker; never disable or bypass Windows security controls. See [the signing and release plan](docs/WINDOWS_COLLECTOR_RELEASE.md).
+- The executable targets .NET Framework 4.8 because it is included in stock Windows 10 22H2 and Windows 11. No developer tooling is required. Windows Secure Boot remains deliberately `unavailable` to preserve ordinary-user execution.
+- The executable still requires ordinary-user, double-click QA on real Windows 10 and Windows 11 hardware. A Windows GitHub runner build and automated core tests are necessary but not a substitute.
+- The PowerShell reference may be blocked by execution policy. This is a beginner-path product limitation, not a PowerShell bug; the project recommends no bypass or policy weakening.
 - Software records describe supported routes and representative verification; they do not promise that a document, plug-in, game, anti-cheat system, peripheral, or organization policy works.
 - The catalog is a maintained snapshot reviewed on **2026-08-11**, not a live compatibility service. Volatile entries are labelled and must be rechecked.
 - Live-session success does not prove that an installed system will behave identically after future updates or driver changes.
@@ -138,6 +144,7 @@ Browser storage is convenience, not backup. Snapshot model names and non-unique 
 - [Decision model and invariants](docs/DECISION_MODEL.md)
 - [Threat model](docs/THREAT_MODEL.md)
 - [Hardware Snapshot design and collector audit](docs/HARDWARE_SNAPSHOT.md)
+- [Windows collector build, checksum and signing plan](docs/WINDOWS_COLLECTOR_RELEASE.md)
 - [Manual QA checklist](docs/MANUAL_QA.md)
 - [Data maintenance](docs/DATA_MAINTENANCE.md)
 - [Privacy](PRIVACY.md)

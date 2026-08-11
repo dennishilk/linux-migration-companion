@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3B1EBDB3-F987-4348-A52A-9C08EB87B563}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>LinuxMigrationCompanion.WindowsCollector.Tests</RootNamespace>
+    <AssemblyName>LinuxMigrationCompanion.WindowsCollector.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>7.3</LangVersion>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CollectorTests.cs" />
+    <Compile Include="..\src\HardwareCollector.cs"><Link>Source\HardwareCollector.cs</Link></Compile>
+    <Compile Include="..\src\NativeMethods.cs"><Link>Source\NativeMethods.cs</Link></Compile>
+    <Compile Include="..\src\SnapshotFileWriter.cs"><Link>Source\SnapshotFileWriter.cs</Link></Compile>
+    <Compile Include="..\src\SnapshotJson.cs"><Link>Source\SnapshotJson.cs</Link></Compile>
+    <Compile Include="..\src\SnapshotModels.cs"><Link>Source\SnapshotModels.cs</Link></Compile>
+    <Compile Include="..\src\TextSafety.cs"><Link>Source\TextSafety.cs</Link></Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

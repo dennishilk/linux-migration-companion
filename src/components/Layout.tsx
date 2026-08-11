@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { AppSection, Locale } from "../domain/types";
 import { messages, sectionLabel, t } from "../i18n";
 import { ResetDialog } from "./ResetDialog";
+import { TeaCupIcon } from "./SupportPanel";
 
 const sections: AppSection[] = [
   "advisor",
@@ -19,8 +20,10 @@ const sections: AppSection[] = [
 interface LayoutProps {
   locale: Locale;
   section: AppSection;
+  supportOpen: boolean;
   onLocaleChange: (locale: Locale) => void;
   onSectionChange: (section: AppSection) => void;
+  onSupport: () => void;
   onReset: () => void;
   children: React.ReactNode;
 }
@@ -28,8 +31,10 @@ interface LayoutProps {
 export function Layout({
   locale,
   section,
+  supportOpen,
   onLocaleChange,
   onSectionChange,
+  onSupport,
   onReset,
   children
 }: LayoutProps) {
@@ -119,8 +124,8 @@ export function Layout({
                 <li key={item}>
                   <button
                     type="button"
-                    className={item === section ? "active" : ""}
-                    aria-current={item === section ? "step" : undefined}
+                    className={item === section && !supportOpen ? "active" : ""}
+                    aria-current={item === section && !supportOpen ? "step" : undefined}
                     onClick={() => onSectionChange(item)}
                   >
                     <span>{String(index + 1).padStart(2, "0")}</span>
@@ -132,6 +137,17 @@ export function Layout({
                 </li>
               ))}
             </ol>
+            <div className="support-nav">
+              <button
+                type="button"
+                className={supportOpen ? "active" : ""}
+                aria-current={supportOpen ? "page" : undefined}
+                onClick={onSupport}
+              >
+                <TeaCupIcon className="support-nav-icon" />
+                Support
+              </button>
+            </div>
           </nav>
           <div className="boundary-note">
             <strong>SAFE RELEASE CANDIDATE</strong>
