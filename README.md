@@ -1,40 +1,62 @@
 # Linux Migration Companion
 
-An explainable, local-first Alpha that helps Windows users decide whether Linux is a realistic fit **before** they remove anything.
+An explainable, local-first Windows-to-Linux migration advisor that helps people test whether Linux can replace Windows **before** they remove anything.
 
-> **Alpha test preview:** no account, backend, analytics, device scan, package installation, partitioning, raw USB writing, bootloader changes, or command execution. Compatibility remains `UNKNOWN` until the user records representative evidence.
+> **Public release (`0.3.0`):** no account, backend, analytics, telemetry, upload, package installation, partitioning, raw USB writing, bootloader changes, or in-app command execution. An optional read-only local collector can create a privacy-minimized hardware JSON file; detection never proves Linux compatibility.
 
-[Open the standalone Alpha](https://dennishilk.github.io/linux-migration-companion/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Decision model](docs/DECISION_MODEL.md)
+[Open the public application](https://www.dennishilk.com/linux-migration-companion/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Decision model](docs/DECISION_MODEL.md)
 
-## What works in this Alpha
+The repository contains the approved `0.3.0` public-release source. Deployment is handled separately.
 
-- A 21-question DE/EN Fit Advisor plus gaming-ecosystem selection.
-- Deterministic recommendations for 11 deliberately different distributions.
-- Reasons, trade-offs, triggering answers, and change factors—never invented compatibility percentages.
-- A curated assessment of exactly 60 applications and workflows with native, web, compatibility, alternative, partial, and no-equivalent routes.
-- Essential software can override a positive distro fit with a hard blocker.
-- Honest, manual hardware evidence with `UNKNOWN` as a first-class state.
-- A 10-item Live Test Assistant for the actual target machine.
-- Safe media preparation that links to official downloads and established writers; the app never accesses a drive.
-- A schema-validated Migration Passport that stays in browser storage and can be exported/imported as JSON.
-- A personalized, non-executing First Boot plan.
-- Responsive layouts for mobile, tablet, conventional desktop, 1920 px, and ultrawide viewports.
+## What version 0.3.0 does
+
+The ten-stage DE/EN journey preserves the original visual and technical architecture while substantially expanding the evidence model:
+
+1. **Fit Advisor:** 21 practical questions plus gaming-ecosystem selection.
+2. **Distro comparison:** up to three relevant profiles, focused on migration, maintenance, NVIDIA, support, installation, troubleshooting, and recovery.
+3. **Software Reality:** exactly 90 curated applications and workflows, with separate application/workflow scope and stable/volatile freshness labels.
+4. **Hardware Evidence:** 19 evidence classes plus optional limited browser facts and auditable read-only Windows/Linux snapshot import. `SNAPSHOT DETECTED` remains distinct from `LIVE VERIFIED`.
+5. **Live Test Assistant:** ten function-level tests on the real target machine; completed tests feed the corresponding hardware evidence.
+6. **Migration Readiness:** explainable, non-numeric readiness plus a “Should I keep Windows?” strategy.
+7. **Data Migration:** 19 data categories using `COPY`, `SYNC`, `EXPORT/IMPORT`, `RECONFIGURE`, `MANUAL CHECK`, or `DO NOT ASSUME`.
+8. **Safe media handoff:** official downloads and verification guidance; the application never writes a device.
+9. **Migration Passport 3.0:** strict local evidence record with optional snapshot provenance, JSON export/import, and explicit v1/v2-to-v3 migrations.
+10. **First Boot Plan 2.0:** guided and fully explained plans covering what, why, risk, verification, and back-out—without executable commands.
+
+No compatibility percentage is calculated or shown. Preference-based distro recommendations never override software or hardware blockers.
+
+A separate, unnumbered **Support** destination follows the ten-stage journey. Support is voluntary; the complete tool stays free, local-first and tracking-free, with no paid or locked functionality.
+
+The tea action uses Dennis Hilk's existing canonical [Buy Me a Coffee destination](https://buymeacoffee.com/dennishilk), verified from [dennishilk.com](https://dennishilk.com/) on 2026-08-11. The page also links to the website and this repository. It embeds no payment widget or third-party asset.
+
+## Readiness vocabulary
+
+The derived state is one of:
+
+- `READY`
+- `READY WITH CHECKS`
+- `LIVE TEST REQUIRED`
+- `WINDOWS SHOULD BE RETAINED`
+- `BLOCKED`
+- `INSUFFICIENT EVIDENCE`
+
+The related strategy is one of Linux primary, test first, dual boot, keep Windows temporarily, keep Windows for specific workflows, or migration blocked. Every result includes its reasons and unresolved evidence.
 
 ## Deliberate recommendation gates
 
-Gaming by itself is **never** enough to select CachyOS or Nobara. In particular, a beginner with NVIDIA graphics, Steam, low maintenance tolerance, and guided troubleshooting remains near Mint, Zorin, and Ubuntu.
+Gaming by itself is **never** enough to select CachyOS or Nobara. A beginner with NVIDIA graphics, Steam, low maintenance tolerance, and guided troubleshooting remains near Mint, Zorin, and Ubuntu.
 
 - CachyOS requires critical gaming **and** sufficient Linux experience, troubleshooting confidence, active maintenance, and explicit rolling-release acceptance.
-- Nobara rises for an experienced gaming/content-creation specialist; beginner or minimal-maintenance use is capped.
+- Nobara rises only for a matching experienced gaming/content-creation specialist; beginner or minimal-maintenance use is capped.
 - NixOS requires explicit interest in declarative configuration-as-code.
 - Arch requires explicit manual-build intent plus advanced experience, terminal confidence, troubleshooting, and rolling-release acceptance.
 - Gentoo requires the complete expert/compile-control persona.
 
-The UI does not show the internal ordinal score. Hard gates and blockers always take precedence. See [the decision-model specification](docs/DECISION_MODEL.md) and the readable implementation in [`src/engine/recommend.ts`](src/engine/recommend.ts).
+The UI does not expose the internal ordinal score. Hard gates and blockers always take precedence. See [the decision-model specification](docs/DECISION_MODEL.md) and [`src/engine/recommend.ts`](src/engine/recommend.ts).
 
 ## Distribution scope
 
-| Profile | Alpha support depth | Role |
+| Profile | Content depth | Role |
 |---|---|---|
 | Linux Mint 22.3 Cinnamon | Guided | Conservative, familiar mainstream path |
 | Zorin OS 18.1 Core | Guided | Polished Windows-migrant path |
@@ -48,7 +70,7 @@ The UI does not show the internal ordinal score. Hard gates and blockers always 
 | Arch Linux | Reference | Manual rolling system |
 | Gentoo Linux | Reference | Expert compile/control system |
 
-“Guided” describes the depth of this Alpha’s content, not a guarantee or endorsement. Every installation still hands off to current official documentation. Details and source links are in [SUPPORTED_DISTROS.md](SUPPORTED_DISTROS.md).
+“Guided” describes this project’s content depth, not a guarantee or endorsement. Every installation hands off to current official documentation. See [SUPPORTED_DISTROS.md](SUPPORTED_DISTROS.md).
 
 ## Run locally
 
@@ -65,44 +87,64 @@ Quality gate:
 npm run qa
 ```
 
-The gate runs ESLint, strict TypeScript, 52 deterministic/unit/UI tests, and the production build. GitHub Actions additionally audits production dependencies; CodeQL and Dependabot are configured separately.
+The gate runs ESLint, strict TypeScript, 100+ deterministic/unit/UI/adversarial tests, and the production build. CI additionally audits production dependencies; CodeQL and Dependabot are configured separately.
+
+For the project subpath build:
+
+```bash
+VITE_BASE_PATH=/linux-migration-companion/ npm run build
+```
 
 ## Architecture and safety boundary
 
-The deployed artifact is a static React/TypeScript application. All rules and curated data ship with it; user choices are evaluated inside the browser. Local storage contains only the versioned Passport. Export is explicit.
+The artifact is a static React/TypeScript application. All rules and curated data ship in the bundle; user choices are evaluated in the browser. Local storage contains only the versioned Passport, including at most one optional snapshot. Export/import and browser snapshot capture are explicit.
 
 The following remain outside the trust boundary:
 
-- reading PCI/USB identifiers, firmware state, serial numbers, accounts, or documents;
-- deciding that hardware works without a live test;
-- downloading an image on the user’s behalf;
-- verifying a checksum on the user’s behalf;
+- automatic browser enumeration of PCI/USB devices or firmware state;
+- any collection of serial numbers, accounts, network identifiers, user file names/content, or secrets;
+- deciding that hardware works without a representative test;
+- downloading an image or verifying a checksum on the user’s behalf;
 - opening raw storage devices or writing media;
 - partitioning, installing, changing bootloaders, installing packages, or running commands;
-- generating NixOS hardware configuration, disk layout, secrets, or credentials.
+- generating NixOS hardware, disk, boot, secret, or credential configuration.
 
 See [ARCHITECTURE.md](docs/ARCHITECTURE.md) and [THREAT_MODEL.md](docs/THREAT_MODEL.md).
 
-## Migration Passport
+## Optional Hardware Snapshot
 
-Passport schema version 1 is strict: unknown fields, unknown distro/software identifiers, oversized files, excessive nesting, and notes longer than 1,000 characters are rejected. Imports are limited to 256 KiB. The machine-readable contract is in [`schemas/migration-passport.schema.json`](schemas/migration-passport.schema.json).
+Manual evidence remains the complete default path. The optional browser route records only coarse, possibly privacy-reduced platform, logical-processor, memory and WebGPU-availability facts; it identifies no device. The primary Windows path is a small portable `.exe` built from the auditable C# source in [`collectors/windows-exe`](collectors/windows-exe). It implements collection directly through local WMI and documented Win32 APIs, makes no network request, requests no elevation, installs nothing, and writes one create-new JSON file to Downloads. The readable PowerShell implementation remains an advanced reference/manual fallback. The Linux Python collector remains an unminified, standard-library source file.
 
-Browser storage is convenience, not backup. Export the JSON file if the evidence matters, inspect it before sharing, and treat it as potentially sensitive because it describes software and migration preferences.
+Snapshot schema v1 is strict, closed, limited to 128 KiB/depth 8 and treated as untrusted input. Imported facts can set an existing class to `KNOWN FACT`; they cannot mark it required, pass a live test, or assert Linux support. The exact APIs, fields, discarded fields, privacy audit, execution-policy limitation and output-path behavior are documented in [Hardware Snapshot design and collector audit](docs/HARDWARE_SNAPSHOT.md). The machine-readable contract is [`schemas/hardware-snapshot.schema.json`](schemas/hardware-snapshot.schema.json).
 
-## Current limitations
+## Migration Passport 3.0
 
-- The proposed read-only Windows hardware scanner was deferred for Alpha. A web page cannot obtain trustworthy device IDs or Secure Boot state, and a rushed native scanner would expand the attack and privacy surface.
-- Software entries describe routes and questions to verify; they do not promise that a specific document, plug-in, game, anti-cheat system, peripheral, or organization policy works.
-- The catalog is a maintained snapshot reviewed on **2026-08-10**, not a live compatibility service.
-- Official pages and supported versions change. Follow the linked project/vendor pages at decision time.
-- Live-session success does not prove an installed system will remain identical after updates or driver changes.
+Passport v3 contains advisor answers, up to three comparison profiles, software/workflow requirements, 19 hardware evidence records, optional validated snapshot provenance, ten live-test results, data-migration selections, media progress, and the chosen distro. Derived readiness remains recomputable rather than being stored as an unchallengeable fact.
+
+Imports are limited to 256 KiB and depth 12. Objects are strict; IDs are closed against the current catalog; comparison IDs are unique and capped; text is bounded; contradictory required/not-applicable hardware evidence is rejected. Existing strict Passport v1 and v2 files are explicitly migrated to v3 without inventing snapshot or live evidence.
+
+Browser storage is convenience, not backup. Snapshot model names and non-unique PCI/USB IDs can be sensitive in context, so inspect exports before sharing. Never put passwords, private keys, recovery codes, or licence keys in notes. The machine-readable v3 contract is in [`schemas/migration-passport.schema.json`](schemas/migration-passport.schema.json).
+
+## Current limitations and release notes
+
+- The Windows `.exe` included in version `0.3.0` is **not Authenticode-signed**. SmartScreen or reputation warnings may therefore appear; never disable or bypass Windows security controls. The published checksum can detect changed bytes but does not authenticate a publisher. See [the signing and release plan](docs/WINDOWS_COLLECTOR_RELEASE.md).
+- The executable targets .NET Framework 4.8 because it is included in stock Windows 10 22H2 and Windows 11. No developer tooling is required. Windows Secure Boot remains deliberately `unavailable` to preserve ordinary-user execution.
+- The executable has passed ordinary-user, double-click QA on real Windows 11 Pro hardware. Representative Windows 10 verification remains outstanding; a Windows GitHub runner build and automated core tests are necessary but not a substitute.
+- The PowerShell reference may be blocked by execution policy. This is a beginner-path product limitation, not a PowerShell bug; the project recommends no bypass or policy weakening.
+- Software records describe supported routes and representative verification; they do not promise that a document, plug-in, game, anti-cheat system, peripheral, or organization policy works.
+- The catalog is a maintained snapshot reviewed on **2026-08-11**, not a live compatibility service. Volatile entries are labelled and must be rechecked.
+- Live-session success does not prove that an installed system will behave identically after future updates or driver changes.
 - The app cannot make dual boot, firmware, backups, or partitioning risk-free.
+- Search indexing is enabled for the single canonical application URL. Query-driven `?step=` states retain deep-linking but canonicalize to the application root; no artificial localized URLs or `hreflang` alternates are published. The project ships a one-URL subpath sitemap, while the production root sitemap remains owned by the main website integration.
+- Real-browser QA remains a required release check; automated DOM tests are not a substitute.
 
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Decision model and invariants](docs/DECISION_MODEL.md)
 - [Threat model](docs/THREAT_MODEL.md)
+- [Hardware Snapshot design and collector audit](docs/HARDWARE_SNAPSHOT.md)
+- [Windows collector build, checksum and signing plan](docs/WINDOWS_COLLECTOR_RELEASE.md)
 - [Manual QA checklist](docs/MANUAL_QA.md)
 - [Data maintenance](docs/DATA_MAINTENANCE.md)
 - [Privacy](PRIVACY.md)
@@ -111,6 +153,10 @@ Browser storage is convenience, not backup. Export the JSON file if the evidence
 
 ## Status and non-affiliation
 
-This repository is a public experimental Alpha. It is not affiliated with or endorsed by any listed Linux distribution, software vendor, or media-writer project. Names and trademarks belong to their respective owners.
+This repository contains public version `0.3.0`, not a compatibility certification. It is not affiliated with or endorsed by any listed Linux distribution, software vendor, or media-writer project. Names and trademarks belong to their respective owners.
 
+## Authorship and license
+
+© 2026 Dennis Hilk  
+Linux Migration Companion  
 Licensed under the [MIT License](LICENSE).

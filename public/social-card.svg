@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Linux Migration Companion</title>
+  <desc id="description">Privacy-first Windows-to-Linux migration planning</desc>
+  <rect width="1200" height="630" fill="#0c211d"/>
+  <circle cx="1110" cy="42" r="310" fill="#15312b"/>
+  <circle cx="1055" cy="570" r="265" fill="#102a2c"/>
+  <path d="M0 548C260 478 445 598 720 530s350-35 480-2v102H0Z" fill="#102a2c"/>
+
+  <g transform="translate(72 72)">
+    <rect width="154" height="154" rx="32" fill="#0c211d" stroke="#55c1a8" stroke-width="4"/>
+    <path d="M35 47c22 0 22 31 44 31h40M35 107c22 0 22-29 44-29" fill="none" stroke="#82e7ca" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="35" cy="47" r="10" fill="#82e7ca"/>
+    <circle cx="35" cy="107" r="10" fill="#82e7ca"/>
+    <path d="m101 58 20 20-20 20" fill="none" stroke="#f0b45c" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <text x="266" y="103" fill="#82e7ca" font-family="Segoe UI, DejaVu Sans, sans-serif" font-size="24" font-weight="700" letter-spacing="3">PRIVACY-FIRST · LOCAL-FIRST · NO TRACKING</text>
+  <text x="72" y="320" fill="#f8faf9" font-family="Segoe UI, DejaVu Sans, sans-serif" font-size="82" font-weight="700" letter-spacing="-3">Linux Migration</text>
+  <text x="72" y="407" fill="#f8faf9" font-family="Segoe UI, DejaVu Sans, sans-serif" font-size="82" font-weight="700" letter-spacing="-3">Companion</text>
+  <text x="74" y="474" fill="#cad5d0" font-family="Segoe UI, DejaVu Sans, sans-serif" font-size="30">Plan a realistic move from Windows to Linux</text>
+  <text x="74" y="514" fill="#cad5d0" font-family="Segoe UI, DejaVu Sans, sans-serif" font-size="30">with software, hardware and live-test evidence.</text>
+  <text x="74" y="568" fill="#82e7ca" font-family="Segoe UI, DejaVu Sans, sans-serif" font-size="22" font-weight="600">Free and open source · Runs locally in your browser · No account</text>
+  <text x="1128" y="604" text-anchor="end" fill="#aabbb4" font-family="Segoe UI, DejaVu Sans, sans-serif" font-size="18">© 2026 Dennis Hilk · MIT License</text>
+</svg>

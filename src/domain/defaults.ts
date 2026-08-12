@@ -1,5 +1,8 @@
 import type {
   AdvisorAnswers,
+  DataMigrationSelections,
+  HardwareClassId,
+  HardwareEvidenceMap,
   HardwareProfile,
   LiveTestResults,
   MediaProgress,
@@ -53,29 +56,66 @@ export const DEFAULT_MEDIA_PROGRESS: MediaProgress = {
   return: false
 };
 
+export const HARDWARE_CLASS_IDS: HardwareClassId[] = [
+  "graphics",
+  "hybrid_graphics",
+  "wifi",
+  "bluetooth",
+  "ethernet",
+  "audio",
+  "usb_audio",
+  "webcam",
+  "microphone",
+  "fingerprint",
+  "dock",
+  "external_monitors",
+  "hidpi",
+  "printer",
+  "scanner",
+  "capture_device",
+  "game_controller",
+  "racing_wheel",
+  "special_usb"
+];
+
+export const DEFAULT_DATA_MIGRATION: DataMigrationSelections = {};
+
+function createDefaultEvidence(): HardwareEvidenceMap {
+  return Object.fromEntries(
+    HARDWARE_CLASS_IDS.map((id) => [
+      id,
+      { state: "unknown", required: id === "graphics", details: "" }
+    ])
+  ) as HardwareEvidenceMap;
+}
+
 export function createDefaultHardware(
   gpuVendor: AdvisorAnswers["gpuVendor"] = "unknown"
 ): HardwareProfile {
   return {
-    source: "manual",
     gpuVendor,
-    overall: gpuVendor === "nvidia" ? "proprietary_driver_required" : "unknown",
-    scannerStatus: "deferred",
-    notes: ""
+    evidence: createDefaultEvidence(),
+    notes: "",
+    snapshot: null
   };
 }
 
 export function createDefaultPassport(): MigrationPassport {
   return {
-    schemaVersion: 1,
+    schemaVersion: 3,
     product: "linux-migration-companion",
     locale: "en",
     updatedAt: new Date().toISOString(),
-    answers: DEFAULT_ANSWERS,
+    answers: {
+      ...DEFAULT_ANSWERS,
+      gameLaunchers: [...DEFAULT_ANSWERS.gameLaunchers]
+    },
     softwareSelections: {},
     hardware: createDefaultHardware(),
-    liveTests: DEFAULT_LIVE_TESTS,
-    mediaProgress: DEFAULT_MEDIA_PROGRESS,
-    selectedDistroId: null
+    liveTests: { ...DEFAULT_LIVE_TESTS },
+    mediaProgress: { ...DEFAULT_MEDIA_PROGRESS },
+    selectedDistroId: null,
+    comparisonDistroIds: [],
+    dataMigration: { ...DEFAULT_DATA_MIGRATION }
   };
 }

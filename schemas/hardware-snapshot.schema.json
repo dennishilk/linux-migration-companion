@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.dennishilk.com/linux-migration-companion/schemas/hardware-snapshot.schema.json",
+  "title": "Linux Migration Companion Hardware Snapshot v1",
+  "description": "Strict data-only contract for optional privacy-minimized browser, Windows and Linux hardware snapshots. Detection is not Linux compatibility or live verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "product", "createdAt", "source", "collector", "system", "facts"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "product": { "const": "linux-migration-companion-hardware-snapshot" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "source": { "enum": ["browser_reported", "windows_collector", "linux_collector"] },
+    "collector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "enum": ["browser-snapshot", "windows-dotnet", "windows-powershell", "linux-python"] },
+        "version": { "type": "string", "maxLength": 32, "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$" }
+      }
+    },
+    "system": { "$ref": "#/$defs/system" },
+    "browserCapabilities": { "$ref": "#/$defs/browserCapabilities" },
+    "facts": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/fact" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "source": { "const": "browser_reported" } }, "required": ["source"] },
+      "then": {
+        "required": ["browserCapabilities"],
+        "properties": {
+          "collector": { "properties": { "id": { "const": "browser-snapshot" } } },
+          "facts": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "source": { "const": "windows_collector" } }, "required": ["source"] },
+      "then": {
+        "not": { "required": ["browserCapabilities"] },
+        "properties": { "collector": { "properties": { "id": { "enum": ["windows-dotnet", "windows-powershell"] } } } }
+      }
+    },
+    {
+      "if": { "properties": { "source": { "const": "linux_collector" } }, "required": ["source"] },
+      "then": {
+        "not": { "required": ["browserCapabilities"] },
+        "properties": { "collector": { "properties": { "id": { "const": "linux-python" } } } }
+      }
+    }
+  ],
+  "$defs": {
+    "safeText160": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "safeText120": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "safeText100": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["osFamily", "architecture", "formFactor", "firmware", "secureBoot", "virtualization"],
+      "properties": {
+        "osFamily": { "enum": ["windows", "linux", "other", "unknown"] },
+        "osLabel": { "$ref": "#/$defs/safeText120" },
+        "architecture": { "enum": ["x86_64", "x86", "arm64", "arm", "other", "unknown"] },
+        "formFactor": { "enum": ["desktop", "laptop", "tablet", "virtual", "unknown"] },
+        "logicalProcessors": { "type": "integer", "minimum": 1, "maximum": 4096 },
+        "memoryGiB": { "type": "number", "minimum": 0.25, "maximum": 16384 },
+        "firmware": { "enum": ["uefi", "legacy", "unknown"] },
+        "secureBoot": { "enum": ["enabled", "disabled", "unavailable", "unknown"] },
+        "virtualization": { "enum": ["enabled", "supported", "unavailable", "unknown"] },
+        "connectedDisplays": { "type": "integer", "minimum": 0, "maximum": 64 }
+      }
+    },
+    "browserCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["platform", "hardwareConcurrency", "deviceMemory", "webgpu"],
+      "properties": {
+        "platform": { "enum": ["reported", "unavailable"] },
+        "hardwareConcurrency": { "enum": ["reported_reduced", "unavailable"] },
+        "deviceMemory": { "enum": ["reported_reduced", "unavailable"] },
+        "webgpu": { "enum": ["adapter_available", "adapter_unavailable", "api_unavailable"] }
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["category", "name"],
+      "properties": {
+        "category": {
+          "enum": [
+            "graphics", "hybrid_graphics", "wifi", "bluetooth", "ethernet", "audio",
+            "usb_audio", "webcam", "microphone", "fingerprint", "dock", "external_monitors",
+            "hidpi", "printer", "scanner", "capture_device", "game_controller", "racing_wheel",
+            "special_usb", "cpu", "storage", "usb_controller", "input_device", "display"
+          ]
+        },
+        "name": { "$ref": "#/$defs/safeText160" },
+        "vendor": { "$ref": "#/$defs/safeText100" },
+        "bus": { "enum": ["pci", "usb", "platform", "unknown"] },
+        "vendorId": { "type": "string", "pattern": "^[0-9a-f]{4}$" },
+        "deviceId": { "type": "string", "pattern": "^[0-9a-f]{4}$" }
+      },
+      "oneOf": [
+        { "not": { "anyOf": [{ "required": ["vendorId"] }, { "required": ["deviceId"] }] } },
+        { "required": ["vendorId", "deviceId"] }
+      ]
+    }
+  }
+}

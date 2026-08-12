@@ -24,7 +24,10 @@ const categoryText: Record<SoftwareRecord["category"], { en: string; de: string 
   gaming: { en: "Gaming", de: "Gaming" },
   communication: { en: "Communication", de: "Kommunikation" },
   media: { en: "Media", de: "Medien" },
-  professional: { en: "Professional", de: "Professionell" }
+  professional: { en: "Professional", de: "Professionell" },
+  hardware: { en: "Hardware utilities", de: "Hardware-Werkzeuge" },
+  cloud: { en: "Cloud workflows", de: "Cloud-Arbeitsabläufe" },
+  security: { en: "Security & recovery", de: "Sicherheit & Wiederherstellung" }
 };
 
 const routeText: Record<SoftwareRoute, { en: string; de: string }> = {
@@ -81,7 +84,7 @@ export function SoftwareAssessmentPanel({
     <section aria-labelledby="software-title">
       <div className="page-heading split-heading">
         <div>
-          <p className="eyebrow">02 / SOFTWARE REALITY</p>
+          <p className="eyebrow">03 / SOFTWARE REALITY</p>
           <h1 id="software-title">
             {locale === "de" ? "Welche Software muss wirklich mit?" : "What software genuinely has to move?"}
           </h1>
@@ -142,6 +145,16 @@ export function SoftwareAssessmentPanel({
               </header>
               <p>{localize(software.summary, locale)}</p>
               <div className="tag-row">
+                <span className="classification-tag">
+                  {software.scope === "application"
+                    ? locale === "de" ? "Anwendung" : "Application"
+                    : locale === "de" ? "Arbeitsablauf" : "Workflow"}
+                </span>
+                <span className={`freshness-tag freshness-${software.freshness}`}>
+                  {software.freshness === "volatile"
+                    ? locale === "de" ? "Volatil – erneut prüfen" : "Volatile: re-check"
+                    : locale === "de" ? "Stabile Grundlage" : "Stable baseline"}
+                </span>
                 {software.routes.map((route) => <span key={route}>{pick(locale, routeText[route])}</span>)}
               </div>
               <details>
@@ -159,7 +172,7 @@ export function SoftwareAssessmentPanel({
                   </button>
                 ) : (
                   <>
-                    <div className="priority-switch" aria-label={`${software.name} priority`}>
+                    <div className="priority-switch" role="group" aria-label={`${software.name} ${locale === "de" ? "Wichtigkeit" : "priority"}`}>
                       <button
                         type="button"
                         className={priority === "important" ? "active" : ""}

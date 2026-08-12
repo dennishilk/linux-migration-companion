@@ -1,16 +1,16 @@
 # Supported distribution profiles
 
-Data review date: 2026-08-10
+Data review date: 2026-08-11
 
-The Alpha compares a fixed, opinionated set of 11 profiles. This is a decision aid, not a universal ranking or compatibility certification.
+Version `0.3.0` compares a fixed, opinionated set of 11 profiles. This is a decision aid, not a universal ranking or compatibility certification.
 
 ## Support-depth vocabulary
 
-- **Guided:** the Alpha provides a structured recommendation, official download/verification/installation handoff, and common migration context.
+- **Guided:** the Companion provides a structured recommendation, official download/verification/installation handoff, and common migration context.
 - **Reference:** the profile participates fully in the advisor, but the intended user is expected to use project documentation and own more troubleshooting.
-- **Experimental:** the decision model and boundary guidance exist, but the Alpha does not generate or manage the system’s configuration.
+- **Experimental:** the decision model and boundary guidance exist, but the Companion does not generate or manage the system’s configuration.
 
-| Profile | Model | Depth | Official project | Alpha-specific boundary |
+| Profile | Model | Depth | Official project | Companion-specific boundary |
 |---|---|---|---|---|
 | Linux Mint 22.3 Cinnamon | LTS | Guided | [linuxmint.com](https://linuxmint.com/) | Familiar/low-maintenance route; hardware still requires live test |
 | Zorin OS 18.1 Core | LTS | Guided | [zorin.com/os](https://zorin.com/os/) | Core is sufficient; no Pro upsell in recommendation logic |

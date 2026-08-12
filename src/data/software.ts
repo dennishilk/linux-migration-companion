@@ -5,7 +5,7 @@ import type {
   SoftwareRoute
 } from "../domain/types";
 
-const reviewedAt = "2026-08-10";
+const reviewedAt = "2026-08-11";
 
 function text(en: string, de: string): LocalizedText {
   return { en, de };
@@ -32,6 +32,28 @@ function record(
     routes,
     baseRisk,
     blockerWhenEssential,
+    scope: routes.some((route) =>
+      [
+        "compatibility_layer",
+        "alternative_workflow",
+        "partial_replacement",
+        "no_real_equivalent"
+      ].includes(route)
+    )
+      ? "workflow"
+      : "application",
+    freshness:
+      category === "gaming" ||
+      category === "hardware" ||
+      category === "cloud" ||
+      category === "security" ||
+      routes.includes("compatibility_layer") ||
+      routes.includes("web_option") ||
+      routes.includes("manual_verification_required") ||
+      routes.includes("partial_replacement") ||
+      routes.includes("no_real_equivalent")
+        ? "volatile"
+        : "stable",
     summary: text(summaryEn, summaryDe),
     verify: text(verifyEn, verifyDe),
     sourceLabel,
@@ -880,6 +902,426 @@ export const softwareCatalog: SoftwareRecord[] = [
     "Modellgröße, Erweiterungen, Renderer, LayOut, Dateiaustausch und Offline-Anforderungen prüfen.",
     "SketchUp system requirements",
     "https://help.sketchup.com/en/sketchup/system-requirements"
+  ),
+  record(
+    "excel-vba-addins",
+    "Excel VBA, add-ins & Power Query workflow",
+    "office",
+    ["web_option", "partial_replacement", "manual_verification_required"],
+    "high",
+    true,
+    "Treat VBA, COM add-ins, Power Query connectors and signed macros as a workflow, not as generic spreadsheet compatibility.",
+    "VBA, COM-Add-ins, Power-Query-Connectoren und signierte Makros sind ein Arbeitsablauf, keine allgemeine Tabellenkompatibilität.",
+    "Run representative workbooks end to end, including refresh, signatures, external data, export and printing.",
+    "Repräsentative Arbeitsmappen vollständig testen: Aktualisierung, Signaturen, externe Daten, Export und Druck.",
+    "Microsoft Excel Power Query guidance",
+    "https://support.microsoft.com/en-us/excel/about-power-query-in-excel"
+  ),
+  record(
+    "microsoft-access",
+    "Microsoft Access databases",
+    "professional",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "An Access database can include forms, reports, VBA, linked tables and organization-specific logic; copying the data alone is not equivalent.",
+    "Eine Access-Datenbank kann Formulare, Berichte, VBA, verknüpfte Tabellen und organisationsspezifische Logik enthalten; nur Daten zu kopieren ist kein Ersatz.",
+    "Inventory front ends, back ends, ODBC links, VBA, reports, security and every required user workflow.",
+    "Frontends, Backends, ODBC-Verknüpfungen, VBA, Berichte, Sicherheit und alle benötigten Abläufe erfassen.",
+    "Microsoft Access desktop database guidance",
+    "https://support.microsoft.com/en-us/access/basic-tasks-for-an-access-desktop-database"
+  ),
+  record(
+    "power-bi-desktop",
+    "Microsoft Power BI Desktop",
+    "professional",
+    ["web_option", "no_real_equivalent", "partial_replacement"],
+    "high",
+    true,
+    "Power BI Desktop's documented desktop requirements are Windows-based. The web service is not a replacement for every authoring, gateway or connector task.",
+    "Die dokumentierten Desktop-Anforderungen von Power BI Desktop basieren auf Windows. Der Webdienst ersetzt nicht jede Autoren-, Gateway- oder Connector-Aufgabe.",
+    "Check PBIX authoring, custom visuals, connectors, gateways, refresh, local data and tenant policy.",
+    "PBIX-Erstellung, benutzerdefinierte Visuals, Connectoren, Gateways, Aktualisierung, lokale Daten und Mandantenrichtlinien prüfen.",
+    "Microsoft Power BI Desktop requirements",
+    "https://learn.microsoft.com/en-us/power-bi/fundamentals/desktop-get-the-desktop"
+  ),
+  record(
+    "sharepoint-sync",
+    "SharePoint / OneDrive library sync",
+    "cloud",
+    ["web_option", "alternative_workflow", "partial_replacement"],
+    "high",
+    true,
+    "Browser access is not the same as synchronized libraries, Files On-Demand, Office integration or tenant-managed retention.",
+    "Browserzugriff ist nicht dasselbe wie synchronisierte Bibliotheken, Files On-Demand, Office-Integration oder mandantengesteuerte Aufbewahrung.",
+    "Confirm every placeholder is downloaded, shared libraries are inventoried, and ownership, retention and conflict rules are understood.",
+    "Alle Platzhalter lokal laden, gemeinsame Bibliotheken erfassen sowie Besitz-, Aufbewahrungs- und Konfliktregeln klären.",
+    "Microsoft OneDrive and SharePoint limitations",
+    "https://support.microsoft.com/en-us/onedrive/restrictions-and-limitations-in-onedrive-and-sharepoint"
+  ),
+  record(
+    "fusion-360",
+    "Autodesk Fusion",
+    "professional",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "Autodesk's current Fusion desktop requirements list Windows and macOS, not Linux. CAD/CAM data exchange does not guarantee design-history or manufacturing parity.",
+    "Autodesks aktuelle Fusion-Desktop-Anforderungen nennen Windows und macOS, nicht Linux. CAD/CAM-Dateiaustausch garantiert keine Gleichheit bei Konstruktionshistorie oder Fertigung.",
+    "Check native projects, cloud ownership, add-ins, electronics, CAM posts, machines, drawings and collaborators.",
+    "Native Projekte, Cloud-Besitz, Add-ins, Elektronik, CAM-Postprozessoren, Maschinen, Zeichnungen und Zusammenarbeit prüfen.",
+    "Autodesk Fusion system requirements",
+    "https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-requirements-for-Autodesk-Fusion-360.html"
+  ),
+  record(
+    "autodesk-inventor",
+    "Autodesk Inventor",
+    "professional",
+    ["no_real_equivalent", "alternative_workflow"],
+    "high",
+    true,
+    "The supported Inventor desktop workflow is Windows-dependent. Neutral exports do not preserve every parametric, assembly or add-in behavior.",
+    "Der unterstützte Inventor-Desktop-Ablauf ist Windows-abhängig. Neutrale Exporte erhalten nicht jedes parametrische, Baugruppen- oder Add-in-Verhalten.",
+    "Test assemblies, constraints, drawings, Vault, iLogic, add-ins, licensing and downstream manufacturing.",
+    "Baugruppen, Abhängigkeiten, Zeichnungen, Vault, iLogic, Add-ins, Lizenzierung und nachgelagerte Fertigung testen.",
+    "Autodesk Inventor system requirements",
+    "https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-requirements-for-Autodesk-Inventor-2026.html"
+  ),
+  record(
+    "revit",
+    "Autodesk Revit",
+    "professional",
+    ["no_real_equivalent", "alternative_workflow"],
+    "high",
+    true,
+    "Revit is a Windows-centered BIM production environment; file viewers or format exchange are not an equivalent authoring workflow.",
+    "Revit ist eine Windows-zentrierte BIM-Produktionsumgebung; Viewer oder Formataustausch sind kein gleichwertiger Autorenablauf.",
+    "Check central models, worksharing, families, add-ins, rendering, IFC exchange, licensing and project contracts.",
+    "Zentrale Modelle, Worksharing, Familien, Add-ins, Rendering, IFC-Austausch, Lizenzierung und Projektverträge prüfen.",
+    "Autodesk Revit system requirements",
+    "https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-requirements-for-Revit-2026-products.html"
+  ),
+  record(
+    "arcgis-pro",
+    "Esri ArcGIS Pro",
+    "professional",
+    ["no_real_equivalent", "alternative_workflow", "partial_replacement"],
+    "high",
+    true,
+    "ArcGIS Pro's official desktop requirements are Windows-specific. Other GIS tools do not automatically reproduce geodatabases, extensions, models or enterprise policy.",
+    "Die offiziellen Desktop-Anforderungen von ArcGIS Pro sind Windows-spezifisch. Andere GIS-Werkzeuge reproduzieren Geodatabases, Erweiterungen, Modelle oder Enterprise-Richtlinien nicht automatisch.",
+    "Inventory projects, geodatabases, extensions, ModelBuilder/Python, portals, authentication, layouts and publishing.",
+    "Projekte, Geodatabases, Erweiterungen, ModelBuilder/Python, Portale, Authentifizierung, Layouts und Veröffentlichung erfassen.",
+    "Esri ArcGIS Pro system requirements",
+    "https://pro.arcgis.com/en/pro-app/latest/get-started/arcgis-pro-system-requirements.htm"
+  ),
+  record(
+    "vmware-workstation",
+    "VMware Workstation",
+    "development",
+    ["native", "manual_verification_required"],
+    "medium",
+    false,
+    "Broadcom documents supported Windows and Linux host operating systems, but kernel, Secure Boot, networking and enterprise support remain version-specific.",
+    "Broadcom dokumentiert unterstützte Windows- und Linux-Hostsysteme; Kernel, Secure Boot, Netzwerk und Enterprise-Support bleiben versionsabhängig.",
+    "Test every VM, snapshot, virtual network, USB device, shared folder, encryption and license on the target distro.",
+    "Jede VM, Snapshots, virtuelle Netze, USB-Geräte, gemeinsame Ordner, Verschlüsselung und Lizenz auf der Zieldistribution testen.",
+    "Broadcom supported Workstation host operating systems",
+    "https://knowledge.broadcom.com/external/article/315653/supported-host-operating-systems-for-wor.html"
+  ),
+  record(
+    "hyper-v",
+    "Hyper-V virtual machines",
+    "development",
+    ["alternative_workflow", "partial_replacement", "manual_verification_required"],
+    "high",
+    true,
+    "Hyper-V is a Windows feature. Moving a VM to KVM/QEMU or another hypervisor requires conversion and validation, not just copying its disk.",
+    "Hyper-V ist eine Windows-Funktion. Der Wechsel zu KVM/QEMU oder einem anderen Hypervisor erfordert Konvertierung und Prüfung, nicht nur das Kopieren der Festplatte.",
+    "Export VMs safely and test generation, firmware, checkpoints, virtual switches, TPM, licensing and backups.",
+    "VMs sicher exportieren und Generation, Firmware, Prüfpunkte, virtuelle Switches, TPM, Lizenzierung und Backups testen.",
+    "Microsoft Hyper-V installation guidance",
+    "https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/get-started/install-hyper-v"
+  ),
+  record(
+    "sql-server-localdb",
+    "SQL Server Express LocalDB workflow",
+    "development",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "LocalDB is a Windows-oriented SQL Server Express mode. Application databases must be backed up and restored through a supported target, not copied while active.",
+    "LocalDB ist ein Windows-orientierter SQL-Server-Express-Modus. Anwendungsdatenbanken müssen über ein unterstütztes Ziel gesichert und wiederhergestellt werden, nicht im laufenden Betrieb kopiert.",
+    "Identify every instance, database, login, collation, connection string, scheduled task and restore test.",
+    "Alle Instanzen, Datenbanken, Logins, Sortierungen, Verbindungszeichenfolgen, Aufgaben und Wiederherstellungstests erfassen.",
+    "Microsoft SQL Server Express LocalDB",
+    "https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb?view=sql-server-ver17"
+  ),
+  record(
+    "windows-desktop-development",
+    ".NET Windows desktop development",
+    "development",
+    ["no_real_equivalent", "alternative_workflow", "partial_replacement"],
+    "high",
+    true,
+    "WPF, Windows Forms, Windows App SDK and Windows-specific APIs target Windows even when parts of .NET tooling run on Linux.",
+    "WPF, Windows Forms, Windows App SDK und Windows-spezifische APIs zielen auf Windows, auch wenn Teile der .NET-Werkzeuge unter Linux laufen.",
+    "Check target frameworks, designers, SDKs, COM, installers, signing, debugging devices and release pipelines.",
+    "Zielframeworks, Designer, SDKs, COM, Installer, Signierung, Debugging-Geräte und Release-Pipelines prüfen.",
+    "Microsoft .NET desktop guide",
+    "https://learn.microsoft.com/en-us/dotnet/desktop/"
+  ),
+  record(
+    "git-cli",
+    "Git command-line workflow",
+    "development",
+    ["native", "manual_verification_required"],
+    "low",
+    false,
+    "Git is native on Linux; repositories are portable, while credentials, hooks, line endings, signing and platform-specific scripts need review.",
+    "Git ist nativ unter Linux; Repositories sind portabel, Zugangsdaten, Hooks, Zeilenenden, Signierung und plattformspezifische Skripte müssen geprüft werden.",
+    "Clone into a clean path and test authentication, LFS, submodules, hooks, signing, builds and CI parity.",
+    "In einen sauberen Pfad klonen und Authentifizierung, LFS, Submodule, Hooks, Signierung, Builds und CI-Gleichheit testen.",
+    "Git for Linux",
+    "https://git-scm.com/download/linux"
+  ),
+  record(
+    "openssh",
+    "OpenSSH keys and agent workflow",
+    "security",
+    ["native", "manual_verification_required"],
+    "medium",
+    false,
+    "OpenSSH is native, but private keys and agent configuration are security-sensitive migration items, not ordinary files to paste into a Passport.",
+    "OpenSSH ist nativ, private Schlüssel und Agent-Konfiguration sind jedoch sicherheitskritische Migrationsobjekte und keine normalen Passport-Inhalte.",
+    "Inventory key purpose and ownership, move secrets through a protected channel, verify permissions and rotate exposed keys.",
+    "Zweck und Besitz der Schlüssel erfassen, Geheimnisse geschützt übertragen, Berechtigungen prüfen und offengelegte Schlüssel rotieren.",
+    "OpenSSH portable project",
+    "https://www.openssh.com/portable.html"
+  ),
+  record(
+    "podman",
+    "Podman containers",
+    "development",
+    ["native", "manual_verification_required"],
+    "low",
+    false,
+    "Podman is available on Linux; Docker-compatible commands do not guarantee identical networking, Compose, storage, permissions or production behavior.",
+    "Podman ist unter Linux verfügbar; Docker-kompatible Befehle garantieren keine identischen Netzwerk-, Compose-, Speicher-, Berechtigungs- oder Produktionsabläufe.",
+    "Test images, volumes, rootless permissions, networks, Compose files, secrets and deployment targets.",
+    "Images, Volumes, Rootless-Berechtigungen, Netzwerke, Compose-Dateien, Geheimnisse und Deployment-Ziele testen.",
+    "Podman installation documentation",
+    "https://podman.io/docs/installation"
+  ),
+  record(
+    "logitech-control",
+    "Logitech Options+ / G HUB device control",
+    "hardware",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "Logitech's official configuration applications target Windows and macOS. Basic HID input does not prove macros, profiles, firmware, lighting or device switching.",
+    "Logitechs offizielle Konfigurationsanwendungen zielen auf Windows und macOS. Einfache HID-Eingabe belegt keine Makros, Profile, Firmware, Beleuchtung oder Geräteumschaltung.",
+    "Test the exact model and every required button, profile, macro, wheel feature, firmware update and onboard-memory behavior.",
+    "Das genaue Modell und jede benötigte Taste, jedes Profil, Makro, Lenkradmerkmal, Firmwareupdate und Onboard-Speicherverhalten testen.",
+    "Logitech G HUB guide",
+    "https://www.logitechg.com/en-us/software/guides/g-hub-basics"
+  ),
+  record(
+    "corsair-icue",
+    "Corsair iCUE hardware control",
+    "hardware",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "Corsair states that iCUE is not supported on Linux. Community control can cover selected devices and features but is not vendor support.",
+    "Corsair erklärt, dass iCUE unter Linux nicht unterstützt wird. Community-Steuerung kann ausgewählte Geräte und Funktionen abdecken, ist aber kein Herstellersupport.",
+    "List exact devices and test cooling, fan curves, sensors, macros, onboard profiles, lighting and firmware without risking thermal control.",
+    "Genaue Geräte erfassen und Kühlung, Lüfterkurven, Sensoren, Makros, Onboard-Profile, Beleuchtung und Firmware ohne thermisches Risiko testen.",
+    "Corsair iCUE compatibility requirements",
+    "https://help.corsair.com/hc/en-us/articles/360040957051-iCUE-Compatibility-and-installation-requirements"
+  ),
+  record(
+    "razer-synapse",
+    "Razer Synapse device control",
+    "hardware",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "Razer's current Synapse installation requirements specify supported Windows versions. Community tools are device- and feature-specific.",
+    "Razers aktuelle Synapse-Installationsanforderungen nennen unterstützte Windows-Versionen. Community-Werkzeuge sind geräte- und funktionsspezifisch.",
+    "Test exact devices, DPI, buttons, profiles, macros, lighting, audio features, firmware and onboard memory.",
+    "Genaue Geräte, DPI, Tasten, Profile, Makros, Beleuchtung, Audiofunktionen, Firmware und Onboard-Speicher testen.",
+    "Razer Synapse installation guidance",
+    "https://mysupport.razer.com/app/answers/detail/a_id/1834/~/how-to-install-or-upgrade-razer-synapse"
+  ),
+  record(
+    "asus-armoury-crate",
+    "ASUS Armoury Crate system control",
+    "hardware",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "ASUS documents Armoury Crate for Windows. On supported laptops and desktops it may control power, fans, graphics modes, lighting and device-specific features.",
+    "ASUS dokumentiert Armoury Crate für Windows. Auf unterstützten Laptops und Desktops kann es Leistung, Lüfter, Grafikmodi, Beleuchtung und gerätespezifische Funktionen steuern.",
+    "Identify every required control and verify safe fan, power, GPU, battery, keyboard and firmware behavior on the exact model.",
+    "Jede benötigte Steuerung erfassen und sicheres Lüfter-, Leistungs-, GPU-, Akku-, Tastatur- und Firmwareverhalten am genauen Modell prüfen.",
+    "ASUS Armoury Crate FAQ",
+    "https://www.asus.com/support/faq/1041654/"
+  ),
+  record(
+    "openrgb",
+    "OpenRGB device control",
+    "hardware",
+    ["native", "manual_verification_required", "partial_replacement"],
+    "medium",
+    false,
+    "OpenRGB runs on Linux, but its supported-device list and access method must match the exact controller; it is not a blanket replacement for vendor utilities.",
+    "OpenRGB läuft unter Linux, aber Geräteliste und Zugriffsmethode müssen zum genauen Controller passen; es ist kein pauschaler Ersatz für Herstellerprogramme.",
+    "Match every hardware revision against the current device list, install reviewed udev rules and test without writing unsafe firmware settings.",
+    "Jede Hardwarerevision mit der aktuellen Geräteliste abgleichen, geprüfte udev-Regeln installieren und ohne riskante Firmwareänderungen testen.",
+    "OpenRGB supported devices",
+    "https://openrgb.org/devices.html"
+  ),
+  record(
+    "printer-scanner-suite",
+    "Printer / scanner vendor suite",
+    "hardware",
+    ["native", "alternative_workflow", "partial_replacement", "manual_verification_required"],
+    "high",
+    true,
+    "Driverless printing or a community driver may handle basic output while vendor scanning, ink, maintenance, finishing, color and accounting features remain unavailable.",
+    "Treiberloses Drucken oder ein Community-Treiber kann die Basisausgabe abdecken, während Hersteller-Scan-, Tinten-, Wartungs-, Finishing-, Farb- oder Abrechnungsfunktionen fehlen.",
+    "Check exact model and revision for printing, duplex, trays, color, scan source, OCR, network discovery, maintenance and consumable status.",
+    "Genaues Modell und Revision auf Druck, Duplex, Fächer, Farbe, Scanquelle, OCR, Netzwerkerkennung, Wartung und Verbrauchsmaterial prüfen.",
+    "OpenPrinting printer database",
+    "https://openprinting.github.io/foomatic/printers"
+  ),
+  record(
+    "audio-interface-control",
+    "Audio interface routing / control software",
+    "hardware",
+    ["native", "no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "USB audio class operation does not prove vendor control software, routing, DSP, firmware, low latency or all sample-rate modes. Focusrite, for example, does not officially support Linux.",
+    "USB-Audio-Klassenbetrieb belegt weder Herstellersteuerung, Routing, DSP, Firmware, niedrige Latenz noch alle Abtastraten. Focusrite unterstützt Linux beispielsweise nicht offiziell.",
+    "Test exact hardware, every input/output, clock, routing, DSP, firmware, sample rate, latency and DAW under sustained load.",
+    "Genaue Hardware, alle Ein-/Ausgänge, Takt, Routing, DSP, Firmware, Abtastraten, Latenz und DAW unter Last testen.",
+    "Focusrite Linux compatibility statement",
+    "https://support.focusrite.com/hc/en-gb/articles/208530735-Is-my-Focusrite-Product-compatible-with-Linux"
+  ),
+  record(
+    "capture-device-control",
+    "Capture card / streaming device workflow",
+    "hardware",
+    ["native", "alternative_workflow", "partial_replacement", "manual_verification_required"],
+    "high",
+    true,
+    "A UVC video feed does not prove vendor capture software, HDR, high frame rates, passthrough, firmware, audio or Stream Deck integrations.",
+    "Ein UVC-Videostream belegt weder Herstellersoftware, HDR, hohe Bildraten, Passthrough, Firmware, Audio noch Stream-Deck-Integrationen.",
+    "Test the exact model, USB link speed, formats, HDR, audio sync, passthrough, sustained capture and recovery after suspend.",
+    "Genaues Modell, USB-Verbindung, Formate, HDR, Audiosynchronität, Passthrough, Daueraufnahme und Wiederherstellung nach Standby testen.",
+    "Elgato capture system requirements",
+    "https://help.elgato.com/hc/en-us/articles/5293623183501-Elgato-Game-Capture-HD60-X-System-Requirements"
+  ),
+  record(
+    "racing-peripherals",
+    "Racing wheel, pedals & force-feedback workflow",
+    "hardware",
+    ["alternative_workflow", "partial_replacement", "manual_verification_required"],
+    "high",
+    true,
+    "USB detection is not proof of force feedback, pedal calibration, load-cell behavior, shifters, displays, profiles or per-game support.",
+    "USB-Erkennung belegt weder Force Feedback, Pedalkalibrierung, Load-Cell-Verhalten, Schalthebel, Displays, Profile noch Spielunterstützung.",
+    "Test exact wheelbase, rim, pedals, shifter, handbrake, firmware, calibration and every critical game in a Live environment.",
+    "Genaues Wheelbase, Lenkrad, Pedale, Schalthebel, Handbremse, Firmware, Kalibrierung und jedes wichtige Spiel im Live-System testen.",
+    "Logitech G HUB hardware guidance",
+    "https://www.logitechg.com/en-us/software/ghub"
+  ),
+  record(
+    "enterprise-vpn",
+    "Enterprise VPN / endpoint posture workflow",
+    "security",
+    ["native", "no_real_equivalent", "manual_verification_required"],
+    "high",
+    false,
+    "Some enterprise clients support Linux, but the organization's exact package, authentication, certificate, posture, EDR and split-tunnel policy determines viability.",
+    "Einige Enterprise-Clients unterstützen Linux; entscheidend sind jedoch das konkrete Paket der Organisation sowie Authentifizierungs-, Zertifikats-, Posture-, EDR- und Split-Tunnel-Richtlinien.",
+    "Obtain an approved Linux package and test SSO/MFA, certificates, DNS, posture modules, internal routes, suspend and support ownership.",
+    "Freigegebenes Linux-Paket beschaffen und SSO/MFA, Zertifikate, DNS, Posture-Module, interne Routen, Standby und Supportzuständigkeit testen.",
+    "Cisco Secure Client data sheet",
+    "https://www.cisco.com/c/en/us/products/collateral/security/anyconnect-secure-mobility-client/secure-mobility-client-ds.html"
+  ),
+  record(
+    "password-manager",
+    "Password manager / passkey workflow",
+    "security",
+    ["native", "web_option", "manual_verification_required"],
+    "medium",
+    false,
+    "Cross-platform password managers can support Linux, but browser integration, biometrics, passkeys, SSH agents and organization policy vary by product and package.",
+    "Plattformübergreifende Passwortmanager können Linux unterstützen; Browserintegration, Biometrie, Passkeys, SSH-Agenten und Organisationsrichtlinien unterscheiden sich nach Produkt und Paket.",
+    "Confirm a recovery method, export policy, browser integration, autofill domains, passkeys, hardware keys, biometrics and offline access.",
+    "Wiederherstellungsweg, Exportrichtlinie, Browserintegration, Autofill-Domains, Passkeys, Hardwareschlüssel, Biometrie und Offline-Zugriff prüfen.",
+    "Bitwarden desktop app feature support",
+    "https://bitwarden.com/help/desktop-app-feature-support/"
+  ),
+  record(
+    "backup-imaging",
+    "Windows backup / disk imaging workflow",
+    "security",
+    ["alternative_workflow", "partial_replacement", "manual_verification_required"],
+    "high",
+    true,
+    "A Windows image is valuable rollback evidence but does not replace a tested file restore, application export or Linux-native backup plan.",
+    "Ein Windows-Abbild ist wertvolle Rückfall-Evidenz, ersetzt aber weder getestete Dateiwiederherstellung noch Anwendungsexporte oder einen Linux-nativen Backupplan.",
+    "Create recovery media, record encryption keys, verify the image, restore representative files and prove boot recovery on compatible hardware.",
+    "Rettungsmedium erstellen, Verschlüsselungsschlüssel erfassen, Abbild prüfen, repräsentative Dateien wiederherstellen und Boot-Recovery auf passender Hardware nachweisen.",
+    "Microsoft Windows Backup guidance",
+    "https://support.microsoft.com/en-us/windows/back-up-your-windows-pc-87a81f8a-78fa-456e-b521-ac0560e32338"
+  ),
+  record(
+    "remote-desktop",
+    "Remote desktop / managed workspace workflow",
+    "professional",
+    ["native", "web_option", "alternative_workflow", "manual_verification_required"],
+    "medium",
+    false,
+    "RDP and browser routes exist on Linux, but redirection, smart cards, screen protection, USB, multiple monitors, audio and administrator policy can differ.",
+    "RDP- und Browserwege existieren unter Linux; Umleitung, Smartcards, Bildschirmschutz, USB, mehrere Monitore, Audio und Administratorrichtlinien können sich unterscheiden.",
+    "Test the organization's exact endpoint, client, MFA, certificates, clipboard, drives, printers, cameras, displays and support policy.",
+    "Konkreten Organisationsendpunkt, Client, MFA, Zertifikate, Zwischenablage, Laufwerke, Drucker, Kameras, Displays und Supportrichtlinie testen.",
+    "Microsoft Remote Desktop web client requirements",
+    "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-web-client"
+  ),
+  record(
+    "bitlocker-data",
+    "BitLocker-protected data and recovery",
+    "security",
+    ["no_real_equivalent", "alternative_workflow", "manual_verification_required"],
+    "high",
+    true,
+    "Do not assume Linux can recover BitLocker-protected volumes. Preserve the recovery key and copy required data from a verified unlocked Windows session before repartitioning.",
+    "Nicht annehmen, dass Linux BitLocker-Volumes wiederherstellen kann. Wiederherstellungsschlüssel sichern und benötigte Daten vor der Partitionierung aus einer geprüften entsperrten Windows-Sitzung kopieren.",
+    "Locate and verify the 48-digit recovery password, identify every encrypted volume, unlock it, copy data separately and test restore.",
+    "48-stelliges Wiederherstellungskennwort finden und prüfen, alle verschlüsselten Volumes erfassen, entsperren, Daten getrennt kopieren und Wiederherstellung testen.",
+    "Microsoft BitLocker recovery overview",
+    "https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/recovery-overview"
+  ),
+  record(
+    "yubikey-security-key",
+    "YubiKey / hardware security key workflow",
+    "security",
+    ["native", "manual_verification_required"],
+    "medium",
+    false,
+    "Yubico provides Linux tooling, but FIDO2, OTP, PIV, PAM login, browser use and organization enrollment are distinct workflows with lockout risk.",
+    "Yubico bietet Linux-Werkzeuge; FIDO2, OTP, PIV, PAM-Anmeldung, Browsernutzung und Organisationseinbindung sind jedoch getrennte Abläufe mit Aussperrrisiko.",
+    "Keep a second login/recovery method, test every enrolled service, PIN, browser, PIV certificate and required PAM policy before enabling login enforcement.",
+    "Zweiten Anmelde-/Wiederherstellungsweg behalten und alle Dienste, PINs, Browser, PIV-Zertifikate sowie benötigte PAM-Richtlinien vor erzwungener Anmeldung testen.",
+    "Yubico YubiKey Manager",
+    "https://www.yubico.com/support/download/yubikey-manager/"
   )
 ];
 
@@ -894,5 +1336,8 @@ export const softwareCategories: Array<SoftwareRecord["category"]> = [
   "gaming",
   "communication",
   "media",
-  "professional"
+  "professional",
+  "hardware",
+  "cloud",
+  "security"
 ];

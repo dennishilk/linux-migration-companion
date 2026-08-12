@@ -48,7 +48,7 @@ export function LiveTestPanel({
     <section aria-labelledby="live-title">
       <div className="page-heading split-heading">
         <div>
-          <p className="eyebrow">04 / LIVE TEST ASSISTANT</p>
+          <p className="eyebrow">05 / LIVE TEST ASSISTANT</p>
           <h1 id="live-title">{t(locale, "liveTitle")}</h1>
           <p>{t(locale, "liveLead")}</p>
         </div>
@@ -74,7 +74,7 @@ export function LiveTestPanel({
               <p>{localize(test.instruction, locale)}</p>
               {test.essential ? <span>{copy(locale, "CORE CHECK", "KERNCHECK")}</span> : null}
             </div>
-            <div className="test-status" role="group" aria-label={`${localize(test.title, locale)} status`}>
+            <div className="test-status" role="group" aria-label={`${localize(test.title, locale)} ${copy(locale, "status", "Status")}`}>
               {statuses.map((status) => (
                 <button
                   type="button"
@@ -94,7 +94,7 @@ export function LiveTestPanel({
       <div className="panel-actions sticky-actions">
         <span>{readinessMessage}</span>
         <button type="button" className="button primary" onClick={onContinue}>
-          {copy(locale, "Prepare test media", "Testmedium vorbereiten")}
+          {copy(locale, "Review migration readiness", "Migrationsbereitschaft prüfen")}
         </button>
       </div>
     </section>

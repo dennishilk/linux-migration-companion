@@ -25,7 +25,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://linuxmint-installation-guide.readthedocs.io/en/latest/verify.html",
     installUrl: "https://linuxmint-installation-guide.readthedocs.io/en/latest/",
     mediaTool: "rufus_or_etcher",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "zorin-os",
@@ -51,7 +51,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://help.zorin.com/docs/getting-started/check-the-integrity-of-your-copy-of-zorin-os/",
     installUrl: "https://help.zorin.com/docs/getting-started/install-zorin-os/",
     mediaTool: "rufus_or_etcher",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "ubuntu-lts",
@@ -77,7 +77,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://discourse.ubuntu.com/t/how-to-verify-your-ubuntu-download/14010",
     installUrl: "https://documentation.ubuntu.com/desktop/en/latest/tutorial/install-ubuntu-desktop/",
     mediaTool: "rufus_or_etcher",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "fedora-kde",
@@ -103,7 +103,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://fedoraproject.org/security/",
     installUrl: "https://docs.fedoraproject.org/en-US/fedora-kde/",
     mediaTool: "fedora_media_writer",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "debian-kde",
@@ -129,7 +129,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://www.debian.org/CD/verify",
     installUrl: "https://www.debian.org/releases/stable/installmanual",
     mediaTool: "rufus_or_etcher",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "opensuse-tumbleweed-kde",
@@ -155,7 +155,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://en.opensuse.org/SDB:Download_help",
     installUrl: "https://doc.opensuse.org/documentation/tumbleweed/",
     mediaTool: "official_guidance",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "cachyos",
@@ -181,7 +181,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://wiki.cachyos.org/installation/download/",
     installUrl: "https://wiki.cachyos.org/installation/installation_on_root/",
     mediaTool: "official_guidance",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "nobara",
@@ -207,7 +207,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://wiki.nobaraproject.org/FAQ/FAQ",
     installUrl: "https://wiki.nobaraproject.org/en/new-user-guide-general-guidelines",
     mediaTool: "official_guidance",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "nixos",
@@ -233,7 +233,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://nixos.org/download/",
     installUrl: "https://nixos.org/manual/nixos/stable/",
     mediaTool: "official_guidance",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "arch-linux",
@@ -258,7 +258,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://archlinux.org/download/",
     installUrl: "https://wiki.archlinux.org/title/Installation_guide",
     mediaTool: "official_guidance",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   },
   {
     id: "gentoo",
@@ -283,7 +283,7 @@ export const distros: DistroProfile[] = [
     verifyUrl: "https://wiki.gentoo.org/wiki/Handbook:AMD64/Full/Installation/Media",
     installUrl: "https://wiki.gentoo.org/wiki/Handbook:AMD64",
     mediaTool: "official_guidance",
-    reviewedAt: "2026-08-10"
+    reviewedAt: "2026-08-11"
   }
 ];
 
