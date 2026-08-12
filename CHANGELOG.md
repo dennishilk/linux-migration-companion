@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 — 2026-08-12
+
+- Finalized the approved public version metadata from `0.3.0-rc.2` to `0.3.0` across the package, JSON-LD, public release labels and current documentation.
+- Retained the complete historical release-candidate record and the explicit unsigned Windows executable, SmartScreen and publisher-authentication warnings.
+- Changed no product logic, recommendations, collectors, schemas, workflows, localization behavior, security/privacy behavior or visual design; no tag, release, deployment or npm publication is included.
+
 ## 0.3.0-rc.2 — 2026-08-11
 
 - Replaced the normal Windows PowerShell workflow with a portable, framework-dependent .NET Framework 4.8 executable that implements its read-only WMI/Win32 collector logic directly and needs no terminal, installer, elevation, network or account.

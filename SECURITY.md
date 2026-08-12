@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-`0.3.0-rc.2` is a website release candidate. Until a public version is explicitly tagged, only the latest reviewed commit on `main` is maintained.
+`0.3.0` is the current public release. Older pre-release builds are not maintained.
 
 ## Reporting a vulnerability
 
@@ -24,7 +24,7 @@ The web application is intentionally static and unprivileged. It must never:
 
 The optional downloadable collectors run only after the user independently downloads, inspects and starts them outside the web application. Their narrower boundary is fixed: explicit read allowlists, no elevation/root, no installer/service/registry/package/driver/configuration change, no user-file access, no network, no telemetry/update mechanism, one create-new JSON output, and no execution of collected data. The primary Windows executable implements this directly through local WMI/Win32 APIs rather than wrapping PowerShell. Crossing that boundary requires a new threat model and independent review.
 
-## Defensive controls in the release candidate
+## Defensive controls in version 0.3.0
 
 - Strict TypeScript and deterministic pure decision functions.
 - Zod validation for stored/imported Passport v3 data plus explicit strict v1→v3 and v2→v3 migration paths that add no snapshot/live evidence.
@@ -35,7 +35,7 @@ The optional downloadable collectors run only after the user independently downl
 - Collector-side prohibited-key self-checks plus tests that execute Linux output validation and build/run the Windows C# core on a Windows runner, including schema shape, privacy allowlists, multiple devices/VMs, output failures, Unicode/length bounds and ordinary-user manifest checks.
 - Linux output uses mode `0600`, `O_EXCL` and `O_NOFOLLOW` where available; Windows uses the OS-resolved Downloads known folder, `FileMode.CreateNew`, exclusive sharing, no temp file and fixed names. Parent redirection remains a documented trust boundary.
 - No subprocess or network API in the primary Windows collector; constant WMI queries never include collected text. The only shell handoff opens the already resolved output folder after an explicit button press.
-- Deterministic Windows build settings, per-artifact SHA-256 and build provenance. The current RC executable is explicitly unsigned; Authenticode signing and real Windows 10/11 trust-UX QA are required before public release.
+- Deterministic Windows build settings, per-artifact SHA-256 and build provenance. The `0.3.0` Windows executable is explicitly unsigned; SmartScreen/reputation warnings are documented, bypassing security controls is never recommended, and the checksum does not authenticate the publisher. Authenticode signing remains recommended future hardening.
 - External links open with `rel="noreferrer"`.
 - No runtime third-party scripts, fonts, analytics, or service worker.
 - Production dependency audit in CI, JavaScript/TypeScript and C# CodeQL scanning, Dependabot, branch-scoped Pages deployment, and minimal workflow permissions.
@@ -43,4 +43,4 @@ The optional downloadable collectors run only after the user independently downl
 
 The complete analysis is in [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
 The field-level implementation audit is in [docs/HARDWARE_SNAPSHOT.md](docs/HARDWARE_SNAPSHOT.md).
-The executable release and signing gate is in [docs/WINDOWS_COLLECTOR_RELEASE.md](docs/WINDOWS_COLLECTOR_RELEASE.md).
+The executable release and future signing plan is in [docs/WINDOWS_COLLECTOR_RELEASE.md](docs/WINDOWS_COLLECTOR_RELEASE.md).

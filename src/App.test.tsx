@@ -44,7 +44,7 @@ function storePopulatedPassport(locale: "en" | "de" = "en") {
   return passport;
 }
 
-describe("release-candidate application flow", () => {
+describe("public release application flow", () => {
   afterEach(() => cleanup());
 
   beforeEach(() => {

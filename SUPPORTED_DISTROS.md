@@ -2,7 +2,7 @@
 
 Data review date: 2026-08-11
 
-The release candidate compares a fixed, opinionated set of 11 profiles. This is a decision aid, not a universal ranking or compatibility certification.
+Version `0.3.0` compares a fixed, opinionated set of 11 profiles. This is a decision aid, not a universal ranking or compatibility certification.
 
 ## Support-depth vocabulary
 

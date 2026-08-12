@@ -3,7 +3,7 @@ import type { Locale, LocalizedText } from "./domain/types";
 export const messages = {
   en: {
     appName: "Linux Migration Companion",
-    releaseStatus: "WEBSITE RELEASE CANDIDATE",
+    releaseStatus: "VERSION 0.3.0",
     localOnly: "Runs locally in your browser. No account. No tracking.",
     language: "Language",
     startOver: "Start over",
@@ -120,13 +120,13 @@ export const messages = {
     selectedCount: "selected",
     openNew: "Opens official site in a new tab",
     privacyFooter:
-      "Local-first release candidate · no backend · no analytics · no destructive actions",
+      "Local-first · no backend · no analytics · no destructive actions",
     notAffiliated:
       "Not affiliated with or endorsed by the listed Linux distributions or software vendors."
   },
   de: {
     appName: "Linux Migration Companion",
-    releaseStatus: "WEBSITE-RELEASE-CANDIDATE",
+    releaseStatus: "VERSION 0.3.0",
     localOnly: "Läuft lokal im Browser. Kein Konto. Kein Tracking.",
     language: "Sprache",
     startOver: "Neu beginnen",
@@ -243,7 +243,7 @@ export const messages = {
     selectedCount: "ausgewählt",
     openNew: "Öffnet die offizielle Seite in einem neuen Tab",
     privacyFooter:
-      "Lokaler Release Candidate · kein Backend · keine Analyse · keine destruktiven Aktionen",
+      "Lokal · kein Backend · keine Analyse · keine destruktiven Aktionen",
     notAffiliated:
       "Keine Verbindung zu oder Empfehlung durch die genannten Linux-Distributionen oder Softwareanbieter."
   }

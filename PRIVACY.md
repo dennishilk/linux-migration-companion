@@ -1,12 +1,12 @@
 # Privacy
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-12
 
 Linux Migration Companion is designed as a static, local-first web application.
 
 ## Data processing
 
-The release candidate has no application backend, user account, analytics, advertising, telemetry, third-party font request, or hardware upload. Advisor answers, selected/comparison distributions, software/workflow priorities, hardware evidence, an optional validated snapshot, live-test results, data-migration selections, media progress, and locale are evaluated and stored in the browser as a versioned Migration Passport.
+Version `0.3.0` has no application backend, user account, analytics, advertising, telemetry, third-party font request, or hardware upload. Advisor answers, selected/comparison distributions, software/workflow priorities, hardware evidence, an optional validated snapshot, live-test results, data-migration selections, media progress, and locale are evaluated and stored in the browser as a versioned Migration Passport.
 
 The application and optional collectors deliberately do **not** collect or export:
 

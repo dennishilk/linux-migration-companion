@@ -82,7 +82,7 @@ describe("release SEO metadata", () => {
       name: "Linux Migration Companion",
       url: canonicalUrl,
       applicationCategory: "UtilitiesApplication",
-      softwareVersion: "0.3.0-rc.2",
+      softwareVersion: "0.3.0",
       isAccessibleForFree: true,
       inLanguage: ["en", "de"],
       license: "https://opensource.org/license/mit",

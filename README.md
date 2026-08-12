@@ -2,13 +2,13 @@
 
 An explainable, local-first Windows-to-Linux migration advisor that helps people test whether Linux can replace Windows **before** they remove anything.
 
-> **Website Release Candidate (`0.3.0-rc.2`):** no account, backend, analytics, telemetry, upload, package installation, partitioning, raw USB writing, bootloader changes, or in-app command execution. An optional read-only local collector can create a privacy-minimized hardware JSON file; detection never proves Linux compatibility.
+> **Public release (`0.3.0`):** no account, backend, analytics, telemetry, upload, package installation, partitioning, raw USB writing, bootloader changes, or in-app command execution. An optional read-only local collector can create a privacy-minimized hardware JSON file; detection never proves Linux compatibility.
 
-[Current standalone test deployment](https://www.dennishilk.com/linux-migration-companion/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Decision model](docs/DECISION_MODEL.md)
+[Open the public application](https://www.dennishilk.com/linux-migration-companion/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Decision model](docs/DECISION_MODEL.md)
 
-The release-candidate branch is prepared for review; this repository does not assume that the current deployment contains the branch.
+The repository contains the approved `0.3.0` public-release source. Deployment is handled separately.
 
-## What the release candidate does
+## What version 0.3.0 does
 
 The ten-stage DE/EN journey preserves the original visual and technical architecture while substantially expanding the evidence model:
 
@@ -125,18 +125,18 @@ Imports are limited to 256 KiB and depth 12. Objects are strict; IDs are closed 
 
 Browser storage is convenience, not backup. Snapshot model names and non-unique PCI/USB IDs can be sensitive in context, so inspect exports before sharing. Never put passwords, private keys, recovery codes, or licence keys in notes. The machine-readable v3 contract is in [`schemas/migration-passport.schema.json`](schemas/migration-passport.schema.json).
 
-## Current limitations and release gate
+## Current limitations and release notes
 
-- The release-candidate Windows `.exe` is currently **unsigned**. SmartScreen or reputation warnings are therefore a public-release blocker; never disable or bypass Windows security controls. See [the signing and release plan](docs/WINDOWS_COLLECTOR_RELEASE.md).
+- The Windows `.exe` included in version `0.3.0` is **not Authenticode-signed**. SmartScreen or reputation warnings may therefore appear; never disable or bypass Windows security controls. The published checksum can detect changed bytes but does not authenticate a publisher. See [the signing and release plan](docs/WINDOWS_COLLECTOR_RELEASE.md).
 - The executable targets .NET Framework 4.8 because it is included in stock Windows 10 22H2 and Windows 11. No developer tooling is required. Windows Secure Boot remains deliberately `unavailable` to preserve ordinary-user execution.
-- The executable still requires ordinary-user, double-click QA on real Windows 10 and Windows 11 hardware. A Windows GitHub runner build and automated core tests are necessary but not a substitute.
+- The executable has passed ordinary-user, double-click QA on real Windows 11 Pro hardware. Representative Windows 10 verification remains outstanding; a Windows GitHub runner build and automated core tests are necessary but not a substitute.
 - The PowerShell reference may be blocked by execution policy. This is a beginner-path product limitation, not a PowerShell bug; the project recommends no bypass or policy weakening.
 - Software records describe supported routes and representative verification; they do not promise that a document, plug-in, game, anti-cheat system, peripheral, or organization policy works.
 - The catalog is a maintained snapshot reviewed on **2026-08-11**, not a live compatibility service. Volatile entries are labelled and must be rechecked.
 - Live-session success does not prove that an installed system will behave identically after future updates or driver changes.
 - The app cannot make dual boot, firmware, backups, or partitioning risk-free.
 - Search indexing is enabled for the single canonical application URL. Query-driven `?step=` states retain deep-linking but canonicalize to the application root; no artificial localized URLs or `hreflang` alternates are published. The project ships a one-URL subpath sitemap, while the production root sitemap remains owned by the main website integration.
-- Real-browser QA of the release-candidate branch is required before public linking; automated DOM tests are not a substitute.
+- Real-browser QA remains a required release check; automated DOM tests are not a substitute.
 
 ## Documentation
 
@@ -153,7 +153,7 @@ Browser storage is convenience, not backup. Snapshot model names and non-unique 
 
 ## Status and non-affiliation
 
-This repository is a website release candidate, not a compatibility certification. It is not affiliated with or endorsed by any listed Linux distribution, software vendor, or media-writer project. Names and trademarks belong to their respective owners.
+This repository contains public version `0.3.0`, not a compatibility certification. It is not affiliated with or endorsed by any listed Linux distribution, software vendor, or media-writer project. Names and trademarks belong to their respective owners.
 
 ## Authorship and license
 

@@ -14,7 +14,7 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 
 ## Core ten-stage journey
 
-- [ ] Fresh load shows release-candidate, local-only, no-tracking, and no-disk-write boundaries.
+- [ ] Fresh load shows version 0.3.0, local-only, no-tracking, and no-disk-write boundaries.
 - [ ] The skip link is first, visible on focus, localized, and moves focus to the main content.
 - [ ] DE → EN → DE changes current UI, document language/title, and long copy without losing state.
 - [ ] All five Advisor groups open; every choice remains selected while navigating.
@@ -56,8 +56,8 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 
 ### A. Windows 10 and Windows 11
 
-- [ ] On one ordinary non-administrator Windows 10 machine and one Windows 11 machine, download `LinuxMigrationCompanion-HardwareSnapshot.exe` from the candidate site and verify its SHA-256 against the published checksum and candidate commit/build record.
-- [ ] Confirm the release candidate is visibly documented as unsigned. Record the exact Defender/SmartScreen/reputation UX. Do not disable or bypass any control. Repeat the public-release pass only after Authenticode signing and confirm the expected Dennis Hilk publisher identity.
+- [ ] On one ordinary non-administrator Windows 10 machine and one Windows 11 machine, download `LinuxMigrationCompanion-HardwareSnapshot.exe` from the release site and verify its SHA-256 against the published checksum and release commit/build record.
+- [ ] Confirm the version 0.3.0 executable is visibly documented as unsigned. Record the exact Defender/SmartScreen/reputation UX. Do not disable or bypass any control, and do not treat the checksum as publisher authentication.
 - [ ] Double-click the `.exe` without a terminal. Confirm the calm DE/EN UI, complete privacy list, predictable Downloads destination, Create hardware snapshot, success filename, Open folder and Close all work by mouse and keyboard at 100% and 200% scaling.
 - [ ] Confirm no UAC/elevation prompt, installer, service, registry/package/driver/configuration change, browser/backend request, telemetry, update check, child command process, temporary file or additional output appears. The only write should be one new timestamped JSON file in Downloads.
 - [ ] Create twice within one second or pre-create the expected name; confirm the first file is never overwritten and a numeric suffix is used. Make Downloads unavailable in a disposable account and verify the documented fallback/failure UI without stray output.
@@ -178,15 +178,15 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 - [ ] Production dependency audit reports no high/critical production vulnerability.
 - [ ] CSP blocks inline script/object/form submission and no component uses unsafe HTML injection.
 
-## Release and deployment gate
+## Release and deployment checklist
 
 - [ ] `npm ci && npm run qa` passes from a clean checkout.
 - [ ] `VITE_BASE_PATH=/linux-migration-companion/ npm run build` succeeds.
-- [ ] CI web quality and Windows executable build/core-test jobs pass; JavaScript/TypeScript and C# CodeQL pass on the release-candidate SHA.
+- [ ] CI web quality and Windows executable build/core-test jobs pass; JavaScript/TypeScript and C# CodeQL pass on the release SHA.
 - [ ] Both public JSON schemas parse as JSON and match runtime fixture/output tests.
-- [ ] Real Windows 10/11 executable and physical Linux collector results above are attached to the private release record; automated/static tests alone do not satisfy this gate.
-- [ ] The public Windows executable is Authenticode-signed, signature-verified, hashed after signing and checked for real clean-machine SmartScreen behavior. Do not ship the current unsigned RC to beginners.
-- [ ] A branch preview or equivalent serves the exact candidate SHA over HTTPS.
+- [ ] Available real Windows executable and physical Linux collector results above are attached to the private release record; automated/static tests alone do not substitute for representative platform checks.
+- [ ] The public Windows executable is visibly labelled unsigned, its checked-in SHA-256 matches, and real clean-machine SmartScreen behavior is recorded. Never tell users to bypass Defender, SmartScreen or organizational policy, and never present the checksum as publisher authentication.
+- [ ] A branch preview or equivalent serves the exact release SHA over HTTPS.
 - [ ] Chromium and Firefox matrix above is performed against that SHA.
 - [ ] Page title, description, canonical URL, favicon, and app identity are correct; the former `LM` mark is absent.
 - [ ] The footer visibly presents `© 2026 Dennis Hilk`, `Linux Migration Companion`, and `Licensed under the MIT License`.

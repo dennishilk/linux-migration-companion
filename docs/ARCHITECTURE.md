@@ -1,6 +1,6 @@
 # Architecture
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-12
 
 ## System shape
 
@@ -63,13 +63,13 @@ The active numbered section is mirrored in the `?step=` query parameter. This pr
 
 ## Deployment boundary
 
-Pull requests run lint, strict TypeScript, web tests/build, production-dependency audit, a Windows executable build and its independent C# core tests. CodeQL analyzes JavaScript/TypeScript and C#. Pushes to `main` are the only automatic Pages deployment trigger. Release-candidate work on another branch cannot deploy unless a human explicitly changes the workflow or merges it.
+Pull requests run lint, strict TypeScript, web tests/build, production-dependency audit, a Windows executable build and its independent C# core tests. CodeQL analyzes JavaScript/TypeScript and C#. Pushes to `main` are the only automatic Pages deployment trigger. Work on another branch cannot deploy unless a human explicitly changes the workflow or merges it.
 
 The approved crawler-readiness configuration exposes one canonical indexable URL: `https://www.dennishilk.com/linux-migration-companion/`. Every query-driven `?step=` state keeps its deep link while the static canonical points to that root, preventing the ten application states from becoming intended search documents. The single client-stored DE/EN surface publishes no fake localized URLs or `hreflang` pairs. This repository ships a one-URL subpath sitemap; the authoritative origin-root `robots.txt`, main sitemap and inbound site navigation remain integration responsibilities of the main website.
 
 ## Collector executable boundary
 
-This release candidate includes a framework-dependent Windows `.exe` built from readable C# source, an advanced PowerShell reference and a Linux Python source collector. Their exact OS interfaces and fields are reviewed in [HARDWARE_SNAPSHOT.md](HARDWARE_SNAPSHOT.md). They never run inside or automatically from the web app, and the manual path remains complete.
+Version `0.3.0` includes a framework-dependent Windows `.exe` built from readable C# source, an advanced PowerShell reference and a Linux Python source collector. Their exact OS interfaces and fields are reviewed in [HARDWARE_SNAPSHOT.md](HARDWARE_SNAPSHOT.md). They never run inside or automatically from the web app, and the manual path remains complete.
 
 The executable directly queries only local WMI and two small Win32 boundaries: firmware type and the Downloads known folder. A third explicit Win32 call opens that fixed folder only after the user presses **Open folder**. It requests no elevation, ships no app DLL/plugin, never interprets device data as code and has no network/update path. Build/checksum/signing details are in [WINDOWS_COLLECTOR_RELEASE.md](WINDOWS_COLLECTOR_RELEASE.md).
 

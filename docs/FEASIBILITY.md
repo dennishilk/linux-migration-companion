@@ -17,7 +17,7 @@ The implementation follows a feasibility review completed before development.
 
 ## Defer
 
-- Authenticode production signing credentials, auto-update, background services, browser-to-local IPC and automatic execution. The RC builds and checksums an unsigned managed Windows executable, but public release is blocked until that exact artifact is signed and verified through a protected release process.
+- Authenticode production signing credentials, auto-update, background services, browser-to-local IPC and automatic execution. Version `0.3.0` builds and checksums an explicitly unsigned managed Windows executable; signing remains future hardening and would require a protected release process.
 - Automatic compatibility resolution: device/app/game support is volatile and workflow-specific.
 - Install/package automation: crosses privilege and recovery boundaries without being necessary for decision support.
 

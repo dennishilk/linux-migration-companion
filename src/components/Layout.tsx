@@ -150,7 +150,7 @@ export function Layout({
             </div>
           </nav>
           <div className="boundary-note">
-            <strong>SAFE RELEASE CANDIDATE</strong>
+            <strong>PUBLIC RELEASE · 0.3.0</strong>
             <span>
               {locale === "de"
                 ? "Web-App: keine Datenträger-Schreibzugriffe oder Befehlsausführung."

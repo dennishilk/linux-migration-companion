@@ -422,6 +422,6 @@ const personas: Array<{ name: string; verify: () => void }> = [
   }
 ];
 
-describe("adversarial release-candidate personas", () => {
+describe("adversarial release personas", () => {
   it.each(personas)("$name", ({ verify }) => verify());
 });

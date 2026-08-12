@@ -8,7 +8,7 @@ import { distroComparisonById } from "./distroComparison";
 import { DEFAULT_ANSWERS } from "../domain/defaults";
 import { messages } from "../i18n";
 
-describe("curated release-candidate data", () => {
+describe("curated release data", () => {
   it("contains exactly the 11 scoped distro profiles with unique IDs", () => {
     expect(distros).toHaveLength(11);
     expect(new Set(distros.map((item) => item.id)).size).toBe(11);

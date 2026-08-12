@@ -1,6 +1,6 @@
 # Threat model
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-12
 
 ## Assets
 
@@ -13,18 +13,18 @@ Last reviewed: 2026-08-11
 
 ## Adversaries and failures
 
-| Threat | Consequence | Release-candidate mitigation | Residual risk |
+| Threat | Consequence | Release mitigation | Residual risk |
 |---|---|---|---|
 | Malicious/oversized Passport | Memory pressure, unexpected state, UI injection | 256 KiB cap before parse, depth-12 cap, strict Zod objects, closed enums, string limits, known-ID validation, React escaping | Browser still parses one bounded JSON string |
 | Stale or contradictory Passport | False readiness or hidden unknowns | Strict v1/v2/v3 only; explicit v1/v2→v3 migrations add no snapshot/live evidence; required + not-applicable hardware rejected; derived readiness recomputed | Semantically inaccurate user notes cannot be independently verified |
 | Malicious/oversized hardware snapshot | Memory pressure, unexpected state or parser abuse | 128 KiB cap before use, depth-8 cap, strict objects, at most 64 facts, closed enums, bounded text, complete source/collector consistency | Browser still parses one bounded JSON string before structural validation |
 | Unexpected/prototype/private object keys | Prototype pollution, PII entry or future logic corruption | Recursive denylist preflight for `__proto__`/constructor/prototype and prohibited private key names; strict nested Zod schemas; no object spreading before validation | A sensitive value hidden inside an allowed free-text device name cannot be recognized reliably |
 | Stored HTML/script/device-string injection | Execute attacker content | No `dangerouslySetInnerHTML`; imported device strings/notes render as React text; control characters, overlong strings and malformed surrogates rejected; markup/path-like text never becomes a path, URL or command | Browser extensions/same-origin compromise are outside app control |
-| Collector tampering or user-edited snapshot | False provenance/device facts | Windows executable has complete source, deterministic CI build provenance and SHA-256; script collectors remain their own source; import validates structure but labels source as a claim, not a signature; facts stay `known_fact`, never compatibility/live proof | The RC executable is unsigned; checksum alone does not authenticate publisher, and any party can produce plausible false JSON |
+| Collector tampering or user-edited snapshot | False provenance/device facts | Windows executable has complete source, deterministic CI build provenance and SHA-256; script collectors remain their own source; import validates structure but labels source as a claim, not a signature; facts stay `known_fact`, never compatibility/live proof | The `0.3.0` executable is unsigned; checksum alone does not authenticate publisher, and any party can produce plausible false JSON |
 | Accidental PII collection | Personal/unique data stored or shared | Explicit property/path allowlists, no raw dumps, prohibited-key self-check in each collector, independent output/schema tests, inspect-before-import guidance | A device model/description can be customized with personal text; user inspection remains necessary |
 | Command/PowerShell/shell injection | Execute device text or attacker input | Linux uses no subprocess/shell; the primary Windows executable uses constant local WMI queries and direct Win32 APIs, never constructs a command, and never evaluates output; imported fields are data only | The explicit Open-folder action invokes the Windows shell with only the already-resolved fixed output directory |
 | Output path overwrite/symlink/reparse redirection | Overwrite or redirect a local file | Windows writes only to the OS-resolved Downloads/Desktop/Documents known folder with `CreateNew`, exclusive sharing, fixed `.json` names and no temp; Linux uses mode 0600 + `O_EXCL` + final-component `O_NOFOLLOW` | OS/user-managed known-folder redirection, sync roots or parent junctions determine where the new Windows file lands |
-| Windows trust/elevation pressure | User disables a security control to run an unfamiliar executable/script | Executable manifest is `asInvoker`; Secure Boot remains unavailable; UI labels the RC executable unsigned and never recommends bypassing SmartScreen/Defender/policy; PowerShell is advanced only | The unsigned executable can trigger SmartScreen/reputation warnings and is not acceptable for beginner-facing public release |
+| Windows trust/elevation pressure | User disables a security control to run an unfamiliar executable/script | Executable manifest is `asInvoker`; Secure Boot remains unavailable; UI labels the executable unsigned and never recommends bypassing SmartScreen/Defender/policy; PowerShell is advanced only | The unsigned executable can trigger SmartScreen/reputation warnings, and neither checksum nor provenance authenticates the publisher |
 | Managed executable dependency/DLL search | Load unexpected adjacent code | One application `.exe`, no NuGet/application DLL, no plugin/config/update mechanism, only .NET Framework/GAC assemblies and named Windows system DLLs | A compromised OS/runtime or search-path manipulation outside the application boundary is not defended; signing is still missing |
 | Browser fingerprinting/overclaim | Expose identity or imply full GPU detection | Only UA-CH platform, coarse processor/memory and WebGPU adapter availability; feature detection; no renderer/features/limits/WebGL/media/WebUSB/HID; zero browser device facts | Even coarse values add some entropy and APIs vary across browsers |
 | Shared mutable defaults | Evidence leaks across resets/new records | Every Passport receives isolated nested defaults; regression tests mutate independent copies | Future nested fields must preserve this invariant |
@@ -56,8 +56,8 @@ Last reviewed: 2026-08-11
 
 The Companion does not defend a compromised browser, malicious extension, compromised repository/hosting account, modified operating system, malicious official upstream binary, or deliberately false user evidence. It reduces authority and data exposure so those failures have less application-specific leverage.
 
-## Collector review gate
+## Collector review status
 
-The collectors satisfy the narrow read-only boundary described above and in [HARDWARE_SNAPSHOT.md](HARDWARE_SNAPSHOT.md). The C# executable adds a local executable boundary and therefore has its own direct-API review, ordinary-user manifest, string/output hardening, Windows CI tests, checksum/provenance and signing plan. Public launch still requires a trusted Authenticode signature plus representative ordinary-user Windows 10/11 and physical Linux manual verification of output accuracy/privacy and browser QA; automated runner/fixture/static tests do not substitute for those runs.
+The collectors satisfy the narrow read-only boundary described above and in [HARDWARE_SNAPSHOT.md](HARDWARE_SNAPSHOT.md). The C# executable adds a local executable boundary and therefore has its own direct-API review, ordinary-user manifest, string/output hardening, Windows CI tests, checksum/provenance and signing plan. Version `0.3.0` accepts the explicitly disclosed unsigned-publisher limitation; representative platform verification of output accuracy/privacy and browser QA remains necessary, and automated runner/fixture/static tests do not substitute for those runs.
 
-Signing is required but not yet configured because no protected signing identity is available to this repository. Any auto-update system, native local IPC, automatic launch, background service, privilege request, package installation, raw storage access or network client remains deferred and would require a new consent design and independent review.
+Signing is not configured because no protected signing identity is available to this repository. Authenticode remains recommended future hardening and would require a separately protected release process. Any auto-update system, native local IPC, automatic launch, background service, privilege request, package installation, raw storage access or network client remains deferred and would require a new consent design and independent review.

@@ -338,8 +338,8 @@ export function HardwareSnapshotPanel({
           <p className="collector-signing-note">
             {copy(
               locale,
-              "Release-candidate status: this executable is currently unsigned. Windows may show a SmartScreen or reputation warning. Do not disable SmartScreen, Defender or organizational policy. A properly signed artifact is still required for a public release.",
-              "Release-Candidate-Status: Diese ausführbare Datei ist derzeit nicht signiert. Windows kann eine SmartScreen- oder Reputationswarnung anzeigen. Deaktiviere weder SmartScreen noch Defender oder Organisationsrichtlinien. Für eine öffentliche Veröffentlichung ist weiterhin ein korrekt signiertes Artefakt erforderlich."
+              "Unsigned executable: the Windows collector in version 0.3.0 is not Authenticode-signed. Windows may show a SmartScreen or reputation warning. Do not disable SmartScreen, Defender or organizational policy. The published checksum can detect changed bytes but does not authenticate a publisher.",
+              "Nicht signierte ausführbare Datei: Der Windows-Collector in Version 0.3.0 ist nicht mit Authenticode signiert. Windows kann eine SmartScreen- oder Reputationswarnung anzeigen. Deaktiviere weder SmartScreen noch Defender oder Organisationsrichtlinien. Die veröffentlichte Prüfsumme kann veränderte Bytes erkennen, authentifiziert aber keinen Herausgeber."
             )}
           </p>
         </section>

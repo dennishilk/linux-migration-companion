@@ -1,12 +1,12 @@
 # Windows executable collector: build, trust and release plan
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-12
 
 ## Release status
 
-`LinuxMigrationCompanion-HardwareSnapshot.exe` in `0.3.0-rc.2` is a release-candidate artifact and is **not Authenticode-signed**. The website says this before download. Windows may show Microsoft Defender SmartScreen or a low-reputation warning. The project never tells a user to disable Defender, SmartScreen, execution policy or an organization policy, and it does not present an unsigned warning as routine to click through.
+`LinuxMigrationCompanion-HardwareSnapshot.exe` in version `0.3.0` is **not Authenticode-signed**. The website says this before download. Windows may show Microsoft Defender SmartScreen or a low-reputation warning. The project never tells a user to disable Defender, SmartScreen, execution policy or an organization policy, and it does not present an unsigned warning as routine to click through.
 
-An unsigned executable is useful for source review and controlled release-candidate testing. It is **not acceptable for the intended beginner-facing public release**.
+Version `0.3.0` publishes this reviewed executable with the unsigned status explicitly accepted and disclosed. Windows cannot cryptographically identify Dennis Hilk as its publisher; the published SHA-256 detects different bytes but does not establish publisher identity. Users who do not accept that limitation should use the complete manual or limited browser evidence path instead.
 
 ## Why C# and .NET Framework 4.8
 
@@ -74,11 +74,11 @@ The project enables deterministic compilation, release optimization, no PDB and 
 - `LinuxMigrationCompanion-HardwareSnapshot.exe.sha256`;
 - `BUILD-INFO.txt` containing source commit, runner image/version, MSBuild version, target and checksum.
 
-The checked-in unsigned RC artifact is 39,936 bytes with SHA-256 `19b69cfe8c9ebfa22ce3e002af734a036dfc102e8934c47fb70cf5a201602ea7`. It was built from branch commit `d679ce9ff7dec65017e0f64e057f39b9b44c1ca8` on runner image `windows-2022` version `20260802.262.1` with MSBuild `17.14.51.32402`. The adjacent `.sha256` file is the browser-downloadable checksum. Two independent CI builds with that toolchain produced byte-identical executable files; this is useful evidence, not a claim of hermetic reproducibility across future runner images.
+The checked-in unsigned `0.3.0` artifact is 39,936 bytes with SHA-256 `19b69cfe8c9ebfa22ce3e002af734a036dfc102e8934c47fb70cf5a201602ea7`. It was built from branch commit `d679ce9ff7dec65017e0f64e057f39b9b44c1ca8` on runner image `windows-2022` version `20260802.262.1` with MSBuild `17.14.51.32402`. The adjacent `.sha256` file is the browser-downloadable checksum. Two independent CI builds with that toolchain produced byte-identical executable files; this is useful evidence, not a claim of hermetic reproducibility across future runner images.
 
 This gives traceable and repeatable builds with the same toolchain. The GitHub-hosted runner image is still a moving dependency, so the project does not claim hermetic byte-for-byte reproducibility across arbitrary future runner revisions. A tagged release should preserve its build-info record and artifact attestation.
 
-## Required signing process for public release
+## Recommended signing process for a future signed build
 
 1. Protect and review a release tag/commit; all web, C# tests, audit and CodeQL checks must pass.
 2. Build the unsigned executable from that exact commit in the controlled Windows workflow and record its SHA-256 and build provenance.
@@ -90,4 +90,4 @@ This gives traceable and repeatable builds with the same toolchain. The GitHub-h
 
 Microsoft documents Authenticode options for Windows applications in [Code signing options for Windows app developers](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options). A valid signature establishes publisher/file integrity but does not guarantee immediate SmartScreen reputation. The release record must distinguish signature validity from reputation behavior.
 
-No signing secret is available in this repository. CI therefore produces and labels only an unsigned release-candidate artifact; it does not create a self-signed certificate or fake a trusted signature.
+No signing secret is available in this repository. CI therefore produces and labels only unsigned artifacts; it does not create a self-signed certificate or fake a trusted signature.

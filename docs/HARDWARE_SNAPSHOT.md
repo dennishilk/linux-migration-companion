@@ -1,6 +1,6 @@
 # Hardware Snapshot design and collector audit
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-12
 
 Hardware Snapshot is optional. The complete Companion remains usable through manual evidence. The feature has three separate routes:
 
@@ -68,7 +68,7 @@ Windows Secure Boot is deliberately exported as `unavailable`; the collector doe
 
 The normal flow is: download `.exe`, double-click, choose **Create hardware snapshot**, then import the JSON. A new timestamped file is written to the Windows Downloads known folder. If Downloads is unavailable, Desktop and then Documents are tried. `FileMode.CreateNew` and exclusive sharing prevent overwrite, collisions receive a numeric suffix, no temporary file is used, and the exact path is shown after success. The OS-resolved known-folder target, including any Windows-managed redirection/junction, is trusted as the destination.
 
-The executable artifact in this release candidate is **unsigned**. Windows can show SmartScreen or low-reputation warnings. The project does not recommend disabling or bypassing Defender, SmartScreen or organization policy. A properly Authenticode-signed artifact, verified signature, published signed-byte checksum and clean-machine QA remain required for public release.
+The Windows executable shipped with version `0.3.0` is **not Authenticode-signed**. Windows can show SmartScreen or low-reputation warnings. The project does not recommend disabling or bypassing Defender, SmartScreen or organization policy. The published SHA-256 can detect different bytes but does not authenticate Dennis Hilk as publisher; Authenticode signing remains future hardening.
 
 ### Advanced PowerShell reference
 
@@ -117,8 +117,8 @@ Hardware model names and four-digit PCI/USB vendor/device IDs are intentionally 
 ## Known limitations
 
 - Collector source can be modified; an imported `source` value is not authenticated.
-- The release-candidate Windows executable is unsigned and may trigger SmartScreen/reputation warnings. It must be signed and manually verified before beginner-facing public release.
-- The executable has automated Windows-runner build/core coverage but has not yet received ordinary-user double-click QA on real Windows 10 and Windows 11 systems.
+- The version `0.3.0` Windows executable is unsigned and may trigger SmartScreen/reputation warnings. The web UI identifies this before download; the checksum does not authenticate a publisher, and users should never bypass security controls.
+- The executable has automated Windows-runner build/core coverage and ordinary-user Windows 11 Pro double-click QA. Representative real-hardware Windows 10 validation remains outstanding.
 - Windows PowerShell policy may block the advanced script. The project provides no bypass.
 - Windows Secure Boot remains unavailable without elevation; monitor count and CIM device lists can be incomplete or include inactive devices.
 - Linux `/proc`/`/sys` availability varies by kernel, container, permissions, architecture and firmware. Missing data stays unknown/unavailable.
