@@ -57,8 +57,8 @@ export function DistroComparison({
           <p>
             {copy(
               locale,
-              "This is deliberately not a giant feature matrix. It focuses on migration, maintenance and recovery differences that change a real decision.",
-              "Dies ist bewusst keine riesige Funktionsmatrix. Im Mittelpunkt stehen Migrations-, Wartungs- und Recovery-Unterschiede, die eine echte Entscheidung verändern."
+              "The Companion compares a curated set of maintained profiles rather than every Linux distribution. It focuses on migration, maintenance and recovery differences that change a real decision.",
+              "Der Companion vergleicht eine kuratierte Auswahl gepflegter Profile statt jeder existierenden Linux-Distribution. Im Mittelpunkt stehen Migrations-, Wartungs- und Recovery-Unterschiede, die eine echte Entscheidung verändern."
             )}
           </p>
         </div>
@@ -164,8 +164,8 @@ export function DistroComparison({
       )}
 
       <div className="evidence-boundary">
-        <strong>{copy(locale, "Specialist gate remains active", "Spezialisten-Gate bleibt aktiv")}</strong>
-        <p>{copy(locale, "Comparison never upgrades a specialist distribution's recommendation. Gentoo, NixOS, Arch and performance-focused systems still require the matching intent and experience.", "Der Vergleich wertet eine Spezialisten-Distribution niemals auf. Gentoo, NixOS, Arch und performanceorientierte Systeme verlangen weiterhin passende Absicht und Erfahrung.")}</p>
+        <strong>{copy(locale, "Specialist safeguards remain active", "Spezialisten-Schutzregeln bleiben aktiv")}</strong>
+        <p>{copy(locale, "Comparison visibility never upgrades a specialist recommendation. Advanced and reference profiles still depend on experience, terminal comfort, troubleshooting, maintenance and genuine architectural preferences.", "Die Sichtbarkeit im Vergleich wertet eine Spezialistenempfehlung niemals auf. Fortgeschrittene und Referenzprofile hängen weiterhin von Erfahrung, Terminal-Sicherheit, Fehlersuche, Wartung und echten Architekturpräferenzen ab.")}</p>
       </div>
 
       <div className="panel-actions sticky-actions">

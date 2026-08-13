@@ -189,7 +189,10 @@ describe("public release application flow", () => {
     await user.click(screen.getByRole("button", { name: "Analyze my fit" }));
     expect(await screen.findByRole("heading", { name: "Your explained matches" })).toBeInTheDocument();
     expect(screen.getAllByText("Linux Mint").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Compare all included profiles" })).toBeInTheDocument();
     expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "DE" }));
+    expect(screen.getByRole("button", { name: "Alle enthaltenen Profile vergleichen" })).toBeInTheDocument();
   });
 
   it("navigates directly to the 90-workflow software assessment", async () => {
@@ -263,6 +266,25 @@ describe("public release application flow", () => {
     await user.click(screen.getByRole("checkbox", { name: /Ubuntu/ }));
     expect(screen.getByText("3 / 3")).toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: /Fedora KDE/ })).toBeDisabled();
+  });
+
+  it("keeps all 16 curated profiles visible with complete EN and DE catalog wording", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const navigation = screen.getByLabelText("Migration journey");
+    await user.click(within(navigation).getByRole("button", { name: /Compare/ }));
+
+    expect(screen.getAllByRole("checkbox")).toHaveLength(16);
+    expect(screen.getByRole("checkbox", { name: /Void Linux/ })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /Pop!_OS/ })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /Bazzite/ })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /EndeavourOS/ })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /Kubuntu/ })).toBeInTheDocument();
+    expect(screen.getByText(/curated set of maintained profiles rather than every Linux distribution/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "DE" }));
+    expect(screen.getByText(/kuratierte Auswahl gepflegter Profile statt jeder existierenden Linux-Distribution/)).toBeInTheDocument();
+    expect(screen.getByText("Spezialisten-Schutzregeln bleiben aktiv")).toBeInTheDocument();
   });
 
   it("shows insufficient evidence rather than a false ready result", async () => {

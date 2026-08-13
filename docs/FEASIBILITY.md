@@ -6,7 +6,7 @@ The implementation follows a feasibility review completed before development.
 
 - Static, local-first DE/EN web application.
 - Deterministic Fit Advisor with transparent ordinal tiers and hard gates.
-- Curated 11-profile distro data and 90-workflow software assessment.
+- Curated 16-profile distro data and 90-workflow software assessment.
 - Local Migration Passport v3 with strict import/export validation and explicit v1/v2 migrations.
 - Nineteen-class manual hardware evidence, optional limited browser facts, strict local snapshot import, and representative live-test checklist.
 - Small auditable C#/.NET Framework 4.8 Windows executable with a beginner WinForms UI and direct local WMI/Win32 allowlists, plus advanced PowerShell reference and Linux standard-library Python collectors. All keep no-elevation/no-network, one inspectable JSON output and complete manual fallbacks.

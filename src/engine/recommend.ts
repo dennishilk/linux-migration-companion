@@ -32,11 +32,16 @@ const baseScores: Record<string, number> = {
   "linux-mint-cinnamon": 9,
   "zorin-os": 9,
   "ubuntu-lts": 8,
+  kubuntu: 8,
+  "pop-os": 8,
   "fedora-kde": 7,
   "debian-kde": 6,
   "opensuse-tumbleweed-kde": 4,
   cachyos: 3,
   nobara: 4,
+  bazzite: 4,
+  "void-linux": 2,
+  endeavouros: 3,
   nixos: 1,
   "arch-linux": 1,
   gentoo: 0
@@ -89,27 +94,43 @@ function scoreOne(
   const isMint = distroId === "linux-mint-cinnamon";
   const isZorin = distroId === "zorin-os";
   const isUbuntu = distroId === "ubuntu-lts";
+  const isKubuntu = distroId === "kubuntu";
+  const isPop = distroId === "pop-os";
   const isFedora = distroId === "fedora-kde";
   const isDebian = distroId === "debian-kde";
   const isTumbleweed = distroId === "opensuse-tumbleweed-kde";
   const isCachy = distroId === "cachyos";
   const isNobara = distroId === "nobara";
+  const isBazzite = distroId === "bazzite";
+  const isVoid = distroId === "void-linux";
+  const isEndeavour = distroId === "endeavouros";
   const isNix = distroId === "nixos";
   const isArch = distroId === "arch-linux";
   const isGentoo = distroId === "gentoo";
-  const isMainstream = isMint || isZorin || isUbuntu || isFedora || isDebian;
-  const isRolling = isTumbleweed || isCachy || isArch || isGentoo;
+  const isMainstream =
+    isMint || isZorin || isUbuntu || isKubuntu || isPop || isFedora || isDebian;
+  const isRolling =
+    isTumbleweed || isCachy || isVoid || isEndeavour || isArch || isGentoo;
+  const isSpecialistRolling = isCachy || isVoid || isEndeavour || isArch || isGentoo;
+  const advancedRollingReady =
+    exp >= 3 && terminal >= 2 && troubleshoot >= 2 && maintenance >= 2 && acceptsRolling;
+  const manualAssemblyIntent =
+    answers.systemInterest === "manual_build" ||
+    answers.systemInterest === "compile_control" ||
+    answers.desktopPreference === "build_my_own";
 
   if (isBeginner) {
     if (isMint || isZorin) score += 6;
-    if (isUbuntu) score += 4;
+    if (isUbuntu || isKubuntu) score += 4;
+    if (isPop) score += 3;
     if (isFedora) score += 2;
     if (isDebian) score += 1;
     if (isTumbleweed) score -= 3;
     if (isCachy || isNobara) score -= 5;
-    if (isNix || isArch) score -= 8;
+    if (isBazzite) score -= 3;
+    if (isNix || isArch || isVoid || isEndeavour) score -= 8;
     if (isGentoo) score -= 12;
-    if (isMint || isZorin || isUbuntu) {
+    if (isMint || isZorin || isUbuntu || isKubuntu || isPop) {
       reasons.push(
         message(
           "Its supported graphical path matches limited Linux experience.",
@@ -125,7 +146,8 @@ function scoreOne(
     );
   } else if (exp >= 3) {
     if (isFedora || isTumbleweed) score += 2;
-    if (isNix || isArch) score += 3;
+    if (isBazzite) score += 1;
+    if (isNix || isArch || isVoid || isEndeavour) score += 3;
     if (isGentoo) score += 2;
     causedBy.push(
       message(
@@ -137,17 +159,18 @@ function scoreOne(
 
   if (terminal === 0) {
     if (isMint || isZorin) score += 3;
-    if (isUbuntu || isFedora) score += 2;
-    if (isNix || isArch) score -= 5;
+    if (isUbuntu || isKubuntu || isPop || isFedora) score += 2;
+    if (isNix || isArch || isVoid || isEndeavour) score -= 5;
     if (isGentoo) score -= 8;
   } else if (terminal >= 2) {
-    if (isNix || isArch || isTumbleweed) score += 2;
+    if (isNix || isArch || isVoid || isEndeavour || isTumbleweed) score += 2;
     if (isGentoo && terminal === 3) score += 4;
   }
 
   if (troubleshoot <= 1) {
-    if (isMint || isZorin || isUbuntu) score += 3;
-    if (isTumbleweed || isCachy || isArch) score -= 5;
+    if (isMint || isZorin || isUbuntu || isKubuntu || isPop) score += 3;
+    if (isTumbleweed || isCachy || isArch || isVoid || isEndeavour) score -= 5;
+    if (isBazzite || isNobara) score -= 2;
     if (isNix || isGentoo) score -= 4;
     causedBy.push(
       message(
@@ -156,17 +179,26 @@ function scoreOne(
       )
     );
   } else {
-    if (isFedora || isTumbleweed || isCachy || isNobara) score += 2;
+    if (
+      isFedora ||
+      isTumbleweed ||
+      isCachy ||
+      isNobara ||
+      isBazzite ||
+      isVoid ||
+      isEndeavour
+    ) score += 2;
   }
 
   if (answers.maintenance === "minimal") {
-    if (isMint || isZorin || isUbuntu) score += 5;
+    if (isMint || isZorin || isUbuntu || isKubuntu || isPop) score += 5;
     if (isDebian) score += 3;
     if (isFedora) score -= 1;
     if (isRolling) score -= 8;
     if (isNobara) score -= 3;
+    if (isBazzite && answers.systemInterest === "use_it") score += 1;
     reasons.push(
-      ...(isMint || isZorin || isUbuntu
+      ...(isMint || isZorin || isUbuntu || isKubuntu || isPop
         ? [
             message(
               "Its release model fits your low-maintenance preference.",
@@ -176,20 +208,29 @@ function scoreOne(
         : [])
     );
   } else if (answers.maintenance === "active" || answers.maintenance === "hobby") {
-    if (isFedora || isTumbleweed || isCachy || isArch) score += 3;
+    if (isFedora || isTumbleweed || isCachy || isArch || isVoid || isEndeavour) score += 3;
     if (isNix || isGentoo) score += 2;
   }
 
+  if (isSpecialistRolling && answers.maintenance === "minimal") {
+    tradeoffs.push(
+      message(
+        "You prefer minimal maintenance; this profile expects active rolling-release ownership.",
+        "Du möchtest möglichst wenig Wartung; dieses Profil setzt aktive Verantwortung für ein Rolling Release voraus."
+      )
+    );
+  }
+
   if (answers.freshness === "stable") {
-    if (isMint || isZorin || isUbuntu || isDebian) score += 3;
+    if (isMint || isZorin || isUbuntu || isKubuntu || isPop || isDebian) score += 3;
     if (isRolling) score -= 2;
   } else if (answers.freshness === "newest") {
     if (isFedora) score += 4;
-    if (isTumbleweed || isCachy || isArch) score += 5;
-    if (isNobara) score += 3;
+    if (isTumbleweed || isCachy || isArch || isVoid || isEndeavour) score += 5;
+    if (isNobara || isBazzite) score += 3;
     if (isMint || isZorin || isDebian) score -= 2;
     reasons.push(
-      ...(isFedora || isTumbleweed || isCachy || isArch
+      ...(isFedora || isTumbleweed || isCachy || isArch || isVoid || isEndeavour
         ? [
             message(
               "It aligns with your preference for current kernels and packages.",
@@ -237,8 +278,9 @@ function scoreOne(
 
   if (answers.desktopPreference === "windows_like") {
     if (isMint || isZorin) score += 6;
+    if (isKubuntu) score += 4;
     if (isFedora || isDebian || isTumbleweed) score += 2;
-    if (isMint || isZorin) {
+    if (isMint || isZorin || isKubuntu) {
       reasons.push(
         message(
           "Its desktop provides the familiar layout you requested.",
@@ -247,24 +289,27 @@ function scoreOne(
       );
     }
   } else if (answers.desktopPreference === "kde") {
-    if (isFedora || isTumbleweed) score += 6;
+    if (isFedora || isTumbleweed || isKubuntu) score += 6;
     if (isDebian) score += 5;
-    if (isCachy || isNobara) score += 2;
+    if (isCachy || isNobara || isBazzite || isEndeavour) score += 2;
     if (isNix || isArch) score += 1;
   } else if (answers.desktopPreference === "gnome") {
     if (isUbuntu) score += 5;
-    if (isZorin || isNobara) score += 2;
+    if (isZorin || isNobara || isBazzite) score += 2;
   } else if (answers.desktopPreference === "build_my_own") {
     if (isArch) score += 7;
+    if (isVoid) score += 5;
+    if (isEndeavour) score += 2;
     if (isNix || isGentoo) score += 4;
     if (isMint || isZorin) score -= 2;
   }
 
   if (answers.windowsLikeUi === "important") {
     if (isMint || isZorin) score += 4;
+    if (isKubuntu) score += 3;
     if (isFedora || isDebian || isTumbleweed) score += 1;
   } else if (answers.windowsLikeUi === "irrelevant") {
-    if (isFedora || isUbuntu || isNix || isArch) score += 1;
+    if (isFedora || isUbuntu || isPop || isNix || isArch || isVoid) score += 1;
   }
 
   if (answers.gaming !== "none") {
@@ -339,6 +384,53 @@ function scoreOne(
     }
   }
 
+  if (isBazzite) {
+    const managedModelFits =
+      answers.systemInterest === "use_it" || answers.systemInterest === "customize";
+    const gamingFit =
+      (answers.gaming === "important" || answers.gaming === "critical") &&
+      managedModelFits;
+
+    if (gamingFit) {
+      score += answers.gaming === "critical" ? 11 : 8;
+      reasons.push(
+        message(
+          "Your gaming priority and preference for a managed system make the image-based model worth evaluating.",
+          "Deine Gaming-Priorität und der Wunsch nach einem verwalteten System machen das Image-Modell prüfenswert."
+        )
+      );
+      tradeoffs.push(
+        message(
+          "Bazzite uses an image-based Fedora Atomic model rather than a conventional package-by-package host workflow.",
+          "Bazzite nutzt ein Image-basiertes Fedora-Atomic-Modell statt eines konventionellen Host-Systems mit einzelner Paketverwaltung."
+        )
+      );
+      if (isBeginner || troubleshoot <= 1) {
+        maximumTier = capTier(maximumTier, "exploratory");
+      }
+    } else {
+      score -= answers.gaming === "none" ? 5 : 2;
+      maximumTier = capTier(maximumTier, "exploratory");
+      changeFactors.push(
+        message(
+          "Bazzite rises when gaming is important and a managed image-based system matches how you want to maintain the computer.",
+          "Bazzite steigt, wenn Gaming wichtig ist und ein verwaltetes Image-System zu deiner gewünschten Systempflege passt."
+        )
+      );
+    }
+
+    if (manualAssemblyIntent) {
+      score -= 8;
+      maximumTier = capTier(maximumTier, "exploratory");
+      tradeoffs.push(
+        message(
+          "You want direct ownership of major system layers; Bazzite intentionally manages the host as an image.",
+          "Du möchtest wesentliche Systemebenen direkt kontrollieren; Bazzite verwaltet den Host bewusst als Image."
+        )
+      );
+    }
+  }
+
   if (answers.gameLaunchers.some((launcher) => launcher !== "steam")) {
     tradeoffs.push(
       message(
@@ -349,8 +441,8 @@ function scoreOne(
   }
 
   if (answers.office === "complex") {
-    if (isMint || isZorin || isUbuntu) score += 1;
-    if (isNix || isArch || isGentoo) score -= 2;
+    if (isMint || isZorin || isUbuntu || isKubuntu || isPop) score += 1;
+    if (isNix || isArch || isVoid || isEndeavour || isGentoo) score -= 2;
     tradeoffs.push(
       message(
         "Complex Microsoft Office files, macros and integrations require representative testing.",
@@ -360,8 +452,9 @@ function scoreOne(
   }
 
   if (answers.development === "web" || answers.development === "cross_platform") {
-    if (isUbuntu || isFedora) score += 3;
-    if (isNix || isArch) score += exp >= 2 ? 2 : 0;
+    if (isUbuntu || isPop || isFedora) score += 3;
+    if (isKubuntu) score += 2;
+    if (isNix || isArch || isVoid || isEndeavour) score += exp >= 2 ? 2 : 0;
   } else if (answers.development === "microsoft_stack") {
     tradeoffs.push(
       message(
@@ -372,7 +465,7 @@ function scoreOne(
   }
 
   if (answers.creative === "professional") {
-    if (isUbuntu || isFedora) score += 1;
+    if (isUbuntu || isPop || isFedora) score += 1;
     if (isNobara && exp >= 2) score += 3;
     tradeoffs.push(
       message(
@@ -384,7 +477,7 @@ function scoreOne(
 
   if (answers.mediaProduction === "professional") {
     if (isNobara && exp >= 2) score += 4;
-    if (isUbuntu || isFedora) score += 1;
+    if (isUbuntu || isPop || isFedora) score += 1;
   }
 
   if (answers.professionalDependencies === "essential") {
@@ -420,14 +513,32 @@ function scoreOne(
   } else if (
     answers.gpuVendor === "amd" &&
     answers.gaming === "critical" &&
-    (isFedora || isTumbleweed || isCachy)
+    (isFedora || isTumbleweed || isCachy || isBazzite)
   ) {
     score += 2;
   }
 
   if (answers.secureBoot === "required") {
-    if (isMint || isZorin || isUbuntu || isFedora || isDebian) score += 1;
-    if (isCachy || isNobara || isArch || isGentoo) {
+    if (isMint || isZorin || isUbuntu || isKubuntu || isFedora || isDebian) score += 1;
+    if (isPop) {
+      score -= 5;
+      maximumTier = "not_recommended";
+      tradeoffs.push(
+        message(
+          "Current official Pop!_OS installation guidance requires Secure Boot to be disabled, which conflicts with your requirement.",
+          "Die aktuelle offizielle Pop!_OS-Installationsanleitung verlangt deaktiviertes Secure Boot und widerspricht damit deiner Anforderung."
+        )
+      );
+    }
+    if (
+      isCachy ||
+      isNobara ||
+      isBazzite ||
+      isVoid ||
+      isEndeavour ||
+      isArch ||
+      isGentoo
+    ) {
       score -= 2;
       tradeoffs.push(
         message(
@@ -440,11 +551,19 @@ function scoreOne(
 
   if (answers.systemInterest === "use_it") {
     if (isMainstream) score += 3;
+    if (isBazzite) score += 3;
     if (isNix || isArch) score -= 8;
+    if (isVoid) score -= 7;
+    if (isEndeavour) score -= 5;
     if (isGentoo) score -= 12;
   } else if (answers.systemInterest === "customize") {
-    if (isFedora || isTumbleweed || isDebian) score += 3;
+    if (isFedora || isTumbleweed || isDebian || isKubuntu) score += 3;
+    if (isPop) score += 2;
     if (isMint) score += 1;
+    if (isEndeavour) score += 4;
+    if (isVoid) score += 3;
+    if (isArch) score += 2;
+    if (isBazzite) score += 1;
   } else if (answers.systemInterest === "declarative") {
     if (isNix) {
       score += 20;
@@ -457,7 +576,7 @@ function scoreOne(
     }
   } else if (answers.systemInterest === "manual_build") {
     if (isArch) {
-      score += 20;
+      score += 15;
       reasons.push(
         message(
           "You explicitly want to assemble and learn each system layer.",
@@ -465,6 +584,8 @@ function scoreOne(
         )
       );
     }
+    if (isVoid) score += 12;
+    if (isEndeavour) score += 5;
     if (isGentoo) score += 5;
   } else if (answers.systemInterest === "compile_control") {
     if (isGentoo) {
@@ -477,6 +598,8 @@ function scoreOne(
       );
     }
     if (isArch) score += 5;
+    if (isVoid) score += 6;
+    if (isEndeavour) score += 2;
   }
 
   if (isNix) {
@@ -499,13 +622,88 @@ function scoreOne(
     }
   }
 
-  if (isArch) {
-    if (
-      answers.systemInterest !== "manual_build" &&
-      answers.systemInterest !== "compile_control"
-    ) {
+  if (isVoid) {
+    if (isBeginner) {
       maximumTier = "not_recommended";
-    } else if (exp < 3 || terminal < 2 || troubleshoot < 2 || !acceptsRolling) {
+      changeFactors.push(
+        message(
+          "Void requires meaningful Linux experience, terminal comfort, troubleshooting and active rolling maintenance together.",
+          "Void verlangt gemeinsam echte Linux-Erfahrung, Terminal-Sicherheit, Fehlersuche und aktive Rolling-Wartung."
+        )
+      );
+    } else if (!advancedRollingReady) {
+      maximumTier = capTier(maximumTier, "exploratory");
+      tradeoffs.push(
+        message(
+          "Void assumes advanced Linux experience, terminal troubleshooting and active rolling-release maintenance.",
+          "Void setzt fortgeschrittene Linux-Erfahrung, Fehlersuche im Terminal und aktive Rolling-Wartung voraus."
+        )
+      );
+    } else {
+      score += 10;
+      reasons.push(
+        message(
+          "Your Linux experience, terminal confidence and rolling-maintenance tolerance make Void a realistic specialist option.",
+          "Deine Linux-Erfahrung, Terminal-Sicherheit und Rolling-Wartungsbereitschaft machen Void zu einer realistischen Spezialistenoption."
+        )
+      );
+    }
+
+    if (answers.systemInterest === "use_it") {
+      maximumTier = capTier(maximumTier, "exploratory");
+      tradeoffs.push(
+        message(
+          "You prefer sensible defaults and graphical tools; Void's independent XBPS/runit model expects more hands-on administration.",
+          "Du bevorzugst sinnvolle Voreinstellungen und grafische Werkzeuge; Voids eigenständiges XBPS-/runit-Modell verlangt mehr manuelle Administration."
+        )
+      );
+    }
+  }
+
+  if (isEndeavour) {
+    const endeavourReady =
+      exp >= 2 && terminal >= 2 && troubleshoot >= 2 && maintenance >= 2 && acceptsRolling;
+    if (isBeginner) {
+      maximumTier = "not_recommended";
+      changeFactors.push(
+        message(
+          "The installer does not remove EndeavourOS's terminal and rolling-maintenance expectations.",
+          "Der Installer beseitigt nicht die Terminal- und Rolling-Wartungsanforderungen von EndeavourOS."
+        )
+      );
+    } else if (!endeavourReady) {
+      maximumTier = capTier(maximumTier, "exploratory");
+      tradeoffs.push(
+        message(
+          "EndeavourOS still requires terminal confidence, troubleshooting and active rolling maintenance after installation.",
+          "EndeavourOS verlangt auch nach der Installation Terminal-Sicherheit, Fehlersuche und aktive Rolling-Wartung."
+        )
+      );
+    } else {
+      score += 9;
+      reasons.push(
+        message(
+          "Your experience supports an Arch-based rolling system while the installer reduces initial assembly work.",
+          "Deine Erfahrung passt zu einem Arch-basierten Rolling-System, während der Installer die Ersteinrichtung reduziert."
+        )
+      );
+    }
+
+    if (answers.systemInterest === "use_it") {
+      maximumTier = capTier(maximumTier, "possible");
+    }
+  }
+
+  if (isArch) {
+    if (isBeginner || answers.systemInterest === "use_it") {
+      maximumTier = "not_recommended";
+      changeFactors.push(
+        message(
+          "Arch conflicts with a beginner path or a preference for sensible preassembled defaults.",
+          "Arch widerspricht einem Einsteigerweg oder dem Wunsch nach sinnvoll vorkonfigurierten Voreinstellungen."
+        )
+      );
+    } else if (!advancedRollingReady) {
       maximumTier = capTier(maximumTier, "exploratory");
       tradeoffs.push(
         message(
@@ -513,6 +711,23 @@ function scoreOne(
           "Arch verlangt gemeinsam fortgeschrittene Erfahrung, Terminal-Sicherheit, Fehlersuche und Rolling-Akzeptanz."
         )
       );
+    } else {
+      score += 7;
+      reasons.push(
+        message(
+          "Your Linux experience and active rolling-maintenance tolerance make Arch technically realistic.",
+          "Deine Linux-Erfahrung und aktive Rolling-Wartungsbereitschaft machen Arch technisch realistisch."
+        )
+      );
+      if (!manualAssemblyIntent) {
+        maximumTier = capTier(maximumTier, "possible");
+        tradeoffs.push(
+          message(
+            "Your skills fit, but you did not make manual system assembly a primary goal.",
+            "Deine Fähigkeiten passen, aber manueller Systemaufbau ist für dich kein Hauptziel."
+          )
+        );
+      }
     }
   }
 

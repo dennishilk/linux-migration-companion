@@ -18,9 +18,11 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] The skip link is first, visible on focus, localized, and moves focus to the main content.
 - [ ] DE → EN → DE changes current UI, document language/title, and long copy without losing state.
 - [ ] All five Advisor groups open; every choice remains selected while navigating.
-- [ ] Default persona shows Mint, Zorin, Ubuntu in that order.
+- [ ] Default persona shows Mint, Zorin, and Kubuntu as the first three profiles while Ubuntu remains in the first four.
 - [ ] Results contain reasons, trade-offs, triggering answers, change factors, and no percentage.
 - [ ] Comparison accepts 0–3 unique distros, disables a fourth, remains usable on mobile, and never upgrades a specialist tier.
+- [ ] `Compare all included profiles` / `Alle enthaltenen Profile vergleichen` exposes all 16 catalog entries independently of recommendation tier.
+- [ ] Void, Pop!_OS, Bazzite, EndeavourOS, and Kubuntu render complete DE/EN comparison facets and official handoff links without overflow.
 - [ ] Software search/category/add/remove/priority controls work with all 90 records.
 - [ ] Application/workflow scope, volatile/stable label, official source, and review date are visible.
 - [ ] Essential Photoshop/Creative Cloud produces a hard blocker and keep-Windows-for-workflows strategy.
@@ -138,6 +140,14 @@ Run each from a reset Passport and record top recommendations, readiness, Window
 28. Unknown/new Unicode device description.
 29. User who assumes detected means supported; verify corrective copy/readiness.
 30. Snapshot that cannot identify an important device; `UNKNOWN` must survive.
+31. Mainstream Windows beginner: Mint/Zorin/Ubuntu/Kubuntu remain viable; Arch/Gentoo/Void/EndeavourOS/CachyOS do not become strong.
+32. Void-like expert: terminal/troubleshooting comfort, active maintenance, current software and rolling acceptance surface Void without a distro-name answer.
+33. Arch-like expert without manual-build intent: Arch can surface with an explicit assembly trade-off; adding manual-build intent strengthens it.
+34. Exact Gentoo expert and near-miss: the complete compile-control property gate remains intact.
+35. Expert explicitly rejecting rolling releases: every rolling-only profile remains not recommended.
+36. Beginner critical gamer: specialist gaming signals do not override experience, troubleshooting, and maintenance safeguards.
+37. Managed-image gaming candidate: Bazzite is meaningful; a conventional manual-host candidate is not silently pushed toward it.
+38. EndeavourOS-like user: installer-assisted customization can place EndeavourOS above manual Arch while retaining rolling-maintenance warnings.
 
 Attempt to bypass every specialist gate and force `READY` while Photoshop, failed Wi-Fi, failed suspend, essential `DO NOT ASSUME` data, or other blockers remain.
 

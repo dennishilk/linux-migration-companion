@@ -53,6 +53,39 @@ describe("Migration Passport schema", () => {
     expect(parsePassportText(serializePassport(passport))).toEqual(passport);
   });
 
+  it("preserves every public 0.3.0 system-interest answer after the wording change", () => {
+    const values = [
+      "use_it",
+      "customize",
+      "declarative",
+      "manual_build",
+      "compile_control"
+    ] as const;
+    for (const systemInterest of values) {
+      const passport = makePassport();
+      passport.answers.systemInterest = systemInterest;
+      expect(parsePassportText(serializePassport(passport)).answers.systemInterest).toBe(systemInterest);
+    }
+  });
+
+  it("accepts every newly included profile without changing Passport v3", () => {
+    for (const distroId of [
+      "void-linux",
+      "pop-os",
+      "bazzite",
+      "endeavouros",
+      "kubuntu"
+    ]) {
+      const passport = makePassport();
+      passport.selectedDistroId = distroId;
+      passport.comparisonDistroIds = [distroId];
+      const parsed = parsePassportText(serializePassport(passport));
+      expect(parsed.schemaVersion).toBe(3);
+      expect(parsed.selectedDistroId).toBe(distroId);
+      expect(parsed.comparisonDistroIds).toEqual([distroId]);
+    }
+  });
+
   it("rejects malformed JSON", () => {
     expect(() => parsePassportText("{not-json")).toThrow("passport_invalid_json");
   });

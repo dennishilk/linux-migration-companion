@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { cwd } from "node:process";
 import { describe, expect, it } from "vitest";
+import { distros } from "../data/distros";
 
 function schema(name: string): Record<string, unknown> {
   return JSON.parse(
@@ -13,10 +14,14 @@ function schema(name: string): Record<string, unknown> {
 describe("published JSON schema contracts", () => {
   it("publishes Passport v3 with embedded hardware snapshot provenance", () => {
     const passport = schema("migration-passport.schema.json");
+    const distroIds = (
+      passport.$defs as { distroId: { enum: string[] } }
+    ).distroId.enum;
     expect(passport.title).toBe("Linux Migration Companion Passport v3");
     expect(JSON.stringify(passport)).toContain('"schemaVersion":{"const":3}');
     expect(JSON.stringify(passport)).toContain("storedHardwareSnapshot");
     expect(JSON.stringify(passport)).toContain("hardware-snapshot.schema.json");
+    expect(distroIds).toEqual(distros.map((distro) => distro.id));
   });
 
   it("publishes strict Hardware Snapshot v1 bounds and source pairs", () => {

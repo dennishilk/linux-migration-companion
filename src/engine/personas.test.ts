@@ -69,8 +69,9 @@ const personas: Array<{ name: string; verify: () => void }> = [
       expect(results.slice(0, 3).map((item) => item.distro.id)).toEqual([
         "linux-mint-cinnamon",
         "zorin-os",
-        "ubuntu-lts"
+        "kubuntu"
       ]);
+      expect(results.slice(0, 4).map((item) => item.distro.id)).toContain("ubuntu-lts");
     }
   },
   {

@@ -80,6 +80,58 @@ export const distros: DistroProfile[] = [
     reviewedAt: "2026-08-11"
   },
   {
+    id: "kubuntu",
+    name: "Kubuntu",
+    edition: "26.04 LTS",
+    category: "mainstream",
+    supportDepth: "guided",
+    summary: {
+      en: "Ubuntu's long-term base with KDE Plasma for a conventional, customizable desktop migration path.",
+      de: "Ubuntu-Langzeitbasis mit KDE Plasma für einen konventionellen, anpassbaren Desktop-Umstieg."
+    },
+    maintenance: {
+      en: "Low to moderate. LTS updates and periodic release upgrades through the Ubuntu ecosystem.",
+      de: "Gering bis mittel. LTS-Updates und gelegentliche Release-Upgrades im Ubuntu-Ökosystem."
+    },
+    desktop: {
+      en: "KDE Plasma 6 with a familiar panel, launcher and extensive graphical customization.",
+      de: "KDE Plasma 6 mit vertrauter Leiste, Anwendungsstarter und umfangreicher grafischer Anpassung."
+    },
+    releaseModel: "lts",
+    officialHome: "https://kubuntu.org/",
+    downloadUrl: "https://kubuntu.org/download/",
+    verifyUrl: "https://cdimage.ubuntu.com/kubuntu/releases/26.04/release/",
+    installUrl: "https://kubuntu.org/download/",
+    mediaTool: "rufus_or_etcher",
+    reviewedAt: "2026-08-13"
+  },
+  {
+    id: "pop-os",
+    name: "Pop!_OS",
+    edition: "24.04 LTS",
+    category: "mainstream",
+    supportDepth: "guided",
+    summary: {
+      en: "Graphical Ubuntu-based desktop with System76's COSMIC environment and a practical development-oriented workflow.",
+      de: "Grafischer Ubuntu-basierter Desktop mit System76s COSMIC-Oberfläche und praxisnahem Entwicklungs-Workflow."
+    },
+    maintenance: {
+      en: "Low to moderate. LTS base with continuously updated COSMIC, kernels and hardware enablement.",
+      de: "Gering bis mittel. LTS-Basis mit fortlaufend aktualisiertem COSMIC, Kerneln und Hardware-Unterstützung."
+    },
+    desktop: {
+      en: "COSMIC Epoch 1 with graphical settings, optional tiling, dock and panel layouts.",
+      de: "COSMIC Epoch 1 mit grafischen Einstellungen, optionalem Tiling sowie Dock- und Leistenlayouts."
+    },
+    releaseModel: "lts",
+    officialHome: "https://system76.com/pop/",
+    downloadUrl: "https://system76.com/pop/download/",
+    verifyUrl: "https://system76.com/pop/download/",
+    installUrl: "https://support.system76.com/support/articles/install-pop",
+    mediaTool: "rufus_or_etcher",
+    reviewedAt: "2026-08-13"
+  },
+  {
     id: "fedora-kde",
     name: "Fedora KDE",
     edition: "44",
@@ -208,6 +260,84 @@ export const distros: DistroProfile[] = [
     installUrl: "https://wiki.nobaraproject.org/en/new-user-guide-general-guidelines",
     mediaTool: "official_guidance",
     reviewedAt: "2026-08-11"
+  },
+  {
+    id: "bazzite",
+    name: "Bazzite",
+    edition: "Fedora 44 stable image",
+    category: "gaming",
+    supportDepth: "reference",
+    summary: {
+      en: "Gaming-focused Fedora Atomic image with managed system updates, hardware-specific variants and rollback deployments.",
+      de: "Gaming-orientiertes Fedora-Atomic-Image mit verwalteten Systemupdates, Hardwarevarianten und Rollback-Deployments."
+    },
+    maintenance: {
+      en: "Managed but different. Image updates and rollbacks reduce package-level chores; the atomic model must fit the user.",
+      de: "Verwaltet, aber anders. Image-Updates und Rollbacks verringern Paketpflege; das Atomic-Modell muss zum Nutzer passen."
+    },
+    desktop: {
+      en: "KDE Plasma or GNOME; Steam Gaming Mode is limited to appropriate Bazzite-Deck images and hardware.",
+      de: "KDE Plasma oder GNOME; Steam Gaming Mode ist auf passende Bazzite-Deck-Images und Hardware begrenzt."
+    },
+    releaseModel: "rapid",
+    officialHome: "https://bazzite.gg/",
+    downloadUrl: "https://bazzite.gg/",
+    verifyUrl: "https://docs.bazzite.gg/General/Installation_Guide/install-guide/",
+    installUrl: "https://docs.bazzite.gg/General/Installation_Guide/install-guide/",
+    mediaTool: "fedora_media_writer",
+    reviewedAt: "2026-08-13"
+  },
+  {
+    id: "void-linux",
+    name: "Void Linux",
+    edition: "2025-02-02 XFCE image",
+    category: "advanced",
+    supportDepth: "reference",
+    summary: {
+      en: "Independent rolling distribution with XBPS and runit for experienced users who deliberately want a distinct system architecture.",
+      de: "Unabhängige Rolling-Distribution mit XBPS und runit für Erfahrene, die bewusst eine eigenständige Systemarchitektur möchten."
+    },
+    maintenance: {
+      en: "Active. Routine rolling updates, project news and hands-on troubleshooting are user-owned.",
+      de: "Aktiv. Regelmäßige Rolling-Updates, Projekthinweise und praktische Fehlersuche liegen beim Nutzer."
+    },
+    desktop: {
+      en: "Official XFCE live image or a user-assembled desktop; glibc and musl variants are available.",
+      de: "Offizielles XFCE-Live-Image oder selbst zusammengestellter Desktop; glibc- und musl-Varianten sind verfügbar."
+    },
+    releaseModel: "rolling",
+    officialHome: "https://voidlinux.org/",
+    downloadUrl: "https://voidlinux.org/download/",
+    verifyUrl: "https://docs.voidlinux.org/installation/",
+    installUrl: "https://docs.voidlinux.org/installation/",
+    mediaTool: "official_guidance",
+    reviewedAt: "2026-08-13"
+  },
+  {
+    id: "endeavouros",
+    name: "EndeavourOS",
+    edition: "Titan Neo (2026.04.27)",
+    category: "advanced",
+    supportDepth: "reference",
+    summary: {
+      en: "Installer-assisted, terminal-centric Arch-based rolling system that retains active Arch maintenance expectations.",
+      de: "Installer-gestütztes, terminalorientiertes Arch-basiertes Rolling-System mit weiterhin aktiven Arch-Wartungsanforderungen."
+    },
+    maintenance: {
+      en: "Active. Regular full-system updates, current project/Arch news and troubleshooting remain expected.",
+      de: "Aktiv. Regelmäßige vollständige Systemupdates, aktuelle Projekt-/Arch-Hinweise und Fehlersuche bleiben erforderlich."
+    },
+    desktop: {
+      en: "Installer-selected desktop or window manager; KDE Plasma is one supported path.",
+      de: "Im Installer gewählter Desktop oder Fenstermanager; KDE Plasma ist eine unterstützte Option."
+    },
+    releaseModel: "rolling",
+    officialHome: "https://endeavouros.com/",
+    downloadUrl: "https://endeavouros.com/",
+    verifyUrl: "https://discovery.endeavouros.com/signature-and-keyring/how-to-check-and-trust-key-and-signature-for-the-endeavouros-iso/2025/01/",
+    installUrl: "https://discovery.endeavouros.com/installation/",
+    mediaTool: "official_guidance",
+    reviewedAt: "2026-08-13"
   },
   {
     id: "nixos",

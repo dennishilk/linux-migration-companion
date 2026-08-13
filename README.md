@@ -42,30 +42,40 @@ The derived state is one of:
 
 The related strategy is one of Linux primary, test first, dual boot, keep Windows temporarily, keep Windows for specific workflows, or migration blocked. Every result includes its reasons and unresolved evidence.
 
-## Deliberate recommendation gates
+## Deliberate recommendation safeguards
 
-Gaming by itself is **never** enough to select CachyOS or Nobara. A beginner with NVIDIA graphics, Steam, low maintenance tolerance, and guided troubleshooting remains near Mint, Zorin, and Ubuntu.
+Gaming by itself is **never** enough to select a specialist distribution. A beginner with NVIDIA graphics, Steam, low maintenance tolerance, and guided troubleshooting remains near mainstream profiles such as Mint, Zorin, Ubuntu, and Kubuntu.
 
 - CachyOS requires critical gaming **and** sufficient Linux experience, troubleshooting confidence, active maintenance, and explicit rolling-release acceptance.
 - Nobara rises only for a matching experienced gaming/content-creation specialist; beginner or minimal-maintenance use is capped.
-- NixOS requires explicit interest in declarative configuration-as-code.
-- Arch requires explicit manual-build intent plus advanced experience, terminal confidence, troubleshooting, and rolling-release acceptance.
-- Gentoo requires the complete expert/compile-control persona.
+- Bazzite needs both a meaningful gaming use case and a preference compatible with its managed image-based system; beginner or low-troubleshooting use remains exploratory.
+- Void and EndeavourOS need experience, terminal/troubleshooting confidence, active maintenance, and rolling-release acceptance. Their system-control signals affect rank without acting as distro-name gates.
+- NixOS retains the real property gate of explicit interest in declarative configuration-as-code.
+- Arch can surface from demonstrated competence and rolling-maintenance tolerance even when manual assembly is not the primary goal; manual intent strengthens the result.
+- Gentoo retains the complete expert/compile-control gate.
+- An explicit refusal of rolling releases keeps every rolling-only profile out of recommendation tiers.
 
 The UI does not expose the internal ordinal score. Hard gates and blockers always take precedence. See [the decision-model specification](docs/DECISION_MODEL.md) and [`src/engine/recommend.ts`](src/engine/recommend.ts).
 
 ## Distribution scope
+
+The Companion compares 16 deliberately curated, maintained profiles. They span useful migration and system-model choices; they are not intended to catalogue every Linux distribution.
 
 | Profile | Content depth | Role |
 |---|---|---|
 | Linux Mint 22.3 Cinnamon | Guided | Conservative, familiar mainstream path |
 | Zorin OS 18.1 Core | Guided | Polished Windows-migrant path |
 | Ubuntu 26.04 LTS | Guided | Broad mainstream reference |
+| Kubuntu 26.04 LTS | Guided | Ubuntu ecosystem with a familiar KDE Plasma path |
+| Pop!_OS 24.04 LTS | Guided | COSMIC mainstream/development-oriented path |
 | Fedora KDE 44 | Guided | Current KDE/mainstream path |
 | Debian 13 KDE Live | Guided | Conservative community path |
 | openSUSE Tumbleweed KDE | Guided | Explicit rolling KDE path |
 | CachyOS Desktop | Reference | Experienced performance/gaming path |
 | Nobara Linux | Reference | Experienced gaming/creation specialist path |
+| Bazzite Fedora 44 stable image | Reference | Managed Fedora Atomic gaming path |
+| Void Linux 2025-02-02 XFCE image | Reference | Independent XBPS/runit rolling path |
+| EndeavourOS Titan Neo | Reference | Installer-assisted Arch-based rolling path |
 | NixOS 26.05 | Experimental | Declarative system model |
 | Arch Linux | Reference | Manual rolling system |
 | Gentoo Linux | Reference | Expert compile/control system |
@@ -132,7 +142,7 @@ Browser storage is convenience, not backup. Snapshot model names and non-unique 
 - The executable has passed ordinary-user, double-click QA on real Windows 11 Pro hardware. Representative Windows 10 verification remains outstanding; a Windows GitHub runner build and automated core tests are necessary but not a substitute.
 - The PowerShell reference may be blocked by execution policy. This is a beginner-path product limitation, not a PowerShell bug; the project recommends no bypass or policy weakening.
 - Software records describe supported routes and representative verification; they do not promise that a document, plug-in, game, anti-cheat system, peripheral, or organization policy works.
-- The catalog is a maintained snapshot reviewed on **2026-08-11**, not a live compatibility service. Volatile entries are labelled and must be rechecked.
+- The catalog is a maintained snapshot with per-profile review dates through **2026-08-13**, not a live compatibility service. Edition labels and volatile claims must be rechecked before use.
 - Live-session success does not prove that an installed system will behave identically after future updates or driver changes.
 - The app cannot make dual boot, firmware, backups, or partitioning risk-free.
 - Search indexing is enabled for the single canonical application URL. Query-driven `?step=` states retain deep-linking but canonicalize to the application root; no artificial localized URLs or `hreflang` alternates are published. The project ships a one-URL subpath sitemap, while the production root sitemap remains owned by the main website integration.
@@ -142,6 +152,7 @@ Browser storage is convenience, not backup. Snapshot model names and non-unique 
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Decision model and invariants](docs/DECISION_MODEL.md)
+- [Advisor catalog 0.3.1 research record](docs/ADVISOR_CATALOG_0.3.1_RESEARCH.md)
 - [Threat model](docs/THREAT_MODEL.md)
 - [Hardware Snapshot design and collector audit](docs/HARDWARE_SNAPSHOT.md)
 - [Windows collector build, checksum and signing plan](docs/WINDOWS_COLLECTOR_RELEASE.md)

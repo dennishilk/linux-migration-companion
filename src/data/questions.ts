@@ -151,8 +151,8 @@ export const questions: QuestionDefinition[] = [
     group: "maintenance",
     question: { en: "Would you use a rolling release?", de: "Würdest du ein Rolling Release nutzen?" },
     help: {
-      en: "A “no” is a real gate for Tumbleweed, CachyOS, Arch and Gentoo.",
-      de: "Ein „Nein“ ist eine echte Grenze für Tumbleweed, CachyOS, Arch und Gentoo."
+      en: "A “no” is a real gate for every rolling-only profile, including Tumbleweed, Void, EndeavourOS, Arch and Gentoo.",
+      de: "Ein „Nein“ ist eine echte Grenze für alle reinen Rolling-Profile, darunter Tumbleweed, Void, EndeavourOS, Arch und Gentoo."
     },
     options: [
       option("no", "No", "Nein"),
@@ -322,17 +322,17 @@ export const questions: QuestionDefinition[] = [
   {
     field: "systemInterest",
     group: "confidence",
-    question: { en: "What do you want from the system itself?", de: "Was möchtest du vom System selbst?" },
+    question: { en: "How much control do you want over how the system is assembled?", de: "Wie viel Kontrolle möchtest du darüber, wie das System aufgebaut ist?" },
     help: {
-      en: "This is the explicit gate for NixOS, Arch and Gentoo.",
-      de: "Das ist die ausdrückliche Grenze für NixOS, Arch und Gentoo."
+      en: "This is evaluated together with experience, terminal comfort, troubleshooting and maintenance; it is not a distro-name gate.",
+      de: "Das wird gemeinsam mit Erfahrung, Terminal-Sicherheit, Fehlersuche und Wartung bewertet; es ist kein Gate nach Distributionsnamen."
     },
     options: [
-      option("use_it", "Use the computer, not build it", "Den Rechner nutzen, nicht bauen"),
-      option("customize", "Customize the desktop", "Den Desktop stark anpassen"),
-      option("declarative", "Declarative, reproducible system-as-code", "Deklaratives, reproduzierbares System-as-Code"),
-      option("manual_build", "Assemble and learn every layer", "Jede Ebene selbst aufbauen und lernen"),
-      option("compile_control", "Compile, tune and control everything", "Alles kompilieren, abstimmen und kontrollieren")
+      option("use_it", "Sensible defaults and graphical tools", "Sinnvolle Voreinstellungen und grafische Werkzeuge"),
+      option("customize", "I am comfortable adjusting system configuration", "Ich passe die Systemkonfiguration gern an"),
+      option("declarative", "A declarative, reproducible system-as-code model", "Ein deklaratives, reproduzierbares System-as-Code-Modell"),
+      option("manual_build", "I want to assemble major parts myself", "Ich möchte wesentliche Teile selbst zusammenstellen"),
+      option("compile_control", "Building, compiling and maintaining it is part of the point", "Aufbauen, Kompilieren und Warten gehören für mich zum Ziel")
     ]
   },
   {

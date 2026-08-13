@@ -1,6 +1,6 @@
 # Architecture
 
-Last reviewed: 2026-08-12
+Last reviewed: 2026-08-13
 
 ## System shape
 
@@ -28,7 +28,7 @@ Only an explicit external-link handoff crosses the application origin. Collector
 | Area | Source | Responsibility |
 |---|---|---|
 | Domain | `src/domain` | Closed types, isolated defaults, Passport state |
-| Curated data | `src/data` | 11 distro profiles, 90 software/workflows, 19 hardware classes, 19 data categories, 21 questions, 10 live checks |
+| Curated data | `src/data` | 16 distro profiles, 90 software/workflows, 19 hardware classes, 19 data categories, 21 questions, 10 live checks |
 | Recommendation | `src/engine/recommend.ts` | Pure ordinal scoring, tier caps, specialist gates, explanations, warnings |
 | Software/live evidence | `src/engine/assess.ts` | Software risk/blockers and live-test status |
 | Readiness | `src/engine/readiness.ts` | Explainable readiness and Windows-retention strategy; hard blockers outrank preferences |

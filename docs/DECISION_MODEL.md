@@ -41,11 +41,14 @@ Current raw tier boundaries in `recommend.ts` are `>=20` strong, `>=13` possible
 
 ## Hard invariants
 
-- Gaming alone never unlocks CachyOS.
+- Gaming alone never unlocks CachyOS and does not make Bazzite an automatic winner.
 - CachyOS needs intermediate-or-better experience, comfortable-or-better troubleshooting, active-or-hobby maintenance, critical gaming, and explicit rolling acceptance.
 - Nobara needs that specialist gaming context or an experienced professional-media context to rise; beginner/minimal-maintenance use is capped at exploratory.
+- Bazzite needs important-or-critical gaming plus a preference compatible with its managed image-based host. Beginner or low-troubleshooting use is capped at exploratory, and manual system-assembly intent conflicts with it.
+- Void needs advanced experience, terminal/troubleshooting comfort, active maintenance, and rolling acceptance to rise beyond exploratory; the property-intent answer changes rank but is not a distro-name gate.
+- EndeavourOS needs intermediate-or-better experience, terminal/troubleshooting comfort, active maintenance, and rolling acceptance. Its installer-assisted setup can outrank manual Arch when the user wants customization without full assembly.
 - NixOS is not recommended without explicit declarative-system intent; insufficient experience can further cap it.
-- Arch is not recommended without manual-build/compile intent and is capped unless advanced experience, terminal comfort, troubleshooting, and rolling tolerance align.
+- Arch is not recommended for beginners or users choosing preassembled graphical defaults. Advanced experience, terminal/troubleshooting comfort, active maintenance, and rolling acceptance can make it realistic; absent manual-assembly intent caps it at possible rather than erasing it.
 - Gentoo is not recommended unless expert experience, terminal/troubleshooting enthusiasm, hobby maintenance, rolling acceptance, and compile-control intent all align.
 - A “no” to rolling release blocks rolling profiles from recommendation tiers regardless of their point total.
 - NVIDIA increases the need for a supported driver workflow; it does not imply a gaming/enthusiast distro.
@@ -66,8 +69,12 @@ Tests cover at least:
 - low-maintenance office family;
 - cross-platform developer wanting a current KDE stack;
 - explicit NixOS learner;
-- explicit Arch builder;
+- advanced Arch candidate with and without manual-build intent;
 - exact Gentoo expert and near-miss persona;
+- Void-like and EndeavourOS-like experienced rolling users;
+- beginner and advanced users who explicitly reject rolling releases;
+- beginner gamer and managed-image Bazzite candidate;
+- mainstream Kubuntu/KDE candidate;
 - Adobe/Creative Cloud essential blocker;
 - Xbox/Vanguard warning/blocker context;
 - Secure Boot and NVIDIA policy conflicts.

@@ -1,6 +1,6 @@
 # Threat model
 
-Last reviewed: 2026-08-12
+Last reviewed: 2026-08-13
 
 ## Assets
 
@@ -34,7 +34,7 @@ Last reviewed: 2026-08-12
 | Unsafe installer/partition action | Windows/data loss | No partition/install API; prominent installer boundary; readiness frequently advises keeping Windows | Official installers remain powerful tools |
 | Misleading hardware inference | Failed migration | Detection/provenance stored separately; imports do not alter `required` or live state; seven evidence states; required `known_fact` remains unresolved; failed linked tests block | Live tests cannot prove all future kernels/updates |
 | False READY result | User removes a proven system too early | Hard blockers evaluated first; failed required hardware/live tests block; absent evidence cannot pass; adversarial readiness tests | The app relies on truthful, representative user input |
-| Gaming/specialist bias | Inappropriate specialist distro | Explicit gates and beginner/NVIDIA/Gentoo/NixOS/Arch persona tests | Curated rules remain product judgment, not outcomes data |
+| Gaming/specialist bias | Inappropriate specialist distro | True architectural contradictions remain gates; skill/maintenance signals, conservative caps, and beginner/advanced/Gentoo/NixOS/Void/Bazzite/Arch persona tests cover both suppression and reachability | Curated rules remain product judgment, not outcomes data |
 | Secret entry into notes | Sensitive export/storage disclosure | Copy repeatedly says no passwords/private keys/recovery codes; bounded local notes; inspect-before-share guidance | Free text cannot safely detect every secret |
 | Dependency/supply-chain compromise | Malicious static bundle or executable | npm lockfile/audit, dependency-free C# project, deterministic Windows build record/checksum, Windows core tests, JavaScript and C# CodeQL, Dependabot, minimal workflow permissions | Major action tags, GitHub runner images, MSBuild/.NET reference assemblies and npm are not zero-risk; Windows build is traceable but not hermetic |
 | Hosting/account compromise | Modified deployment | Repository controls, Actions deployment, public history; deployment only from `main` | Repository owner security is external to code |

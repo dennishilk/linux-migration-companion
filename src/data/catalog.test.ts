@@ -9,9 +9,47 @@ import { DEFAULT_ANSWERS } from "../domain/defaults";
 import { messages } from "../i18n";
 
 describe("curated release data", () => {
-  it("contains exactly the 11 scoped distro profiles with unique IDs", () => {
-    expect(distros).toHaveLength(11);
-    expect(new Set(distros.map((item) => item.id)).size).toBe(11);
+  it("contains exactly the 16 scoped distro profiles with unique IDs", () => {
+    expect(distros).toHaveLength(16);
+    expect(new Set(distros.map((item) => item.id)).size).toBe(16);
+  });
+
+  it("contains the five reviewed post-release profiles with their intended roles", () => {
+    expect(
+      Object.fromEntries(
+        distros
+          .filter((item) => ["void-linux", "pop-os", "bazzite", "endeavouros", "kubuntu"].includes(item.id))
+          .map((item) => [item.id, [item.category, item.supportDepth, item.reviewedAt]])
+      )
+    ).toEqual({
+      kubuntu: ["mainstream", "guided", "2026-08-13"],
+      "pop-os": ["mainstream", "guided", "2026-08-13"],
+      bazzite: ["gaming", "reference", "2026-08-13"],
+      "void-linux": ["advanced", "reference", "2026-08-13"],
+      endeavouros: ["advanced", "reference", "2026-08-13"]
+    });
+  });
+
+  it("uses official handoff domains for every newly added profile", () => {
+    const expectedDomains: Record<string, string[]> = {
+      kubuntu: ["kubuntu.org", "cdimage.ubuntu.com"],
+      "pop-os": ["system76.com", "support.system76.com"],
+      bazzite: ["bazzite.gg", "docs.bazzite.gg"],
+      "void-linux": ["voidlinux.org", "docs.voidlinux.org"],
+      endeavouros: ["endeavouros.com", "discovery.endeavouros.com"]
+    };
+    for (const [id, domains] of Object.entries(expectedDomains)) {
+      const distro = distros.find((item) => item.id === id);
+      expect(distro, id).toBeDefined();
+      for (const url of [
+        distro?.officialHome,
+        distro?.downloadUrl,
+        distro?.verifyUrl,
+        distro?.installUrl
+      ]) {
+        expect(domains, `${id}: ${url}`).toContain(new URL(url ?? "").hostname);
+      }
+    }
   });
 
   it("states support depth for every distro", () => {
@@ -24,7 +62,7 @@ describe("curated release data", () => {
       expect(distro.downloadUrl, distro.id).toMatch(/^https:\/\//);
       expect(distro.verifyUrl, distro.id).toMatch(/^https:\/\//);
       expect(distro.installUrl, distro.id).toMatch(/^https:\/\//);
-      expect(distro.reviewedAt).toBe("2026-08-11");
+      expect(distro.reviewedAt).toMatch(/^2026-08-(11|13)$/);
     }
   });
 
@@ -74,7 +112,15 @@ describe("curated release data", () => {
         "recovery",
         "troubleshooting"
       ]);
-      expect(comparison.recovery.en.length).toBeGreaterThan(20);
+      for (const value of [
+        distro.summary,
+        distro.maintenance,
+        distro.desktop,
+        ...Object.values(comparison)
+      ]) {
+        expect(value.en.length, `${distro.id} EN`).toBeGreaterThan(20);
+        expect(value.de.length, `${distro.id} DE`).toBeGreaterThan(20);
+      }
     }
   });
 
@@ -94,6 +140,13 @@ describe("curated release data", () => {
   it("asks once for every scalar advisor field", () => {
     const scalarFields = Object.keys(DEFAULT_ANSWERS).filter((field) => field !== "gameLaunchers");
     expect(questions.map((question) => question.field).sort()).toEqual(scalarFields.sort());
+  });
+
+  it("asks for system properties rather than named specialist distributions", () => {
+    const question = questions.find((item) => item.field === "systemInterest");
+    expect(question?.question.en).toContain("how the system is assembled");
+    expect(question?.question.de).toContain("wie das System aufgebaut ist");
+    expect(JSON.stringify(question)).not.toMatch(/Arch|Gentoo|NixOS|Void|Bazzite/);
   });
 
   it("keeps the static DE and EN message contracts aligned", () => {

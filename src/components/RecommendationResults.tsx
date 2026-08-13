@@ -150,7 +150,7 @@ export function RecommendationResults({
         <button type="button" className="button secondary" onClick={() => setShowAll((value) => !value)}>
           {showAll
             ? text(locale, "Show top matches", "Nur Top-Empfehlungen zeigen")
-            : text(locale, "Compare all 11 profiles", "Alle 11 Profile vergleichen")}
+            : text(locale, "Compare all included profiles", "Alle enthaltenen Profile vergleichen")}
         </button>
         <button type="button" className="button primary" onClick={onContinue}>
           {t(locale, "continueSoftware")}
