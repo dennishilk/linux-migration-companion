@@ -78,7 +78,7 @@ jobs:
             "signed=false"
             "sha256=$hash"
           ) | Set-Content -Path (Join-Path $stage "BUILD-INFO.txt") -Encoding utf8NoBOM
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: windows-hardware-snapshot-unsigned-${{ env.BUILD_SOURCE_COMMIT }}
           path: ${{ runner.temp }}/windows-hardware-snapshot
