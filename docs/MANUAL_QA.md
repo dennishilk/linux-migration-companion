@@ -42,7 +42,9 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] Empty/default evidence produces `INSUFFICIENT EVIDENCE`.
 - [ ] Data plan covers all 19 categories, six methods, backup warning, cloud placeholders, encryption, Fast Startup/NTFS, and active databases.
 - [ ] Media guide uses selected distro’s official links and offers no raw-write action.
-- [ ] Passport 3.0 summarizes distros, software, blockers, required hardware, snapshot provenance, live tests, strategy, data, gaming, and unknowns.
+- [ ] The Passport begins with a compact DE/EN Migration Summary showing the existing readiness state/strategy, supported positives, open checks, named software blockers, generic hardware/live blockers, at most three eligible distro candidates, and no numeric score.
+- [ ] `Copy summary` / `Zusammenfassung kopieren` is keyboard accessible, copies only after activation, reports success/failure accessibly, remains fully localized, and excludes notes, snapshot/device details, filesystem paths, raw Passport JSON, and unrelated local state.
+- [ ] Passport 3.0 retains the detailed evidence below the summary and still covers distros, software, blockers, required hardware, snapshot provenance, live tests, strategy, data, gaming, and unknowns.
 - [ ] Passport preview matches stored data; export downloads valid schema-v3 JSON.
 - [ ] Strict v1/v2 imports migrate without a snapshot or invented live evidence; valid v3 imports; malformed/extra/oversized/deep/unknown/stale/contradictory files fail safely.
 - [ ] Markup-like notes render as text and create no DOM element or console error.

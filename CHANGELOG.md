@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a bilingual beginner-friendly Migration Summary above the detailed Passport, derived from the existing readiness gate, evidence, strategy, and recommendation tiers, with an explicit local plain-text copy action that excludes free-form and raw Passport data.
 - Added a bilingual current deciding gate and concrete next action to every readiness result without exposing a numeric score or weakening blocker precedence.
 - Added privacy-preserving, user-initiated GitHub correction links for software records and distro profiles, prefilled only with the selected catalog record's public metadata.
 - Added Void Linux, Pop!_OS, Bazzite, EndeavourOS, and Kubuntu to the deliberately curated comparison catalog, with bilingual primary-source-backed metadata and per-profile review dates.

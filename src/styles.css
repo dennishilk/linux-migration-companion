@@ -2250,6 +2250,108 @@ button:disabled {
   gap: 0.5rem;
 }
 
+.migration-summary {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.migration-summary-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.migration-summary-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.migration-summary-header > div > p {
+  max-width: 760px;
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.migration-summary-copy {
+  display: grid;
+  flex: 0 0 auto;
+  justify-items: end;
+  gap: 0.3rem;
+}
+
+.migration-summary-copy p {
+  min-height: 1.1rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+.migration-summary-overview,
+.migration-summary-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.migration-summary-overview article,
+.migration-summary-sections article {
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.migration-summary-overview h3,
+.migration-summary-sections h3 {
+  margin: 0;
+  color: var(--muted);
+  font-family: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+.migration-summary-overview strong {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--teal-dark);
+  font-size: 0.9rem;
+}
+
+.migration-summary-sections ul,
+.migration-summary-sections ol {
+  margin: 0.55rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.migration-summary-sections li,
+.migration-summary-sections article > p {
+  color: #4f625b;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.migration-summary-sections li + li {
+  margin-top: 0.28rem;
+}
+
+.migration-summary-sections article > p {
+  margin: 0.55rem 0 0;
+}
+
+.migration-summary-sections .migration-summary-actions {
+  grid-column: 1 / -1;
+}
+
 .passport-grid {
   display: grid;
   grid-template-columns: 1.45fr repeat(3, 1fr);
@@ -2591,6 +2693,8 @@ button:disabled {
   .completion-check { grid-column: 2; }
   .passport-decision { grid-template-columns: 1fr; }
   .passport-decision > div + div { border-top: 1px solid #34534b; border-left: 0; }
+  .migration-summary-header { display: grid; }
+  .migration-summary-copy { justify-items: start; }
   .footer { display: grid; }
 }
 
@@ -2607,8 +2711,11 @@ button:disabled {
   .check-grid,
   .software-grid,
   .passport-grid,
+  .migration-summary-overview,
+  .migration-summary-sections,
   .comparison-picker > div,
   .plan-explanation-grid { grid-template-columns: 1fr; }
+  .migration-summary-sections .migration-summary-actions { grid-column: 1; }
   .question-list,
   .section-kicker { padding-inline: 1rem; }
   .panel-actions,

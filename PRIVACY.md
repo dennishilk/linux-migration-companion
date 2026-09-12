@@ -29,6 +29,8 @@ Browser storage is not encrypted by the application and is accessible to scripts
 
 Passport export creates a JSON download only after a user action. The file can reveal software choices, migration constraints and optional hardware facts. Inspect it before sharing and protect it like any personal planning document.
 
+The separate “Copy summary / Zusammenfassung kopieren” action runs only after an explicit click and writes a plain-text, high-level migration overview to the local clipboard. It may name intentionally selected blocking software, generic hardware categories, readiness/strategy, distro candidates, and generic next actions. It excludes free-form notes, snapshot facts and identifiers, raw Passport JSON, filesystem paths, browser/device metadata, and unrelated local state. Nothing is uploaded.
+
 Passport import is local. Files are limited to 256 KiB and depth 12, then validated against a strict schema. Unknown keys/IDs, excess/duplicate items, overlong text, contradictory required/not-applicable hardware, excessive nesting, and invalid versions are rejected. Strict v1/v2 files are explicitly migrated to v3 without inventing snapshot or live evidence. The file is never uploaded.
 
 Hardware snapshot import is separately limited to 128 KiB and depth 8. It rejects extra/unsafe/private keys, unknown versions/categories, contradictory sources, malformed text and all non-data structures before state use. A file claiming to be official is still untrusted. The app stores only the current validated snapshot inside Passport v3.

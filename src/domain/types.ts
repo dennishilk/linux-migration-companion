@@ -346,6 +346,21 @@ export interface ReadinessAssessment {
   blockers: LocalizedText[];
 }
 
+export interface MigrationSummaryDistro {
+  id: string;
+  name: string;
+}
+
+export interface MigrationSummary {
+  overallState: ReadinessState;
+  strategy: MigrationStrategy;
+  readyItems: LocalizedText[];
+  stillToVerify: LocalizedText[];
+  blockers: LocalizedText[];
+  suggestedDistros: MigrationSummaryDistro[];
+  nextActions: LocalizedText[];
+}
+
 export type DataMigrationId =
   | "documents"
   | "photos"

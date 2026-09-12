@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { App } from "./App";
@@ -45,7 +45,13 @@ function storePopulatedPassport(locale: "en" | "de" = "en") {
 }
 
 describe("public release application flow", () => {
-  afterEach(() => cleanup());
+  afterEach(() => {
+    cleanup();
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: undefined
+    });
+  });
 
   beforeEach(() => {
     window.localStorage.clear();
@@ -582,6 +588,76 @@ describe("public release application flow", () => {
       await screen.findByText("Passport wurde importiert und validiert.")
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("de");
+  });
+
+  it("places the localized beginner summary before the detailed Passport", async () => {
+    const user = userEvent.setup();
+    storePopulatedPassport();
+    window.history.replaceState({}, "", "/?step=passport");
+    render(<App />);
+
+    const summaryHeading = screen.getByRole("heading", {
+      name: "Your migration summary"
+    });
+    const summary = summaryHeading.closest("section");
+    const detailedGrid = document.querySelector(".passport-grid");
+    expect(summary).not.toBeNull();
+    expect(detailedGrid).not.toBeNull();
+    expect(
+      summary!.compareDocumentPosition(detailedGrid!) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(within(summary!).getByText("BLOCKED")).toBeInTheDocument();
+    expect(within(summary!).getByText(/Photoshop blocks migration/)).toBeInTheDocument();
+    expect(screen.getByText("Software workflows requiring verification")).toBeInTheDocument();
+    expect(screen.getByText("Inspect complete exported data")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "DE" }));
+    expect(
+      screen.getByRole("heading", { name: "Deine Migrationsübersicht" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Zusammenfassung kopieren" })
+    ).toBeInTheDocument();
+  });
+
+  it("copies the local summary only after an explicit click and reports success", async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText }
+    });
+    window.history.replaceState({}, "", "/?step=passport");
+    render(<App />);
+
+    expect(writeText).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Copy summary" }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledOnce());
+    expect(writeText.mock.calls[0][0]).toContain(
+      "Linux Migration Companion — Migration Summary"
+    );
+    expect(writeText.mock.calls[0][0]).not.toMatch(/score|percentage|%/i);
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Summary copied to the clipboard."
+    );
+  });
+
+  it("fails gracefully when clipboard access is unavailable", async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: undefined
+    });
+    window.history.replaceState({}, "", "/?step=passport");
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Copy summary" }));
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "The summary could not be copied. Clipboard access may be unavailable."
+    );
   });
 
   it("keeps the media handoff non-destructive when no distro is selected", async () => {

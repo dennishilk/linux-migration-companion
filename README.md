@@ -20,7 +20,7 @@ The ten-stage DE/EN journey preserves the original visual and technical architec
 6. **Migration Readiness:** explainable, non-numeric readiness plus a “Should I keep Windows?” strategy.
 7. **Data Migration:** 19 data categories using `COPY`, `SYNC`, `EXPORT/IMPORT`, `RECONFIGURE`, `MANUAL CHECK`, or `DO NOT ASSUME`.
 8. **Safe media handoff:** official downloads and verification guidance; the application never writes a device.
-9. **Migration Passport 3.0:** strict local evidence record with optional snapshot provenance, JSON export/import, and explicit v1/v2-to-v3 migrations.
+9. **Migration Passport 3.0:** a beginner-friendly derived Migration Summary above the strict local evidence record, plus optional snapshot provenance, JSON export/import, and explicit v1/v2-to-v3 migrations.
 10. **First Boot Plan 2.0:** guided and fully explained plans covering what, why, risk, verification, and back-out—without executable commands.
 
 No compatibility percentage is calculated or shown. Preference-based distro recommendations never override software or hardware blockers.
@@ -130,6 +130,8 @@ Snapshot schema v1 is strict, closed, limited to 128 KiB/depth 8 and treated as 
 ## Migration Passport 3.0
 
 Passport v3 contains advisor answers, up to three comparison profiles, software/workflow requirements, 19 hardware evidence records, optional validated snapshot provenance, ten live-test results, data-migration selections, media progress, and the chosen distro. Derived readiness remains recomputable rather than being stored as an unchallengeable fact.
+
+The Passport stage begins with a compact DE/EN Migration Summary derived from that current evidence and the existing readiness result. It shows status, strategy, supported positives, open verification, blockers, up to three eligible distro candidates, and prioritized next actions without a percentage or internal score. An explicit copy button creates local plain text for community review; it includes only high-level derived evidence and excludes free-form notes, snapshot/device details, and raw Passport JSON.
 
 Imports are limited to 256 KiB and depth 12. Objects are strict; IDs are closed against the current catalog; comparison IDs are unique and capped; text is bounded; contradictory required/not-applicable hardware evidence is rejected. Existing strict Passport v1 and v2 files are explicitly migrated to v3 without inventing snapshot or live evidence.
 

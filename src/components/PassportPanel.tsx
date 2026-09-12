@@ -14,6 +14,12 @@ import type {
   SoftwareAssessment
 } from "../domain/types";
 import { buildDataMigrationAssessment } from "../engine/dataMigration";
+import {
+  buildMigrationSummary,
+  formatMigrationSummary,
+  migrationSummaryStatus,
+  migrationSummaryStrategy
+} from "../engine/migrationSummary";
 import { localize, t } from "../i18n";
 import { parsePassportText, serializePassport } from "../passport/schema";
 
@@ -29,6 +35,7 @@ interface PassportPanelProps {
 }
 
 type ImportState = "idle" | "success" | "error";
+type CopyState = "idle" | "success" | "error";
 
 const copy = (locale: Locale, en: string, de: string) =>
   locale === "de" ? de : en;
@@ -86,6 +93,7 @@ export function PassportPanel({
 }: PassportPanelProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [importState, setImportState] = useState<ImportState>("idle");
+  const [copyState, setCopyState] = useState<CopyState>("idle");
   const selected =
     recommendations.find((item) => item.distro.id === passport.selectedDistroId) ??
     recommendations[0];
@@ -100,6 +108,12 @@ export function PassportPanel({
     ["unknown", "known_fact", "user_reported"].includes(evidence.state)
   );
   const hardwareSnapshot = passport.hardware.snapshot;
+  const migrationSummary = buildMigrationSummary(
+    passport,
+    recommendations,
+    softwareAssessment,
+    migrationReadiness
+  );
 
   const exportPassport = () => {
     const text = serializePassport(passport);
@@ -120,10 +134,23 @@ export function PassportPanel({
       const parsed = parsePassportText(await file.text());
       onImport(parsed);
       setImportState("success");
+      setCopyState("idle");
     } catch {
       setImportState("error");
     } finally {
       if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  const copyMigrationSummary = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(
+        formatMigrationSummary(migrationSummary, locale)
+      );
+      setCopyState("success");
+    } catch {
+      setCopyState("error");
     }
   };
 
@@ -167,6 +194,164 @@ export function PassportPanel({
           )}
         </div>
       ) : null}
+
+      <section
+        className={`migration-summary readiness-state-${migrationSummary.overallState}`}
+        aria-labelledby="migration-summary-title"
+      >
+        <header className="migration-summary-header">
+          <div>
+            <h2 id="migration-summary-title">
+              {copy(locale, "Your migration summary", "Deine Migrationsübersicht")}
+            </h2>
+            <p>
+              {copy(
+                locale,
+                "A quick overview of what looks ready, what still needs proof, and what to do next.",
+                "Ein kurzer Überblick darüber, was schon gut aussieht, was noch geprüft werden muss und was als Nächstes sinnvoll ist."
+              )}
+            </p>
+          </div>
+          <div className="migration-summary-copy">
+            <button
+              type="button"
+              className="button secondary"
+              onClick={() => void copyMigrationSummary()}
+            >
+              {copy(locale, "Copy summary", "Zusammenfassung kopieren")}
+            </button>
+            <p role="status" aria-live="polite">
+              {copyState === "success"
+                ? copy(
+                    locale,
+                    "Summary copied to the clipboard.",
+                    "Zusammenfassung wurde in die Zwischenablage kopiert."
+                  )
+                : copyState === "error"
+                  ? copy(
+                      locale,
+                      "The summary could not be copied. Clipboard access may be unavailable.",
+                      "Die Zusammenfassung konnte nicht kopiert werden. Der Zugriff auf die Zwischenablage ist möglicherweise nicht verfügbar."
+                    )
+                  : ""}
+            </p>
+          </div>
+        </header>
+
+        <div className="migration-summary-overview">
+          <article>
+            <h3>{copy(locale, "Current status", "Aktueller Status")}</h3>
+            <strong>
+              {migrationSummaryStatus(migrationSummary.overallState, locale)}
+            </strong>
+          </article>
+          <article>
+            <h3>{copy(locale, "Recommended strategy", "Empfohlene Strategie")}</h3>
+            <strong>
+              {migrationSummaryStrategy(migrationSummary.strategy, locale)}
+            </strong>
+          </article>
+        </div>
+
+        <div className="migration-summary-sections">
+          <article>
+            <h3>{copy(locale, "Already ready", "Bereits bereit")}</h3>
+            {migrationSummary.readyItems.length ? (
+              <ul>
+                {migrationSummary.readyItems.map((item) => (
+                  <li key={item.en}>{localize(item, locale)}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                {copy(
+                  locale,
+                  "No readiness claim is supported yet.",
+                  "Noch ist keine Bereitschaftsaussage ausreichend belegt."
+                )}
+              </p>
+            )}
+          </article>
+
+          <article>
+            <h3>{copy(locale, "Still to verify", "Noch zu prüfen")}</h3>
+            {migrationSummary.stillToVerify.length ? (
+              <ul>
+                {migrationSummary.stillToVerify.map((item) => (
+                  <li key={item.en}>{localize(item, locale)}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                {copy(
+                  locale,
+                  "No required verification is currently open.",
+                  "Derzeit ist keine erforderliche Prüfung offen."
+                )}
+              </p>
+            )}
+          </article>
+
+          <article>
+            <h3>{copy(locale, "Blockers", "Blocker")}</h3>
+            {migrationSummary.blockers.length ? (
+              <ul>
+                {migrationSummary.blockers.map((item) => (
+                  <li key={item.en}>{localize(item, locale)}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                {copy(
+                  locale,
+                  "No active blocker is recorded. Remaining unknowns and checks still matter.",
+                  "Kein aktiver Blocker ist erfasst. Verbleibende Unklarheiten und Prüfungen sind weiterhin wichtig."
+                )}
+              </p>
+            )}
+          </article>
+
+          <article>
+            <h3>
+              {copy(locale, "Suggested distributions", "Vorgeschlagene Distributionen")}
+            </h3>
+            {migrationSummary.suggestedDistros.length ? (
+              <ul>
+                {migrationSummary.suggestedDistros.map((distro) => (
+                  <li key={distro.id}>{distro.name}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                {copy(
+                  locale,
+                  "No suitable distribution candidate is currently available.",
+                  "Derzeit ist kein geeigneter Distributionskandidat verfügbar."
+                )}
+              </p>
+            )}
+          </article>
+
+          <article className="migration-summary-actions">
+            <h3>{copy(locale, "Next actions", "Nächste Schritte")}</h3>
+            {migrationSummary.nextActions.length ? (
+              <ol>
+                {migrationSummary.nextActions.map((item) => (
+                  <li key={item.en}>{localize(item, locale)}</li>
+                ))}
+              </ol>
+            ) : (
+              <p>
+                {copy(
+                  locale,
+                  "No additional action is currently derived.",
+                  "Derzeit wird kein zusätzlicher Schritt abgeleitet."
+                )}
+              </p>
+            )}
+          </article>
+        </div>
+      </section>
 
       <div className="passport-grid passport-grid-v3">
         <article className="passport-card passport-primary">
