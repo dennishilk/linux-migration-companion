@@ -45,11 +45,18 @@ describe("migration readiness and Windows retention", () => {
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("insufficient_evidence");
     expect(result.strategy).toBe("test_first");
+    expect(result.currentGate.decidingFactor.en).toContain("evidence is still missing");
+    expect(result.currentGate.nextAction?.de).toContain("Software-Arbeitsablauf");
   });
 
   it("lets a hard software blocker outrank all positive evidence", () => {
     const passport = readyPassport();
     passport.softwareSelections = { photoshop: "essential" };
+    passport.hardware.evidence.wifi = {
+      state: "failed_test",
+      required: true,
+      details: "Drops after wake"
+    };
     const result = assessMigrationReadiness(
       passport,
       assessSoftware(passport.softwareSelections)
@@ -57,6 +64,8 @@ describe("migration readiness and Windows retention", () => {
     expect(result.state).toBe("blocked");
     expect(result.strategy).toBe("keep_windows_for_workflows");
     expect(result.blockers[0].en).toContain("Photoshop");
+    expect(result.currentGate.decidingFactor.en).toContain("Photoshop");
+    expect(result.currentGate.decidingFactor.en).not.toContain("Wi-Fi");
   });
 
   it("retains Windows temporarily for an essential high-risk workflow", () => {
@@ -68,6 +77,8 @@ describe("migration readiness and Windows retention", () => {
     );
     expect(result.state).toBe("windows_should_be_retained");
     expect(result.strategy).toBe("keep_windows_temporarily");
+    expect(result.currentGate.decidingFactor.en).toContain("Enterprise VPN");
+    expect(result.currentGate.nextAction?.en).toContain("end-to-end verification");
   });
 
   it("blocks on a failed required hardware test", () => {
@@ -80,6 +91,8 @@ describe("migration readiness and Windows retention", () => {
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("blocked");
     expect(result.strategy).toBe("migration_blocked");
+    expect(result.currentGate.decidingFactor.en).toContain("Wi-Fi");
+    expect(result.currentGate.decidingFactor.en).toContain("failed test");
   });
 
   it("blocks on a known issue in required hardware", () => {
@@ -102,6 +115,8 @@ describe("migration readiness and Windows retention", () => {
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("live_test_required");
     expect(result.checks.some((item) => item.en.includes("not live-test verified"))).toBe(true);
+    expect(result.currentGate.decidingFactor.en).toContain("Wi-Fi");
+    expect(result.currentGate.nextAction?.en).toContain("target system");
   });
 
   it("does not treat a user report as live verification", () => {
@@ -127,6 +142,7 @@ describe("migration readiness and Windows retention", () => {
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("blocked");
     expect(result.blockers.some((item) => item.en.includes("live hardware"))).toBe(true);
+    expect(result.currentGate.decidingFactor.en).toContain("Suspend / wake");
   });
 
   it("requires essential live checks that remain untested", () => {
@@ -134,6 +150,7 @@ describe("migration readiness and Windows retention", () => {
     passport.liveTests.suspend = "not_tested";
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("live_test_required");
+    expect(result.currentGate.decidingFactor.en).toContain("Suspend / wake");
   });
 
   it("can become ready when blockers, unknowns and data gaps are resolved", () => {
@@ -141,6 +158,8 @@ describe("migration readiness and Windows retention", () => {
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("ready");
     expect(result.strategy).toBe("linux_primary");
+    expect(result.currentGate.decidingFactor.en).toContain("No current hard blocker");
+    expect(result.currentGate.nextAction).toBeUndefined();
   });
 
   it("returns ready with checks when the data inventory is empty", () => {
@@ -149,6 +168,8 @@ describe("migration readiness and Windows retention", () => {
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("ready_with_checks");
     expect(result.checks.some((item) => item.en.includes("No data migration"))).toBe(true);
+    expect(result.currentGate.decidingFactor.en).toContain("data migration inventory");
+    expect(result.currentGate.nextAction?.de).toContain("Datenkategorien");
   });
 
   it("keeps gaming verification visible without inventing compatibility", () => {
@@ -158,6 +179,18 @@ describe("migration readiness and Windows retention", () => {
     const result = assessMigrationReadiness(passport, assessSoftware({}));
     expect(result.state).toBe("ready_with_checks");
     expect(result.checks.some((item) => item.en.includes("title-by-title"))).toBe(true);
+  });
+
+  it("names the most relevant software trade-off when checks remain", () => {
+    const passport = readyPassport();
+    passport.softwareSelections = { "enterprise-vpn": "important" };
+    const result = assessMigrationReadiness(
+      passport,
+      assessSoftware(passport.softwareSelections)
+    );
+    expect(result.state).toBe("ready_with_checks");
+    expect(result.currentGate.decidingFactor.en).toContain("Enterprise VPN");
+    expect(result.currentGate.nextAction?.en).toContain("Verify the real workflow");
   });
 
   it("respects a recorded dual-boot preference when checks remain", () => {
@@ -182,5 +215,7 @@ describe("migration readiness and Windows retention", () => {
   it("never emits a compatibility percentage", () => {
     const result = assessMigrationReadiness(readyPassport(), assessSoftware({}));
     expect(JSON.stringify(result)).not.toMatch(/\d+%/);
+    expect(result).not.toHaveProperty("score");
+    expect(result.currentGate).not.toHaveProperty("score");
   });
 });

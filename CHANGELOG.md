@@ -2,11 +2,13 @@
 
 ## Unreleased
 
+- Added a bilingual current deciding gate and concrete next action to every readiness result without exposing a numeric score or weakening blocker precedence.
+- Added privacy-preserving, user-initiated GitHub correction links for software records and distro profiles, prefilled only with the selected catalog record's public metadata.
 - Added Void Linux, Pop!_OS, Bazzite, EndeavourOS, and Kubuntu to the deliberately curated comparison catalog, with bilingual primary-source-backed metadata and per-profile review dates.
 - Replaced the distro-name-style specialist prompt with property-oriented system-control wording while retaining all public Passport v3 answer values.
 - Let demonstrated experience, terminal/troubleshooting confidence, maintenance tolerance, and rolling acceptance surface Void, EndeavourOS, and Arch without weakening true rolling, NixOS, Gentoo, CachyOS, Secure Boot, or beginner-safety gates.
 - Clarified that comparison covers all included profiles rather than every Linux distribution and added beginner/advanced, catalog, localization, ranking, and Passport contract regressions.
-- Kept package/application version `0.3.0`; no release, tag, merge, deployment, collector, evidence, storage, or workflow change is included.
+- Kept package/application version `0.3.0`; no release, tag, collector, evidence, storage, or workflow change is included.
 
 ## 0.3.0 — 2026-08-12
 

@@ -5,6 +5,7 @@ import type {
   Locale
 } from "../domain/types";
 import { localize } from "../i18n";
+import { buildCatalogReportUrl } from "../utils/catalogReport";
 
 interface DistroComparisonProps {
   locale: Locale;
@@ -154,9 +155,36 @@ export function DistroComparison({
                     <dd>{localize(comparison.recovery, locale)}</dd>
                   </div>
                 </dl>
-                <a href={distro.officialHome} target="_blank" rel="noreferrer">
-                  {copy(locale, "Official project site ↗", "Offizielle Projektseite ↗")}
-                </a>
+                <div className="catalog-links">
+                  <a href={distro.officialHome} target="_blank" rel="noreferrer">
+                    {copy(locale, "Official project site ↗", "Offizielle Projektseite ↗")}
+                  </a>
+                  <a
+                    className="catalog-report-link"
+                    href={buildCatalogReportUrl({
+                      type: "Distro",
+                      name: distro.edition
+                        ? `${distro.name} — ${distro.edition}`
+                        : distro.name,
+                      id: distro.id,
+                      reviewedAt: distro.reviewedAt,
+                      sourceUrl: distro.officialHome
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${copy(
+                      locale,
+                      "Report outdated or incorrect information",
+                      "Veraltete oder falsche Information melden"
+                    )} (${copy(locale, "opens in a new tab", "öffnet in einem neuen Tab")})`}
+                  >
+                    {copy(
+                      locale,
+                      "Report outdated or incorrect information",
+                      "Veraltete oder falsche Information melden"
+                    )} ↗
+                  </a>
+                </div>
               </article>
             );
           })}

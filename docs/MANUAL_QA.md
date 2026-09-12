@@ -25,6 +25,7 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] Void, Pop!_OS, Bazzite, EndeavourOS, and Kubuntu render complete DE/EN comparison facets and official handoff links without overflow.
 - [ ] Software search/category/add/remove/priority controls work with all 90 records.
 - [ ] Application/workflow scope, volatile/stable label, official source, and review date are visible.
+- [ ] Software and distro correction links render in DE/EN, open the repository's new-issue form in a new tab, and prefill only the selected record's type, name, ID, review date, and public source URL.
 - [ ] Essential Photoshop/Creative Cloud produces a hard blocker and keep-Windows-for-workflows strategy.
 - [ ] Essential enterprise VPN produces Windows-retained-until-tested, not a false vendor-support claim.
 - [ ] All 19 hardware classes support required, evidence state, and 500-character details.
@@ -36,6 +37,7 @@ Record browser/version, operating system, viewport, zoom, commit SHA, date, cons
 - [ ] All ten live-test rows support four states; linked evidence becomes live-verified/failed/not-applicable correctly.
 - [ ] Reverting a live result does not preserve a false live-verification state.
 - [ ] Readiness exposes the exact state, strategy, reasons, open checks, and blockers.
+- [ ] Every readiness state names one current deciding gate and, except for `READY`, one representative action that could change it; no score, percentage, points, or distance-to-ready wording appears.
 - [ ] A software blocker or required hardware failure can never produce `READY`.
 - [ ] Empty/default evidence produces `INSUFFICIENT EVIDENCE`.
 - [ ] Data plan covers all 19 categories, six methods, backup warning, cloud placeholders, encryption, Fast Startup/NTFS, and active databases.
@@ -181,6 +183,7 @@ Attempt to bypass every specialist gate and force `READY` while Photoshop, faile
 ## Network, security, and privacy
 
 - [ ] DevTools Network shows only same-origin static assets until the user opens an external link.
+- [ ] Catalog correction links contact GitHub only after activation and never include Passport, hardware, browser/device, or unrelated software-selection state in the URL.
 - [ ] No analytics, font, telemetry, compatibility API, tracker, or service-worker request occurs.
 - [ ] Console has no errors or warnings during the complete journey.
 - [ ] External links are HTTPS and open with `noreferrer`.

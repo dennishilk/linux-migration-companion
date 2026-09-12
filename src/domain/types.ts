@@ -332,9 +332,15 @@ export type MigrationStrategy =
   | "keep_windows_for_workflows"
   | "migration_blocked";
 
+export interface ReadinessGate {
+  decidingFactor: LocalizedText;
+  nextAction?: LocalizedText;
+}
+
 export interface ReadinessAssessment {
   state: ReadinessState;
   strategy: MigrationStrategy;
+  currentGate: ReadinessGate;
   reasons: LocalizedText[];
   checks: LocalizedText[];
   blockers: LocalizedText[];

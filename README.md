@@ -40,7 +40,7 @@ The derived state is one of:
 - `BLOCKED`
 - `INSUFFICIENT EVIDENCE`
 
-The related strategy is one of Linux primary, test first, dual boot, keep Windows temporarily, keep Windows for specific workflows, or migration blocked. Every result includes its reasons and unresolved evidence.
+The related strategy is one of Linux primary, test first, dual boot, keep Windows temporarily, keep Windows for specific workflows, or migration blocked. Every result includes its reasons, unresolved evidence, the single factor currently deciding the state, and the next representative action where one can change it.
 
 ## Deliberate recommendation safeguards
 
@@ -143,6 +143,7 @@ Browser storage is convenience, not backup. Snapshot model names and non-unique 
 - The PowerShell reference may be blocked by execution policy. This is a beginner-path product limitation, not a PowerShell bug; the project recommends no bypass or policy weakening.
 - Software records describe supported routes and representative verification; they do not promise that a document, plug-in, game, anti-cheat system, peripheral, or organization policy works.
 - The catalog is a maintained snapshot with per-profile review dates through **2026-08-13**, not a live compatibility service. Edition labels and volatile claims must be rechecked before use.
+- Every software record and distro profile provides a user-initiated GitHub correction link containing only that record's public catalog metadata; no Passport or device state is attached.
 - Live-session success does not prove that an installed system will behave identically after future updates or driver changes.
 - The app cannot make dual boot, firmware, backups, or partitioning risk-free.
 - Search indexing is enabled for the single canonical application URL. Query-driven `?step=` states retain deep-linking but canonicalize to the application root; no artificial localized URLs or `hreflang` alternates are published. The project ships a one-URL subpath sitemap, while the production root sitemap remains owned by the main website integration.

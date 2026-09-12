@@ -1043,6 +1043,16 @@ button:disabled {
   font-size: 0.79rem;
 }
 
+.catalog-links {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.catalog-report-link {
+  color: #52645e;
+  font-size: 0.72rem;
+}
+
 .result-actions {
   margin-top: 1.3rem;
   padding-inline: 0;
@@ -1510,10 +1520,18 @@ button:disabled {
   line-height: 1.5;
 }
 
-.comparison-card > a {
+.comparison-card > .catalog-links {
   display: inline-block;
   margin-top: 0.75rem;
+}
+
+.comparison-card > .catalog-links a {
+  display: block;
   font-size: 0.75rem;
+}
+
+.comparison-card > .catalog-links a + a {
+  margin-top: 0.35rem;
 }
 
 .readiness-hero {
@@ -1604,6 +1622,33 @@ button:disabled {
 .readiness-facts span {
   color: var(--muted);
   font-size: 0.72rem;
+}
+
+.readiness-gate {
+  margin-top: 0.8rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid #7eb5a6;
+  border-left: 5px solid var(--teal);
+  border-radius: 8px;
+  background: #edf8f4;
+}
+
+.readiness-gate h2,
+.readiness-gate h3 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.readiness-gate h3 {
+  margin-top: 0.8rem;
+  font-size: 0.78rem;
+}
+
+.readiness-gate p {
+  margin: 0.4rem 0 0;
+  color: #405b52;
+  font-size: 0.8rem;
+  line-height: 1.55;
 }
 
 .readiness-reasons {

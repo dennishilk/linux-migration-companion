@@ -1,6 +1,6 @@
 # Privacy
 
-Last reviewed: 2026-08-12
+Last reviewed: 2026-09-12
 
 Linux Migration Companion is designed as a static, local-first web application.
 
@@ -17,7 +17,7 @@ The application and optional collectors deliberately do **not** collect or expor
 
 The optional collectors may export selected non-unique hardware model names, coarse system facts, and four-digit PCI/USB vendor/device IDs because those facts materially support migration planning. The browser-only route uses a few feature-detected APIs and labels processor/memory values as possibly privacy-reduced; it does not use aggressive fingerprinting or identify a GPU renderer. Every exact read and discard decision is in [the Hardware Snapshot audit](docs/HARDWARE_SNAPSHOT.md).
 
-Static hosting infrastructure may process ordinary HTTP connection data under the host’s own policies. Following an external source or voluntary Support link leaves this application and is subject to the destination’s privacy policy. The Support page embeds no payment script, image, tracker or remote content; the third-party destination is contacted only after the user activates its link.
+Static hosting infrastructure may process ordinary HTTP connection data under the host’s own policies. Following an external source, catalog correction, or voluntary Support link leaves this application and is subject to the destination’s privacy policy. Catalog correction links open a GitHub issue form only after the user activates them and prefill only the selected record's catalog type, name, ID, review date, and public source URL. They do not include Migration Passport, hardware, browser/device, or unrelated application state; submitting the issue remains a separate user action. The Support page embeds no payment script, image, tracker or remote content; the third-party destination is contacted only after the user activates its link.
 
 ## Browser storage
 

@@ -83,6 +83,19 @@ export function ReadinessPanel({
         </article>
       </div>
 
+      <section className="readiness-gate" aria-labelledby="current-gate-title">
+        <h2 id="current-gate-title">
+          {copy(locale, "What currently decides this status?", "Was entscheidet diesen Status gerade?")}
+        </h2>
+        <p>{localize(readiness.currentGate.decidingFactor, locale)}</p>
+        {readiness.currentGate.nextAction ? (
+          <div>
+            <h3>{copy(locale, "What could change it?", "Was könnte ihn ändern?")}</h3>
+            <p>{localize(readiness.currentGate.nextAction, locale)}</p>
+          </div>
+        ) : null}
+      </section>
+
       {readiness.blockers.length ? (
         <section className="readiness-reasons readiness-blockers" aria-labelledby="blockers-title">
           <h2 id="blockers-title">{copy(locale, "Why this is blocked", "Warum dies blockiert ist")}</h2>

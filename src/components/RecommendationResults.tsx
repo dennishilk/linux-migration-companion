@@ -6,6 +6,7 @@ import type {
 } from "../domain/types";
 import { buildAdvisorWarnings } from "../engine/recommend";
 import { localize, t } from "../i18n";
+import { buildCatalogReportUrl } from "../utils/catalogReport";
 
 interface RecommendationResultsProps {
   locale: Locale;
@@ -125,14 +126,41 @@ export function RecommendationResults({
               </details>
 
               <footer className="card-actions">
-                <a
-                  className="text-link"
-                  href={item.distro.officialHome}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {text(locale, "Official project", "Offizielles Projekt")} ↗
-                </a>
+                <div className="catalog-links">
+                  <a
+                    className="text-link"
+                    href={item.distro.officialHome}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {text(locale, "Official project", "Offizielles Projekt")} ↗
+                  </a>
+                  <a
+                    className="catalog-report-link"
+                    href={buildCatalogReportUrl({
+                      type: "Distro",
+                      name: item.distro.edition
+                        ? `${item.distro.name} — ${item.distro.edition}`
+                        : item.distro.name,
+                      id: item.distro.id,
+                      reviewedAt: item.distro.reviewedAt,
+                      sourceUrl: item.distro.officialHome
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${text(
+                      locale,
+                      "Report outdated or incorrect information",
+                      "Veraltete oder falsche Information melden"
+                    )} (${text(locale, "opens in a new tab", "öffnet in einem neuen Tab")})`}
+                  >
+                    {text(
+                      locale,
+                      "Report outdated or incorrect information",
+                      "Veraltete oder falsche Information melden"
+                    )} ↗
+                  </a>
+                </div>
                 <button
                   type="button"
                   className={selected ? "button success" : "button primary"}

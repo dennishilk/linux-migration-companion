@@ -202,6 +202,22 @@ describe("public release application flow", () => {
     await user.click(within(navigation).getByRole("button", { name: /Software/ }));
     expect(screen.getByRole("heading", { name: "What software genuinely has to move?" })).toBeInTheDocument();
     expect(screen.getByText("90 / 90 curated workflows")).toBeInTheDocument();
+
+    const photoshopCard = screen.getByRole("heading", { name: "Adobe Photoshop" }).closest("article");
+    expect(photoshopCard).not.toBeNull();
+    await user.click(within(photoshopCard as HTMLElement).getByText("What to verify"));
+    const reportLink = within(photoshopCard as HTMLElement).getByRole("link", {
+      name: /Report outdated or incorrect information/
+    });
+    const reportUrl = new URL(reportLink.getAttribute("href") ?? "");
+    expect(reportLink).toHaveAttribute("target", "_blank");
+    expect(reportLink).toHaveAttribute("rel", "noopener noreferrer");
+    expect([...reportUrl.searchParams.keys()]).toEqual(["title", "body"]);
+    expect(reportUrl.searchParams.get("body")).toContain("Catalog type: Software");
+    expect(reportUrl.searchParams.get("body")).toContain("ID: photoshop");
+    expect(reportUrl.searchParams.get("body")).not.toMatch(
+      /Migration Passport|hardware|browser|device|selected applications/i
+    );
   });
 
   it("exposes the complete ten-step journey without a hidden route", () => {
@@ -282,9 +298,27 @@ describe("public release application flow", () => {
     expect(screen.getByRole("checkbox", { name: /Kubuntu/ })).toBeInTheDocument();
     expect(screen.getByText(/curated set of maintained profiles rather than every Linux distribution/)).toBeInTheDocument();
 
+    await user.click(screen.getByRole("checkbox", { name: /Void Linux/ }));
+    const voidCard = screen.getByRole("heading", { name: "Void Linux" }).closest("article");
+    expect(voidCard).not.toBeNull();
+    const reportLink = within(voidCard as HTMLElement).getByRole("link", {
+      name: /Report outdated or incorrect information/
+    });
+    const reportUrl = new URL(reportLink.getAttribute("href") ?? "");
+    expect(reportLink).toHaveAttribute("target", "_blank");
+    expect(reportLink).toHaveAttribute("rel", "noopener noreferrer");
+    expect(reportUrl.searchParams.get("body")).toContain("Catalog type: Distro");
+    expect(reportUrl.searchParams.get("body")).toContain("ID: void-linux");
+    expect(reportUrl.searchParams.get("body")).not.toMatch(
+      /Migration Passport|hardware|browser|device|selected applications/i
+    );
+
     await user.click(screen.getByRole("button", { name: "DE" }));
     expect(screen.getByText(/kuratierte Auswahl gepflegter Profile statt jeder existierenden Linux-Distribution/)).toBeInTheDocument();
     expect(screen.getByText("Spezialisten-Schutzregeln bleiben aktiv")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Veraltete oder falsche Information melden/ })
+    ).toBeInTheDocument();
   });
 
   it("shows insufficient evidence rather than a false ready result", async () => {
@@ -293,7 +327,18 @@ describe("public release application flow", () => {
     const navigation = screen.getByLabelText("Migration journey");
     await user.click(within(navigation).getByRole("button", { name: /Readiness/ }));
     expect(screen.getAllByText("INSUFFICIENT EVIDENCE").length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("heading", { name: "What currently decides this status?" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Usable software and real hardware evidence is still missing.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "What could change it?" })).toBeInTheDocument();
     expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "DE" }));
+    expect(
+      screen.getByRole("heading", { name: "Was entscheidet diesen Status gerade?" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Was könnte ihn ändern?" })).toBeInTheDocument();
   });
 
   it("links a successful live test to hardware evidence", async () => {

@@ -35,6 +35,8 @@ The readiness engine is separate from distro ranking:
 6. Remaining software, gaming, data, or manual checks return `READY WITH CHECKS`.
 7. Only resolved required evidence with no remaining checks returns `READY`.
 
+Each result also exposes one bilingual current gate derived inside the same readiness branch, plus one concrete next action where applicable. It follows the order above, names the first active hard blocker or unresolved required workflow/evidence, and never represents a numeric distance from another state.
+
 The migration strategy then respects the recorded test/dual-boot/replace intent without ever performing a disk or boot action.
 
 Current raw tier boundaries in `recommend.ts` are `>=20` strong, `>=13` possible, `>=7` exploratory, otherwise not recommended. These boundaries are implementation details and require persona-test review when changed.

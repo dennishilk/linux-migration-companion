@@ -9,6 +9,7 @@ import type {
 } from "../domain/types";
 import { assessSoftware } from "../engine/assess";
 import { localize, t } from "../i18n";
+import { buildCatalogReportUrl } from "../utils/catalogReport";
 
 interface SoftwareAssessmentProps {
   locale: Locale;
@@ -164,6 +165,27 @@ export function SoftwareAssessmentPanel({
                   {software.sourceLabel} ↗
                 </a>
                 <small>{t(locale, "reviewed")}: {software.reviewedAt}</small>
+                <a
+                  className="catalog-report-link"
+                  href={buildCatalogReportUrl({
+                    type: "Software",
+                    name: software.name,
+                    id: software.id,
+                    reviewedAt: software.reviewedAt,
+                    sourceUrl: software.sourceUrl
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${
+                    locale === "de"
+                      ? "Veraltete oder falsche Information melden"
+                      : "Report outdated or incorrect information"
+                  } (${locale === "de" ? "öffnet in einem neuen Tab" : "opens in a new tab"})`}
+                >
+                  {locale === "de"
+                    ? "Veraltete oder falsche Information melden"
+                    : "Report outdated or incorrect information"} ↗
+                </a>
               </details>
               <footer>
                 {!priority ? (
